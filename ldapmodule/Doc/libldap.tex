@@ -1,0 +1,30 @@
+% $Id: libldap.tex,v 1.1.1.1 2000/02/01 05:41:34 leonard Exp $
+
+%%============================================================
+%% LDAP Module
+
+\section{Module \sectcode{ldap}} \label{app:ldapmodule}
+
+\bimodindex{ldap}
+
+\renewcommand{\indexsubitem}{(in module ldap)}
+
+This module provides access to the University of Michigan's LDAP 
+(Lightweight Directory Access Protocol) \C\ interface. 
+It is more-or-less compliant with the interface described in RFC 1823,
+with the notable differences that lists are manipulated via Python
+list operations, and errors appear as exceptions.
+
+For more detailed information on the \C\ interface, 
+please see the documentation that accompanies the package available from
+\code{ftp://terminator.rs.itd.umich.edu/ldap/ldap-3.3.tar.Z}.
+
+This documentation is current for the python ldap module, version
+$1.4$.
+
+\input{constants}
+
+\input{functions}
+
+\input{LDAPObject}
+

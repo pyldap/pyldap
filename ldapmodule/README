@@ -1,0 +1,135 @@
+
+LDAP module for Python
+======================
+
+This module provides access to the LDAP (C language) library.
+It is known to compile and work with:
+  * UM LDAP library v3.3, ftp://terminator.rs.itd.umich.edu/ldap/ldap.tar.Z
+  * OpenLDAP release 1.2.7, http://www.openldap.org/
+
+For extensive module usage documentation, look in the Doc directory.
+
+Standard build instructions:
+    sh configure
+    make
+    make install  (possibly)
+
+Quick usage example:
+    import ldap
+    l = ldap.open("my_ldap_server.my_domain")
+    l.simple_bind_s("","")
+    l.search_s("o=My Organisation, c=AU", ldap.SCOPE_SUBTREE, "objectclass=*")
+
+Not included:
+   Direct BER support
+   CLDAP 
+
+Author contact:
+   (I am really hoping that someone will add the CLDAP support and 
+   possibly the OpenLDAP extensions such as display templates to this
+   library. If you are interested, please contact me at:)
+	
+   David Leonard
+   David.Leonard@csee.uq.edu.au
+   http://www.csee.uq.edu.au/~leonard/dc-prj/ldapmodule/
+
+Notes for Microsoft WIN32:
+   You are now looking at the source distribution.  A precompiled ldap.pyd 
+   for WIN32 architectures can also be found at:
+
+   	http://www.csee.uq.edu.au/~leonard/dc-prj/ldapmodule/
+
+   If you have MSVC6.0 or equivalent, and want to build the module yourself,
+   you should refer to the README.txt file in the win32 directory.
+
+Notes on building for getting started quickly:
+   Here are some notes on quickly building an external library (either UM's
+   LDAP or OpenLDAP) for *sole* use with this Python module. (You don't
+   need to be here if you have already built and installed LDAP libraries.)
+
+   The idea here is to download and compile just enough of those parts
+   of the third-party C libraries so that ldapmodule may be compiled
+   and installed.
+
+   First, follow one of the package-specific instructions below. After
+   doing that, you should have built the essential LDAP library and 
+   header files in /tmp/ldap-pfx.
+   After doing that you then go back into the ldapmodule directory and
+   tell configure where to find everything with something like this:
+
+   	$ sh configure --with-ldap=/tmp/ldap-pfx
+	$ make
+
+   If you have problems building shared libraries, remove the '*shared*'
+   from the Setup file and re-make.
+
+   After building and installing ldapmodule, you can delete /tmp/ldap-pfx.
+
+ OpenLDAP (release 1.2.1 or higher)
+   [There is a shell script included, openldap.sh, that tries to do the
+    following steps automatically.]
+   1. Download and extract the release source code (from the download page at 
+      http://www.openldap.org/ or from 
+      ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/)
+   2. Create a directory such as /tmp/ldap-pfx that will be used to hold the
+      built libraries.
+      $ mkdir -p /tmp/ldap-pfx/lib /tmp/ldap-pfx/include
+   3. Run the configure script from within the extracted 'ldap' directory:
+      $ sh configure --help   			# (read the options carefully)
+   4. $ sh configure --prefix=/tmp/ldap-pfx --disable-slapd --disable-slurpd \
+   		   --disable-libui --disable-threads # add other needed options
+   7. $ cd include; make && make install
+   5. $ cd ../libraries/liblber; make && make install
+   6. $ cd ../libldap; make && make install
+
+ UM LDAP (ldap-3.3)
+   1. Download and extract ftp://terminator.rs.itd.umich.edu/ldap/ldap.tar.Z
+      It unpacked into a directory called ldap-3.3 for me.
+   2. Create a directory such as /tmp/ldap-pfx that will be used to hold the 
+      built libraries:
+      $ mkdir -p /tmp/ldap-pfx/lib /tmp/ldap-pfx/include
+   3. Edit Make-common in ldap-3.3, changing INSTROOT to be /tmp/ldap-pfx
+   4. Run the makeconfig script from the 'ldap-3.3' directory:
+      $ make makeconfig				# bootstrap future makes
+   5. $ cd libraries/liblber; make install	# build the BER library
+   6. $ cd ../libldap; make install		# build the LDAP library
+   7. $ cd ../../include; make install
+
+Copyright and licensing:
+   The author places this software into the public domain. The author
+   licenses the use of this software for any purpose to anyone at no
+   charge, subject to the following disclaimer. 
+
+Standard disclaimer:
+   This software is made available by the author to the public for free
+   and "as is".  All users of this free software are solely and entirely
+   responsible for their own choice and use of this software for their
+   own purposes.  By using this software, each user agrees that the
+   author shall not be liable for damages of any kind in relation to
+   its use or performance.
+
+   Although not a condition of the licensing, I strongly urge that any
+   improvements you may make be sent back to me for inclusion into 
+   future versions of this module (under the same free licsensing).
+
+Acknowledgements:
+   Thanks to Mauro Cicognini <mcicogni at siosistemi.it> for the 
+   WIN32/MSVC6 bits, and the pre-built WIN32 ldap.pyd.
+
+   These very kind people have supplied patches or suggested changes
+   (@-signs omitted to avoid spam):
+
+       John Benninghoff <johnb at netscape.com>
+       Donn Cave <donn at u.washington.edu>
+       Jason Gunthorpe <jgg at debian.org>
+       gurney_j <gurney_j at 4j.lane.edu>
+       Eric S. Johansson <esj at harvee.billerica.ma.us>
+       David Margrave <davidma at premier1.net>
+       Uche Ogbuji <uche.ogbuji at fourthought.com>
+       Neale Pickett <neale at lanl.gov>
+       Blake Weston <weston at platinum1.cambridge.scr.slb.com>
+
+   Thanks!
+
+
+$Id: README,v 1.1.1.1 2000/02/01 05:41:19 leonard Exp $

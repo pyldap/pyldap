@@ -1,0 +1,482 @@
+
+% $Id: LDAPObject.tex,v 1.1.1.1 2000/02/01 05:41:30 leonard Exp $
+
+\subsection{LDAP Objects}
+
+\noindent
+LDAP objects are created by the \code{open()} function defined at the top 
+level of the module. The connection is automatically unbound and closed 
+during garbage collection.
+
+Most methods initiate an asynchronous request to the LDAP server 
+and return a message id that can be used later to retrieve the result. 
+The methods ending with \code{_s} are the synchronous form and wait for and
+return with
+the server's result, \textit{\'{a} la} \code{result()}, or with
+\code{None} if no data is expected. See the \code{result()} method
+for a description of the data structure returned from the server.
+
+\subsubsection{Exceptions from methods}
+
+Unlike the \C\ library, errors are not returned as result codes, but
+are instead turned into exceptions, raised as soon an the error condition 
+is detected. The exceptions are accompanied by a dictionary containing
+extra information. 
+
+This dictionary contains an entry for the key \code{'desc'} 
+for an English description of the error class and \code{'info'} which
+contains a string containing more information the server may have sent.
+
+If the exception was one of 
+\code{NO_SUCH_OBJECT}, 
+\code{ALIAS_PROBLEM}, 
+\code{INVALID_DNS_SYNTAX}, 
+\code{IS_LEAF}, or 
+\code{ALIAS_DEREFERENCING_PROBLEM}, 
+then \code{'matched'} will be a key for
+the name of the lowest entry (object or alias) that was matched and is a 
+truncated form of the name provided or aliased dereferenced.
+
+%%============================================================
+%% __methods__
+
+\subsubsection{Methods on LDAP Objects}
+
+\renewcommand{\indexsubitem}{(LDAP method)}
+
+%%------------------------------------------------------------
+%% abandon
+
+\begin{funcdesc}{abandon}{msgid}
+Abandons or cancels an LDAP operation in progress. The \var{msgid}
+should be the message id of an outstanding LDAP operation as returned by
+the asynchronous methods \code{search()}, \code{modify()} etc. 
+The caller can expect that the result
+of an abandoned operation will not be returned from a future call to 
+\code{result()}.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% add
+
+\begin{funcdesc}{add}{dn\, modlist}
+     \funcline{add_s}{dn\, modlist}
+This function is similar to \code{modify()}, except that no operation
+integer need be included in the tuples.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% bind
+
+\begin{funcdesc}{bind}{who\, cred\, method}
+     \funcline{bind_s}{who\, cred\, method}
+     \funcline{simple_bind}{who\, passwd}
+     \funcline{simple_bind_s}{who\, passwd}
+     \funcline{kerberos_bind_s}{who}
+     \funcline{kerberos_bind1}{who}
+     \funcline{kerberos_bind1_s}{who}
+     \funcline{kerberos_bind2}{who}
+     \funcline{kerberos_bind2_s}{who}
+After an LDAP object is created, and before any other operations can be
+attempted over the connection, a bind operation must be performed.
+
+This method attempts to bind with the LDAP server using 
+either simple authentication, or kerberos. The general method \code{bind()}
+takes a third parameter, \var{method} which can be one of
+\code{AUTH_SIMPLE}, \code{AUTH_KRBV41} or \code{AUTH_KRBV42}.
+The \var{cred} parameter is ignored for Kerberos authentication.
+
+Kerberos authentication is only available if the LDAP library and 
+the ldap module were compiled with \code{-DWITH_KERBEROS}.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% compare
+
+\begin{funcdesc}{compare}{dn\, attr\, value}
+     \funcline{compare_s}{dn\, attr\, value}
+Perform an LDAP comparison between the attribute named \var{attr} of 
+entry \var{dn}, and the value \var{value}. The synchronous form
+returns \code{0} for false, or \code{1} for true.
+The asynchronous form returns the message id of the initiates request, 
+and the result of the asynchronous compare can be obtained using 
+\code{result()}.  
+
+Note that this latter technique yields the answer
+by raising the exception objects \code{COMPARE_TRUE} or \code{COMPARE_FALSE}.
+
+A design bug in the library prevents \var{value} from containing nul characters.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% delete
+
+\begin{funcdesc}{delete}{dn}
+     \funcline{delete_s}{dn}
+Performs an LDAP delete operation on \var{dn}. The asynchronous form
+returns the message id of the initiated request, and the result can be obtained
+from a subsequent call to \code{result()}.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% destroy_cache
+
+\begin{funcdesc}{destroy_cache}{}
+Turns off caching and removed it from memory.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% disable_cache
+
+\begin{funcdesc}{disable_cache}{}
+Temporarily disables use of the cache. New requests are not cached, and
+the cache is not checked when returning results. Cache contents are not
+deleted.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% enable_cache
+
+\begin{funcdesc}{enable_cache}{\optional{timeout=\code{NO_LIMIT}\, 
+                               \optional{maxmem=\code{NO_LIMIT}}}}
+Using a cache often greatly improves performance. By default the cache
+is disabled. Specifying \var{timeout} in seconds is used to decide how long
+to keep cached requests. The \var{maxmem} value is in bytes, and is used
+to set an upper bound on how much memory the cache will use. A value of
+\code{NO_LIMIT} for either indicates unlimited. 
+Subsequent calls to
+\code{enable_cache} can be used to adjust these parameters.
+
+This and other caching methods are not available if the library and the 
+ldap module were compiled with \code{-DNO_CACHE}.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% flush_cache
+
+\begin{funcdesc}{flush_cache}{}
+Deletes the cache's contents, but does not affect it in any other way.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% modify
+
+\begin{funcdesc}{modify}{ dn\, modlist }
+     \funcline{modify_s}{ dn\, modlist }
+Performs an LDAP modify operation on an entry's attributes. 
+\var{dn} is the DN of the entry to modify,
+and \var{modlist} is the list of modifications to make to the entry.
+
+Each element of the list \var{modlist} should be a tuple of the form 
+\code{(mod_op,mod_type,mod_vals)},
+where \var{mod_op} is the operation (one of \code{MOD_ADD}, \code{MOD_DELETE},
+or \code{MOD_REPLACE}),
+\var{mod_type} is a string indicating the attribute type name, and 
+\var{mod_vals} is either a string value or a list of string values to add, 
+delete or replace respectively.  For the delete operation, \var{mod_vals}
+may be \code{None} indicating that all attributes are to be deleted.
+
+The asynchronous \code{modify()} returns the message id of the 
+initiated request.
+
+See the \code{ber_*} methods for decoding Basic Encoded ASN.1 values.
+(To be implemented.)
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% modrdn
+
+\begin{funcdesc}{modrdn}{dn\, newrdn \optional{\, delold=\code{1}}}
+     \funcline{modrdn_s}{dn\, newrdn \optional{\, delold=\code{1}}}
+Perform a modify RDN operation. These routines take \var{dn}, the DN
+of the entry whose RDN is to be changed, and \var{newrdn}, the new RDN to
+give to the entry. The optional parameter \var{delold} is used to specify
+whether the old RDN should be kept as an attribute of the entry or not.
+The asynchronous version returns the initiated message id.
+
+This actually corresponds to the \code{modrdn2*} routines in the \C\ library.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% result
+
+\begin{funcdesc}{result}{\optional{ msgid=\code{RES_ANY} \optional{\, all=\code{1} \optional{\, timeout=\code{-1}}}}}
+This method is used to wait for and return the result of an operation
+previously initiated by one of the LDAP asynchronous operation routines
+(eg \code{search()}, \code{modify()}, etc.) They all returned
+an invocation identifier (a message id) upon successful initiation of
+their operation. This id is guaranteed to be unique across an LDAP session,
+and can be used to request the result of a specific operation via the
+\var{msgid} parameter of the \code{result()} method.
+
+If the result of a specific operation is required, \var{msgid} should
+be set to the invocation message id returned when the operation was
+initiated; otherwise \code{RES_ANY} should be supplied. 
+
+The \var{all}
+parameter only has meaning for \code{search()} responses and is used to select 
+whether a single entry of the search response should be returned, or to
+wait for \emph{all} the results of the search before returning. 
+%See \code{search()} for more details.
+
+A search response is made up of zero or more search entries followed by
+a search result. If \var{all} is \code{0}, search entries will be returned one
+at a time as they come in, via separate calls to \code{result()}. If
+\var{all} is \code{1}, the search response will be returned in its 
+entirety, ie after all entries and the final search result have been
+received.
+
+The method returns a tuple of the form 
+\code{(\var{result_type}, \var{result_data})}.
+The \var{result_type} is a string, being one of:
+\code{'RES_BIND'}, \code{'RES_SEARCH_ENTRY'}, \code{'RES_SEARCH_RESULT'}, 
+\code{'RES_MODIFY'}, \code{'RES_ADD'}, \code{'RES_DELETE'}, 
+\code{'RES_MODRDN'}, or \code{'RES_COMPARE'}.
+
+The constants \code{RES_*} are set to these strings, for convenience.
+
+See \code{search()} for a description of the search result's \var{result_data},
+otherwise the \var{result_data} is normally meaningless.
+
+The \code{result()} method will block for \var{timeout} seconds, or 
+indefinitely if \var{timeout} is negative. 
+A timeout of \code{0} will effect a poll. 
+The timeout can be expressed as a floating-point value.
+
+If a timeout occurs, the tuple \code{(None,None)} is returned.
+% XXX - should this raise a TIMEOUT exception?
+
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% search
+
+\begin{funcdesc}{search}{base\, scope\, filter\optional{\, 
+	attrlist=\code{None}\optional{\, attrsonly=\code{0}}}}
+     \funcline{search_s}{base\, scope\, filter\optional{\, 
+     	attrlist=\code{None}\optional{\, attrsonly=\code{0}}}}
+    \funcline{search_st}{base\, scope\, filter\optional{\,
+    	attrlist=\code{None}\optional{\, attrsonly=\code{0} \optional{\, 
+		timeout=\code{-1}}}}}
+Perform an LDAP search operation, with \var{base} as the DN of the entry
+at which to start the search, \var{scope} being one of 
+\code{SCOPE_BASE} (to search the object itself), 
+\code{SCOPE_ONELEVEL} (to search the object's immediate children), or
+\code{SCOPE_SUBTREE} (to search the object and all its descendants).
+
+\var{filter} is a string representation of the filter to apply in
+the search. Simple filters can be specified as
+\code{"\var{attribute_type}=\var{attribute_value}"}. 
+More complex filters are specified using a prefix notation according to 
+the following BNF:
+\begin{eqnarray*}
+	\var{filter}	&::=& \code{"("} \ \var{filtercomp} \ \code{")"}
+\\	\var{filtercomp}&::=& \var{and} \ |\ \var{or}\ |\ \var{not} 
+			      \ |\ \var{simple}
+\\	\var{and}	&::=& \code{"\&"} \ \var{filterlist}
+\\	\var{or}	&::=& \code{"|"} \ \var{filterlist}
+\\	\var{not}	&::=& \code{"!"} \ \var{filter}
+\\	\var{filterlist}&::=& \var{filter} \ |\ \var{filter} \ \var{filterlist}
+\\	\var{simple}	&::=& \var{attributetype}\ \var{filtertype} 
+			      \ \var{attributevalue}
+\\	\var{filtertype}&::=& \code{"="} \ |\ \code{"\~="}\ |\ \code{"<="}
+		              \ |\ \code{">="}
+\end{eqnarray*}
+
+When using the asynchronous form and \code{result()}, the \var{all}
+parameter affects how results come in.
+For \var{all} set to \code{0}, 
+result tuples trickle in (with the same message id), and with the result
+type \code{RES_SEARCH_ENTRY}, until the final result which has 
+a result type of \code{RES_SEARCH_RESULT} and a (usually) empty data field.
+When \var{all} is set to \code{1}, only one result is returned, with a
+result type of \code{RES_SEARCH_RESULT}, and all the result tuples listed 
+in the data field.
+
+Each result tuple is of the form \code{(\var{dn},\var{attrs})}, 
+where \var{dn} is a string containing
+the DN (distinguished name) of the entry, and 
+\var{attrs} is a dictionary
+containing the attributes associated with the entry. 
+The keys of \var{attrs} are strings, 
+and the associated values are lists of strings.
+
+The DN in \var{dn} is extracted using the underlying \code{ldap_get_dn()},
+which may raise an exception if the DN is malformed.
+
+If \var{attrsonly} is non-zero, the values of \var{attrs} will be meaningless
+(they are not transmitted in the result).
+
+The retrieved attributes can be limited with the \var{attrlist} parameter.
+If \var{attrlist} is \code{None}, all the attributes of each entry are returned.
+
+The synchronous form with timeout, \code{search_st()}, will block for at most
+\var{timeout} seconds (or indefinitely if \var{timeout} is negative). A
+\code{TIMEOUT} exception is raised if no result is received within the
+time.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% set_cache_options
+
+\begin{funcdesc}{set_cache_options}{option}
+Changes the caching behaviour. Currently supported options are
+    \code{CACHE_OPT_CACHENOERRS}, which suppresses caching of requests
+    	that resulted in an error, and
+    \code{CACHE_OPT_CACHEALLERRS}, which enables caching of all requests.
+The default behaviour is not to cache requests that result in errors, except 
+those that result in a \code{SIZELIMIT_EXCEEDED} exception.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% set_rebind_proc
+
+\begin{funcdesc}{set_rebind_proc}{func}
+If a referral is returned from the server, automatic
+re-binding can be achieved by providing a function that accepts as an argument
+the newly opened LDAP object and returns the tuple \code{(who, cred, method)}.
+
+Passing a value of \code{None} for \var{func} will disable
+this facility. 
+
+Because of restrictions in the implementation, only one
+rebinding function is supported at any one time. This method is only
+available if the module and library were compiled with \code{-DLDAP_REFERRALS}.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% ufn_setfilter
+
+\begin{funcdesc}{ufn_setfilter}{filtername}
+       \funcline{ufn_setprefix}{prefix}
+       \funcline{ufn_search_s}{url\optional{\, attrsonly=\code{0}}}
+       \funcline{ufn_search_st}{url\optional{\, attrsonly=\code{0} \optional{\, timeout=\code{-1}}}}
+See the LDAP library manual pages for more information on these
+`user-friendly name' functions.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% unbind
+
+\begin{funcdesc}{unbind_s}{}
+       \funcline{unbind}{}
+This call is used to unbind from the directory, terminate the current
+association, and free resources. Once called, the connection to the
+LDAP server is closed and the LDAP object is invalid. Further invocation
+of methods on the object will yield an exception.
+
+The \code{unbind} and \code{unbind_s} methods are identical, and are 
+synchronous in nature
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% uncache_entry
+
+\begin{funcdesc}{uncache_entry}{dn}
+Removes all cached entries that make reference to \var{dn}. This should be
+used, for example, after doing a \code{modify()} involving \var{dn}.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% uncache_request
+
+\begin{funcdesc}{uncache_request}{msgid}
+Remove the request indicated by \var{msgid} from the cache.
+\end{funcdesc}
+
+%%------------------------------------------------------------
+%% url_search
+
+\begin{funcdesc}{url_search_s}{url\, \optional{attrsonly=\code{0}}}
+       \funcline{url_search_s}{url\, \optional{attrsonly=\code{0} \optional{\, timeout=\code{-1}}}}
+These routine works much like \code{search_s*}, except that many search
+parameters are pulled out of the URL \var{url}. 
+
+LDAP URLs look like this: 
+
+\code{"ldap://\var{host}\optional{:\var{port}}/\var{dn}\optional{?\var{attributes}\optional{?\var{scope}\optional{?\var{filter}}}}"}
+
+where \var{scope} is one of \code{base} (default), \code{one} or \code{sub},
+and \var{attributes} is a comma-separated list of attributes to be retrieved.
+
+URLs wrapped in angle-brackets and/or preceded by \code{"URL:"} are 
+tolerated.
+\end{funcdesc}
+
+%%============================================================
+%% attributes
+
+\subsubsection{Attributes on LDAP Objects}
+
+Each LDAP object also sports the following attributes.
+
+%%------------------------------------------------------------
+%% deref
+
+\begin{datadesc}{deref}
+    Controls for when an automatic dereference of a referral occurs.
+    This must be one of
+    \code{DEREF_NEVER}, \code{DEREF_SEARCHING}, \code{DEREF_FINDING},
+    or \code{DEREF_ALWAYS}.
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% errno
+
+\begin{datadesc}{errno}
+   \dataline{error}
+   \dataline{matched}
+    These read-only attributes are set after an exception has been raised, and
+    are also included with the value raised. See the section
+    `Exceptions from methods', above.
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% lberoptions
+
+\begin{datadesc}{lberoptions}
+    Options for the BER library.
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% options
+
+\begin{datadesc}{options}
+    General options. This field is the bitiwse OR of the flags
+	\code{OPT_REFERRALS} (follow referrals), and
+	\code{OPT_RESTART}   (restart the \var{select} system call
+			      when interrupted).
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% refhoplimit
+
+\begin{datadesc}{refhoplimit}
+    Maximum number of referrals to follow before raising an exception.
+    Defaults to 5.
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% sizelimit
+
+\begin{datadesc}{sizelimit}
+    Limit on size of message to receive from server. 
+    Defaults to \code{NO_LIMIT}.
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% timelimit
+
+\begin{datadesc}{timelimit}
+    Limit on waiting for any response. 
+    Defaults to \code{NO_LIMIT}.
+\end{datadesc}
+
+%%------------------------------------------------------------
+%% valid
+
+\begin{datadesc}{valid}
+    If zero, the connection has been unbound. See \code{unbind()} for
+    more information.
+\end{datadesc}
+

@@ -1,0 +1,80 @@
+
+% $Id: constants.tex,v 1.1.1.1 2000/02/01 05:41:30 leonard Exp $
+
+\subsection{Constants and Exceptions}
+
+The following exceptions and constants are exported from the module:
+
+\renewcommand{\indexsubitem}{(in module ldap)}
+
+%%------------------------------------------------------------
+%% error
+
+\begin{excdesc}{LDAPError}
+This is the base exeception class raised when some error arises within
+the glue code between the \C\ interface and the Python API.
+\end{excdesc}
+
+%%------------------------------------------------------------
+%% ALIAS_DEREF_PROBLEM ... USER_CANCELLED
+
+\begin{excdesc}{ALIAS_DEREF_PROBLEM}
+       \excline{ALIAS_PROBLEM}
+       \excline{ALREADY_EXISTS}
+       \excline{AUTH_UNKNOWN}
+       \excline{BUSY}
+       \excline{COMPARE_FALSE}
+       \excline{COMPARE_TRUE}
+       \excline{CONSTRAINT_VIOLATION}
+       \excline{DECODING_ERROR}
+       \excline{ENCODING_ERROR}
+       \excline{FILTER_ERROR}
+       \excline{INAPPROPRIATE_AUTH}
+       \excline{INAPPROPRIATE_MATCHING}
+       \excline{INSUFFICIENT_ACCESS}
+       \excline{INVALID_CREDENTIALS}
+       \excline{INVALID_DN_SYNTAX}
+       \excline{INVALID_SYNTAX}
+       \excline{IS_LEAF}
+       \excline{LOCAL_ERROR}
+       \excline{LOOP_DETECT}
+       \excline{NAMING_VIOLATION}
+       \excline{NOT_ALLOWED_ON_NONLEAF}
+       \excline{NOT_ALLOWED_ON_RDN}
+       \excline{NO_OBJECT_CLASS_MODS}
+       \excline{NO_SUCH_ATTRIBUTE}
+       \excline{NO_SUCH_OBJECT}
+       \excline{OBJECT_CLASS_VIOLATION}
+       \excline{OPERATIONS_ERROR}
+       \excline{OTHER}
+       \excline{PARAM_ERROR}
+       \excline{PARTIAL_RESULTS}
+       \excline{PROTOCOL_ERROR}
+       \excline{RESULTS_TOO_LARGE}
+       \excline{SERVER_DOWN}
+       \excline{SIZELIMIT_EXCEEDED}
+       \excline{STRONG_AUTH_NOT_SUPPORTED}
+       \excline{STRONG_AUTH_REQUIRED}
+       \excline{TIMELIMIT_EXCEEDED}
+       \excline{TIMEOUT}
+       \excline{TYPE_OR_VALUE_EXISTS}
+       \excline{UNAVAILABLE}
+       \excline{UNDEFINED_TYPE}
+       \excline{UNWILLING_TO_PERFORM}
+       \excline{USER_CANCELLED}
+These exceptions are raised when a result code from an underlying API
+call does not indicate success.
+\end{excdesc}
+
+%%------------------------------------------------------------
+%% PORT
+
+\begin{datadesc}{PORT}
+The standard TCP port that LDAP servers listen on.
+\end{datadesc}
+
+%%============================================================
+%% others
+
+Many other (undocumented) constants available in the module correspond 
+to those found in the LDAP header file, \code{<ldap.h>}.

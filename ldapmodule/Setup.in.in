@@ -1,0 +1,22 @@
+# David Leonard <david.leonard@csee.uq.edu.au>, 1999. Public domain.
+# $Id: Setup.in.in,v 1.1.1.1 2000/02/01 05:41:19 leonard Exp $
+
+*shared*
+
+#
+# defines recognised below:
+#	-DLDAP_REFERRALS	- automatic referrals
+#	-DLDAP_DNS		- dns-style DNs
+#	-DWITH_KERBEROS		- kerberos authentication
+#	-DNO_CACHE		- don't compile in caching methods
+#
+
+ldap  \
+	LDAPObject.o common.o constants.o errors.o functions.o  \
+	ldapmodule.o message.o version.o \
+	CIDict.o \
+	-DLDAP_REFERRALS \
+	@CPPFLAGS@ \
+	@LDFLAGS@ \
+	@LIBS@
+

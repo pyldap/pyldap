@@ -1,0 +1,5 @@
+
+Track OpenLDAP and try to make it work with the latest and greatest...
+
+Rename exception to LDAPError to match Python library convention (for 2.0?)
+	- David Margrave

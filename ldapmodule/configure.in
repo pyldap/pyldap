@@ -1,0 +1,203 @@
+
+# $Id: configure.in,v 1.1.1.1 2000/02/01 05:41:19 leonard Exp $
+
+AC_INIT(LDAPObject.c)
+AC_CONFIG_HEADER(config.h)
+
+#
+# Options
+#
+
+#-- Listen to the user if they know where the LDAP libraries are installed
+AC_ARG_WITH(ldap, 
+        [  --with-ldap=DIR               Where ldap library is installed; or], 
+[
+        with_ldap_lib=$with_ldap/lib
+        with_ldap_inc=$with_ldap/include
+])
+AC_ARG_WITH(ldap-lib, 
+        [  --with-ldap-lib=DIR/lib       Where libldap.a can be found])
+AC_ARG_WITH(ldap-inc,
+        [  --with-ldap-inc=DIR/include   Where ldap.h can be found])
+AC_ARG_WITH(python,
+        [  --with-python=PROGRAM         Location of python interpreter])
+AC_ARG_WITH(kerberos,
+        [  --with-kerberos               Use Kerberos authentication])
+AC_ARG_WITH(kerberos-lib,
+        [  --with-kerberos-lib=DIR/lib   Location of Kerberos libraries])
+
+AC_ARG_ENABLE(cidict,
+        [  --enable-cidict               Experimental, case-insensitive dict])
+
+#
+# Programs
+#
+
+AC_PROG_CC
+#-- look for python
+if test -n "$with_python"; then ac_cv_prog_python="$with_python"; fi
+AC_CACHE_VAL(ac_cv_prog_python, [AC_PATH_PROG(ac_cv_prog_python,python)])
+AC_CACHE_CHECK(python version, ac_cv_ver_python, [
+ ac_cv_ver_python=`$ac_cv_prog_python -c 'import sys;print sys.version[[:3]]'`])
+AC_CACHE_CHECK(python install prefix, ac_cv_path_python, [
+ ac_cv_path_python=`$ac_cv_prog_python -c 'import sys;print sys.prefix'`])
+
+#
+# Steal some configuration info from openldap.sh if available
+#
+
+LDAP_PFX=/tmp/ldap-pfx
+if test -z "$with_ldap_lib" -a -z "$with_ldap_inc"; then
+    AC_MSG_CHECKING([for $LDAP_PFX])
+    if test -d $LDAP_PFX; then
+	LDFLAGS="$LDFLAGS -L$LDAP_PFX/lib"
+	CPPFLAGS="$CPPFLAGS -I$LDAP_PFX/include"
+	AC_MSG_RESULT([yes])
+        AC_MSG_CHECKING([for LIBS in $LDAP_PFX/src/ldap/config.status])
+	if test -f $LDAP_PFX/src/ldap/config.status; then
+	    LDAPLIBS=`sed -n -e 's,^s%@LIBS@%\(.*\)%g$,\1,p' < $LDAP_PFX/src/ldap/config.status`
+	    if test -z "$LDAPLIBS"; then
+	        AC_MSG_RESULT([no])
+	    else
+		# Merge OpenLDAP's LIBS with ours
+		for _lib in $LDAPLIBS; do case " $LIBS " in 
+			*" $_lib "*) : ;;
+			*) LIBS="$LIBS $_lib" ;;
+		esac; done
+		AC_MSG_RESULT([yes])
+	    fi
+	else
+	    AC_MSG_RESULT([no])
+	fi
+    else
+	AC_MSG_RESULT([no])
+    fi
+fi
+
+#
+# Libraries
+#
+
+#-- check for the networking libraries (derived from PLATFORMLIBS)
+for fn in socket gethostbyname inet_addr inet_ntoa connect; do
+    AC_CHECK_FUNCS($fn)
+    if eval test \$ac_cv_func_$fn = no; then
+	for lib in  nsl net socket V3 nsl_s gen resolv; do
+	  AC_CHECK_LIB($lib, $fn, [LIBS="$LIBS -l$lib"; break])
+	done
+    fi
+done
+
+#-- check for some math functions
+for fn in fmod floor; do
+    AC_CHECK_FUNCS($fn)
+    if eval test \$ac_cv_func_$fn = no; then
+	for lib in m; do
+	  AC_CHECK_LIB($lib, $fn, [LIBS="$LIBS -l$lib"; break])
+	done
+    fi
+done
+
+#-- check for Kerberos and DES libraries
+if test no != "$with_kerberos"; then 
+	CPPFLAGS="$CPPFLAGS -DWITH_KERBEROS"
+	if test -n "$with_kerberos_lib"; then 
+		LDFLAGS="-L$with_kerberos_lib $LDFLAGS"
+	fi
+        AC_CHECK_FUNCS(krb_mk_req)
+	if test $ac_cv_func_krb_mk_req = no; then
+		AC_CHECK_LIB(krb, krb_mk_req, [LIBS="$LIBS -lkrb"])
+	fi
+        AC_CHECK_FUNCS(des_setkey)
+	if test $ac_cv_func_des_setkey = no; then
+		AC_CHECK_LIB(des, des_setkey, [LIBS="$LIBS -ldes"])
+	fi
+fi
+
+#-- this function gets called to suggest how to help find an LDAP library
+no_ldap () {
+  AC_MSG_ERROR([$1
+  Please specify the location of the LDAP library using the --with-ldap=PATH, 
+  --with-ldap-lib=PATH/lib, or --with-ldap-inc=PATH/include options.  You
+  may also need to specify where the Kerberos libraries are if the LDAP
+  library needs to be linked against that.
+
+  You can download LDAP library software from:
+     ftp://terminator.rs.itd.umich.edu/ldap/ldap-3.3.tar.Z
+  or from:
+     http://www.openldap.org/
+
+  Alternatively, you can just run the openldap.sh script in this directory
+  which does most of the work for you, and then you don't have to worry about
+  the --with-ldap flags.])
+}
+
+if test -n "$with_ldap_lib"; then
+  AC_MSG_RESULT([Using LDAP libraries from $with_ldap_lib])
+  LDFLAGS="-L$with_ldap_lib $LDFLAGS"
+fi
+if test -n "$with_ldap_inc"; then
+  AC_MSG_RESULT([Using LDAP includes from $with_ldap_inc])
+  CPPFLAGS="-I$with_ldap_inc $CPPFLAGS"
+fi
+
+AC_SEARCH_LIBS(ber_free, lber)
+AC_SEARCH_LIBS(ldap_open, ldap)
+AC_CHECK_FUNC(ldap_open,, [no_ldap "Couldn't find ldap_open()"])
+AC_CHECK_HEADER(ldap.h,, [no_ldap "Couldn't find ldap.h"])
+
+#
+# LDAP library specifics
+#
+
+#-- how many arguments does ldap_set_rebind_proc() take?
+AC_CACHE_CHECK([number of arguments to ldap_set_rebind_proc()],
+	ac_cv_ldap_set_rebind_proc,
+	[AC_TRY_COMPILE([#include <lber.h>
+#include <ldap.h>],
+[(void)ldap_set_rebind_proc(0,0,0);],
+ac_cv_ldap_set_rebind_proc=3, ac_cv_ldap_set_rebind_proc=2)])
+if test "$ac_cv_ldap_set_rebind_proc" = 3; then
+	AC_DEFINE(LDAP_SET_REBIND_PROC_3ARGS)
+fi
+
+#-- is the LDAP structure opaque?
+AC_CACHE_CHECK([whether the LDAP type is opaque],
+	ac_cv_LDAP_is_opaque,
+	[AC_TRY_COMPILE([#include <lber.h>
+#include <ldap.h>],
+[LDAP l, *p; p = &l;],
+ac_cv_LDAP_is_opaque=no, ac_cv_LDAP_is_opaque=yes
+)])
+if test $ac_cv_LDAP_is_opaque = yes; then
+	AC_DEFINE(LDAP_TYPE_IS_OPAQUE)
+fi
+
+AC_CHECK_FUNCS(ldap_modrdn2_s ldap_modrdn2)
+
+
+#-- check for case-insensitive dictionary to be used
+if test no != $enable_cidict; then
+	AC_DEFINE(USE_CIDICT)
+	AC_MSG_WARN([Using experimental CIDict feature! May be non-portable])
+fi
+
+#
+# Makefiles
+#
+
+#-- grab the Makefile.pre.in from python's config directory if it is there,
+#   otherwise we have to use the one we copied from 1.4's source.
+AC_MSG_CHECKING(python makefile)
+pymf="$ac_cv_path_python/lib/python$ac_cv_ver_python/config/Makefile.pre.in"
+if test -f "$pymf"; then
+	: we will use that one
+else
+	pymf="./Makefile.python-1.4"
+fi
+AC_MSG_RESULT($pymf)
+cp "$pymf" Makefile.pre.in
+AC_OUTPUT_COMMANDS([echo bootstrapping makefile; make -f Makefile.pre.in boot])
+
+AC_OUTPUT(Setup.in)
+

@@ -1,0 +1,63 @@
+Change history for ldapmodule
+
+1.9
+	- removed mod_next for RedHat 5.2 <esj%harvee.billerica.ma.us>
+	- fixed bug where error objects would sometimes be wrong
+	- Works with Solaris 2.7's ldap. (Probably with Netscape's ldap too)
+	  but errors are not available. Sun's man pages suck.
+	- Use correct form of --without-threads option in openldap.sh 
+	  <a.d.stribblehill%durham.ac.uk>
+	- correctly use --enable-cidict fix
+1.8
+	- Exceptions are now classes with a common base class (ldap.LDAPError)
+	  <davidma%premier1.net>
+	- /etc/services is consulted first for the 'ldap' service port number
+	- catch two possible null pointer dereferences
+1.7
+	(No code changes, just install fixes)
+	- install notes cleanup
+	- public domain
+	- fix bug exposed by RedHat Linux 5.2: get extra libs from
+	  openldap's config.status <uche.ogbuji%fourthought.com>
+	- support for OpenLDAP 1.2.7
+	- openldap.sh does MD5 checksum (for corrupted downloads mainly)
+1.6
+	- added experimental 'case insensitive' dictionary, meaning that
+	  attributes records returned can be indexed by case-insensitive
+	  attribute names
+	- added a shell script called openldap.sh which downloads, configures,
+	  and builds the essentials from an OpenLDAP distribution
+1.5
+	- better type checking
+	- documentation in __doc__ strings
+	- support for WIN32 compilation
+	- README tells how to do a minimum-build of the OpenLDAP distribution
+1.4
+	- python 1.5 savvy
+	- uses a configure script
+	- README tells how to do a minimum-build of UM's ldap distribution
+1.3
+	- errors are module-specific now (Neale Pickett <neale%lanl.gov>)
+1.2
+	- patches from Donn Cave <donn%u.washington.edu> (time.h and cpp fixes)
+1.1
+	- fixed potential bug where attributes could get lost
+	- added 'unbind()' method and 'valid' attribute
+1.0
+	- no changes
+0.4
+	- fixed bug where ldap_explode_dn would fail and exception wasn't
+	  indicative of real error (bad DN)
+	- fixed bug where ldap_get_dn would fail and exception wasn't raised
+	- fixed bug where None passed as attribute list to modify would
+	  fail to initialise a pointer and seg fault later on
+0.3
+	- execptions contain more error information
+0.2
+	- thread support
+0.1
+	- documentation fixes, code cleanup
+0.0
+	- basically working 
+
+$Id: CHANGES,v 1.1.1.1 2000/02/01 05:41:08 leonard Exp $
