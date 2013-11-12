@@ -295,7 +295,7 @@ class AttributeType(SchemaElement):
     assert type(self.single_value)==BooleanType and (self.single_value==0 or self.single_value==1)
     assert type(self.no_user_mod)==BooleanType and (self.no_user_mod==0 or self.no_user_mod==1)
     assert self.syntax is None or type(self.syntax)==StringType
-    assert self.syntax_len is None or type(self.syntax_len)==type(0L)
+    assert self.syntax_len is None or type(self.syntax_len)==type(0)
     return
 
   def __str__(self):
