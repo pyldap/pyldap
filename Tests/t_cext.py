@@ -211,7 +211,7 @@ class TestLdapCExtension(unittest.TestCase):
         got_timeout = False
         try:
             r = l.result4(m, _ldap.MSG_ALL, 0.3)  # (timeout /could/ be longer)
-        except _ldap.TIMEOUT, e:
+        except _ldap.TIMEOUT as e:
             got_timeout = True
         self.assertTrue(got_timeout)
 

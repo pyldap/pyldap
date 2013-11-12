@@ -48,7 +48,7 @@ try:
       ('usage',range(2)),
     ]  
   )
-except KeyError,e:
+except KeyError as e:
   print '***KeyError',str(e)
 
 

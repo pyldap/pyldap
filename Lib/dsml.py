@@ -195,7 +195,7 @@ else:
         self._oc_value = ''
       # Unhandled tags
       else:
-        raise ValueError,'Unknown tag %s' % (raw_name)
+        raise ValueError('Unknown tag %s' % (raw_name))
 
     def endElement(self,raw_name):
       assert raw_name.startswith('dsml:'),'Illegal name'
@@ -230,7 +230,7 @@ else:
         del self._oc_value
       # Unhandled tags
       else:
-        raise ValueError,'Unknown tag %s' % (raw_name)
+        raise ValueError('Unknown tag %s' % (raw_name))
 
     def characters(self,ch):
       if self.__dict__.has_key('_oc_value'):

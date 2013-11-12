@@ -123,10 +123,10 @@ signal.signal(signal.SIGINT,commenceShutdown)
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
   database_path = sys.argv[2]
-except IndexError,e:
+except IndexError:
   print 'Usage: syncrepl-client.py <LDAP URL> <pathname of database>'
   sys.exit(1)
-except ValueError,e:
+except ValueError as e:
   print 'Error parsing command-line arguments:',str(e)
   sys.exit(1)
 
@@ -138,7 +138,7 @@ while watcher_running:
     # Now we login to the LDAP server
     try:
         ldap_connection.simple_bind_s(ldap_url.who,ldap_url.cred)
-    except ldap.INVALID_CREDENTIALS, e:
+    except ldap.INVALID_CREDENTIALS as e:
         print 'Login to LDAP server failed: ', str(e)
         sys.exit(1)
     except ldap.SERVER_DOWN:
@@ -162,7 +162,7 @@ while watcher_running:
         # User asked to exit
         commenceShutdown()
         pass
-    except Exception, e:
+    except Exception as e:
         # Handle any exception
         if watcher_running:
             print 'Encountered a problem, going to retry. Error:', str(e)
