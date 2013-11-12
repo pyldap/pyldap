@@ -6,6 +6,8 @@ See http://www.python-ldap.org/ for details.
 $Id: setup.py,v 1.71 2011/10/26 19:42:25 stroeder Exp $
 """
 
+import sys,os,string,time
+
 has_setuptools = False
 try:
         from setuptools import setup, Extension
@@ -13,20 +15,32 @@ try:
 except ImportError:
         from distutils.core import setup, Extension
 
-from ConfigParser import ConfigParser
-import sys,os,string,time
+if sys.version_info[0] >= 3:
+    from configparser import ConfigParser
+    from functools import reduce as reduce_fun
+    def string_strip(s):
+        return s.strip()
+    def string_split(s, *args):
+        return s.split(*args)
+else:
+    from ConfigParser import ConfigParser
+    reduce_fun = reduce
+    def string_strip(s):
+        return string.strip(s)
+    def string_split(s, *args):
+        return string.split(s, *args)
 
 ##################################################################
 # Weird Hack to grab release version of python-ldap from local dir
 ##################################################################
 exec_startdir = os.path.dirname(os.path.abspath(sys.argv[0]))
-package_init_file_name = reduce(os.path.join,[exec_startdir,'Lib','ldap','__init__.py'])
+package_init_file_name = reduce_fun(os.path.join,[exec_startdir,'Lib','ldap','__init__.py'])
 f = open(package_init_file_name,'r')
 s = f.readline()
 while s:
-  s = string.strip(s)
+  s = string_strip(s)
   if s[0:11]=='__version__':
-    version = eval(string.split(s,'=')[1])
+    version = eval(string_split(s,'=')[1])
     break
   s = f.readline()
 f.close()
@@ -50,15 +64,15 @@ cfg.read('setup.cfg')
 if cfg.has_section('_ldap'):
   for name in dir(LDAP_CLASS):
     if cfg.has_option('_ldap', name):
-      print name + ': ' + cfg.get('_ldap', name)
-      setattr(LDAP_CLASS, name, string.split(cfg.get('_ldap', name)))
+      print(name + ': ' + cfg.get('_ldap', name))
+      setattr(LDAP_CLASS, name, string_split(cfg.get('_ldap', name)))
 
 for i in range(len(LDAP_CLASS.defines)):
   LDAP_CLASS.defines[i]=((LDAP_CLASS.defines[i],None))
 
 for i in range(len(LDAP_CLASS.extra_files)):
-  destdir, origfiles = string.split(LDAP_CLASS.extra_files[i], ':')
-  origfileslist = string.split(origfiles, ',')
+  destdir, origfiles = string_split(LDAP_CLASS.extra_files[i], ':')
+  origfileslist = string_split(origfiles, ',')
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 #-- Let distutils/setuptools do the rest
