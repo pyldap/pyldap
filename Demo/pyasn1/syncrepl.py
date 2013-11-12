@@ -149,7 +149,7 @@ while watcher_running:
     # Now we login to the LDAP server
     try:
         ldap_connection.simple_bind_s(ldap_url.who,ldap_url.cred)
-    except ldap.INVALID_CREDENTIALS, e:
+    except ldap.INVALID_CREDENTIALS as e:
         print 'Login to LDAP server failed: ', str(e)
         sys.exit(1)
     except ldap.SERVER_DOWN:
@@ -174,7 +174,7 @@ while watcher_running:
         # User asked to exit
         commenceShutdown()
         pass
-    except Exception, e:
+    except Exception as e:
         # Handle any exception
         if watcher_running:
             print 'Encountered a problem, going to retry. Error:', str(e)

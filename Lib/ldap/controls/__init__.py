@@ -145,9 +145,9 @@ def DecodeControlTuples(ldapControlTuples,knownLDAPControls=None):
       control.controlType,control.criticality = controlType,criticality
       try:
         control.decodeControlValue(encodedControlValue)
-      except PyAsn1Error,e:
+      except PyAsn1Error:
         if criticality:
-          raise e
+          raise
       else:
         result.append(control)
   return result

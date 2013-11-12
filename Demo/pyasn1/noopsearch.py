@@ -42,7 +42,7 @@ if ldap_url.who and ldap_url.cred is None:
 try:
   ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
 
-except ldap.INVALID_CREDENTIALS,e:
+except ldap.INVALID_CREDENTIALS as e:
   print 'Simple bind failed:',str(e)
   sys.exit(1)
 
@@ -56,7 +56,7 @@ try:
     serverctrls=[SearchNoOpControl(criticality=True)],
   )
   _,_,_,search_response_ctrls = ldap_conn.result3(msg_id,all=1,timeout=SEARCH_TIMEOUT)
-except LDAPLimitErrors,e:
+except LDAPLimitErrors as e:
   ldap_conn.abandon(msg_id)
   sys.exit(1)
 
