@@ -1,8 +1,10 @@
 
 # Auto-generated
+.*.swp
 *.pyc
 __pycache__/
 
 # Build related
 *.egg-info
 build/
+dist/
