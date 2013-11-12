@@ -11,7 +11,7 @@
 
 #include "LDAPObject.h"
 
-DL_EXPORT(void) init_ldap(void);
+PyAPI_FUNC(void) init_ldap(void);
 
 /* dummy module methods */
 
@@ -21,7 +21,7 @@ static PyMethodDef methods[]  = {
 
 /* module initialisation */
 
-DL_EXPORT(void)
+PyAPI_FUNC(void)
 init_ldap()
 {
 	PyObject *m, *d;
