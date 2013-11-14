@@ -272,7 +272,7 @@ class Slapd:
                 "-w", self.get_root_password(),
                 "-H", self.get_url()] + extra_args,
                 stdin = subprocess.PIPE, stdout=subprocess.PIPE)
-        p.communicate(ldif)
+        p.communicate(ldif.encode('utf-8'))
         if p.wait() != 0:
             raise RuntimeError("ldapadd process failed")
 

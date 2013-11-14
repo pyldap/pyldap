@@ -117,7 +117,7 @@ class TestLDAPUrl(unittest.TestCase):
         u = LDAPUrl("ldap:///dn=foo%3f")
         self.assertEquals(u.dn, "dn=foo?")
         u = LDAPUrl("ldap:///dn=str%c3%b6der.com")
-        self.assertEquals(u.dn, "dn=str\xc3\xb6der.com")
+        self.assertEquals(u.dn, "dn=str\xf6der.com")
 
     def test_parse_attrs(self):
         u = LDAPUrl("ldap:///?")
@@ -177,7 +177,7 @@ class TestLDAPUrl(unittest.TestCase):
         u = LDAPUrl("ldap:///???(cn=Q%3f)")
         self.assertEquals(u.filterstr, "(cn=Q?)")
         u = LDAPUrl("ldap:///???(sn=Str%c3%b6der)") # (possibly bad?)
-        self.assertEquals(u.filterstr, "(sn=Str\xc3\xb6der)")
+        self.assertEquals(u.filterstr, "(sn=Str\xf6der)")
         u = LDAPUrl("ldap:///???(sn=Str\\c3\\b6der)")
         self.assertEquals(u.filterstr, "(sn=Str\\c3\\b6der)") # (recommended)
         u = LDAPUrl("ldap:///???(cn=*\\2a*)")
