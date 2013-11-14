@@ -1341,23 +1341,6 @@ static PyMethodDef methods[] = {
     { NULL, NULL }
 };
 
-/* get attribute */
-
-static PyObject*
-getattr(LDAPObject* self, char* name) 
-{
-        return Py_FindMethod(methods, (PyObject*)self, name);
-}
-
-/* set attribute */
-
-static int
-setattr(LDAPObject* self, char* name, PyObject* value) 
-{
-        PyErr_SetString(PyExc_AttributeError, name);
-        return -1;
-}
-
 /* type entry */
 
 PyTypeObject LDAP_Type = {
@@ -1373,12 +1356,28 @@ PyTypeObject LDAP_Type = {
         /* methods */
         (destructor)dealloc,    /*tp_dealloc*/
         0,                      /*tp_print*/
-        (getattrfunc)getattr,   /*tp_getattr*/
-        (setattrfunc)setattr,   /*tp_setattr*/
+        0,                      /*tp_getattr*/
+        0,                      /*tp_setattr*/
         0,                      /*tp_compare*/
         0,                      /*tp_repr*/
         0,                      /*tp_as_number*/
         0,                      /*tp_as_sequence*/
         0,                      /*tp_as_mapping*/
         0,                      /*tp_hash*/
+        0,                      /*tp_call*/
+        0,                      /*tp_str*/
+        0,                      /*tp_getattro*/
+        0,                      /*tp_setattro*/
+        0,                      /*tp_as_buffer*/
+        0,                      /*tp_flags*/
+        0,                      /*tp_doc*/
+        0,                      /*tp_traverse*/
+        0,                      /*tp_clear*/
+        0,                      /*tp_richcompare*/
+        0,                      /*tp_weaklistoffset*/
+        0,                      /*tp_iter*/
+        0,                      /*tp_iternext*/
+        methods,                /*tp_methods*/
+        0,                      /*tp_members*/
+        0,                      /*tp_getset*/
 };
