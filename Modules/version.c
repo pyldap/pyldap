@@ -14,7 +14,7 @@ LDAPinit_version( PyObject* d )
 {
 	PyObject *version;
 
-	version = PyString_FromString(version_str);
+	version = PyUnicode_FromString(version_str);
 	PyDict_SetItemString( d, "__version__", version );
 	Py_DECREF(version);
 }

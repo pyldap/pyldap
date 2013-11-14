@@ -205,7 +205,7 @@ LDAP_get_option(LDAPObject *self, int option)
 	    extensions = PyTuple_New(num_extensions);
 	    for (i = 0; i < num_extensions; i++)
 		PyTuple_SET_ITEM(extensions, i,
-		    PyString_FromString(apiinfo.ldapai_extensions[i]));
+		    PyUnicode_FromString(apiinfo.ldapai_extensions[i]));
 
 	    /* return api info as a dictionary */
 	    v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
@@ -271,7 +271,7 @@ LDAP_get_option(LDAPObject *self, int option)
 	    if (self) LDAP_END_ALLOW_THREADS(self);
 	    if (res != LDAP_OPT_SUCCESS)
 		return option_error(res, "ldap_get_option");
-	    return PyInt_FromLong(intval);
+	    return PyLong_FromLong(intval);
 
     case LDAP_OPT_HOST_NAME:
     case LDAP_OPT_URI:
@@ -321,7 +321,7 @@ LDAP_get_option(LDAPObject *self, int option)
 		Py_INCREF(Py_None);
 		return Py_None;
 	    }
-	    v = PyString_FromString(strval);
+	    v = PyUnicode_FromString(strval);
 	    ldap_memfree(strval);
 	    return v;
 

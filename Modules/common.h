@@ -35,5 +35,12 @@ typedef int Py_ssize_t;
 void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #define PyNone_Check(o) ((o) == Py_None)
 
+/* Py2/3 compatibility */
+#if PY_VERSION_HEX < 0x03000000
+#define PyBytes_Check PyString_Check
+#define PyBytes_Size PyString_Size
+#define PyBytes_AsString PyString_AsString
+#endif
+
 #endif /* __h_common_ */
 

@@ -192,7 +192,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 if (refs) {
 	     Py_ssize_t i;
 	     for (i=0; refs[i] != NULL; i++) {
-		 PyObject *refstr = PyString_FromString(refs[i]);
+		 PyObject *refstr = PyUnicode_FromString(refs[i]);
 		 PyList_Append(reflist, refstr);
 		 Py_DECREF(refstr);
 	     }

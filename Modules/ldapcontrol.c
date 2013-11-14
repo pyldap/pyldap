@@ -69,6 +69,7 @@ Tuple_to_LDAPControl( PyObject* tup )
     char iscritical;
     struct berval berbytes;
     PyObject *bytes;
+    PyObject *bytes_utf8;
     LDAPControl *lc = NULL;
     Py_ssize_t len;
 
@@ -103,9 +104,10 @@ Tuple_to_LDAPControl( PyObject* tup )
         berbytes.bv_len = 0;
         berbytes.bv_val = NULL;
     }
-    else if (PyString_Check(bytes)) {
-        berbytes.bv_len = PyString_Size(bytes);
-        berbytes.bv_val = PyString_AsString(bytes);
+    else if (PyUnicode_Check(bytes)) {
+        bytes_utf8 = PyUnicode_AsUTF8String(bytes);
+        berbytes.bv_len = PyBytes_Size(bytes);
+        berbytes.bv_val = PyBytes_AsString(bytes);
     }
     else {
 	PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
