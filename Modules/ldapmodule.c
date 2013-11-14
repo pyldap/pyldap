@@ -11,7 +11,11 @@
 
 #include "LDAPObject.h"
 
+#if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit__ldap(void);
+#else
+PyMODINIT_FUNC init_ldap(void);
+#endif
 
 /* dummy module methods */
 
@@ -23,7 +27,11 @@ static PyMethodDef methods[]  = {
 
 
 PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
 PyInit__ldap()
+#else
+init_ldap()
+#endif
 {
 	PyObject *m, *d;
 
