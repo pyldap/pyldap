@@ -22,7 +22,7 @@ PyObject* c_string_array_to_python(char **string_array)
     py_list = PyList_New(count);
     count = 0;
     for (s=string_array; *s != 0; s++){
-      PyList_SetItem(py_list, count, PyString_FromString(*s));
+      PyList_SetItem(py_list, count, PyUnicode_FromString(*s));
       count++;
     }
   } else py_list=PyList_New(0);
@@ -52,7 +52,7 @@ PyObject* schema_extension_to_python(LDAPSchemaExtensionItem **extensions)
     for (e = extensions; *e !=0; e++) {
       item_tuple = PyTuple_New(2);
       PyTuple_SetItem(item_tuple, 0, 
-		      PyString_FromString((*e)->lsei_name));
+		      PyUnicode_FromString((*e)->lsei_name));
       PyTuple_SetItem(item_tuple, 1, 
 		      c_string_array_to_python((*e)->lsei_values));
       PyList_SetItem(py_list, count, item_tuple);
@@ -89,7 +89,7 @@ l_ldap_str2objectclass(PyObject* self, PyObject *args)
 	return NULL;
   o = ldap_str2objectclass( oc_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyInt_FromLong(ret);
+    py_ret = PyLong_FromLong(ret);
     return py_ret;
   }
 
@@ -98,16 +98,16 @@ l_ldap_str2objectclass(PyObject* self, PyObject *args)
   oc_at_oids_must = c_string_array_to_python(o->oc_at_oids_must);
   oc_at_oids_may  = c_string_array_to_python(o->oc_at_oids_may);
   py_ret = PyList_New(9);
-  PyList_SetItem(py_ret, 0, PyString_FromString(o->oc_oid));
+  PyList_SetItem(py_ret, 0, PyUnicode_FromString(o->oc_oid));
   PyList_SetItem(py_ret, 1, oc_names);
   if (o->oc_desc) {
-    PyList_SetItem(py_ret, 2, PyString_FromString(o->oc_desc)); 
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(o->oc_desc)); 
   } else {
-    PyList_SetItem(py_ret, 2, PyString_FromString(""));
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 3, PyInt_FromLong(o->oc_obsolete));
+  PyList_SetItem(py_ret, 3, PyLong_FromLong(o->oc_obsolete));
   PyList_SetItem(py_ret, 4, oc_sup_oids);
-  PyList_SetItem(py_ret, 5, PyInt_FromLong(o->oc_kind));
+  PyList_SetItem(py_ret, 5, PyLong_FromLong(o->oc_kind));
   PyList_SetItem(py_ret, 6, oc_at_oids_must);
   PyList_SetItem(py_ret, 7, oc_at_oids_may);
 
@@ -136,50 +136,50 @@ l_ldap_str2attributetype(PyObject* self, PyObject *args)
     return NULL;
   a = ldap_str2attributetype( at_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyInt_FromLong(ret);
+    py_ret = PyLong_FromLong(ret);
     return py_ret;
   }
   
   py_ret = PyList_New(15);
-  PyList_SetItem(py_ret, 0, PyString_FromString(a->at_oid));
+  PyList_SetItem(py_ret, 0, PyUnicode_FromString(a->at_oid));
   at_names = c_string_array_to_python(a->at_names);
   PyList_SetItem(py_ret, 1, at_names);
   if (a->at_desc) {
-    PyList_SetItem(py_ret, 2, PyString_FromString(a->at_desc)); 
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(a->at_desc)); 
   } else {
-    PyList_SetItem(py_ret, 2, PyString_FromString(""));
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 3, PyInt_FromLong(a->at_obsolete));
+  PyList_SetItem(py_ret, 3, PyLong_FromLong(a->at_obsolete));
   if (a->at_sup_oid) {
-    PyList_SetItem(py_ret, 4, PyString_FromString(a->at_sup_oid)); 
+    PyList_SetItem(py_ret, 4, PyUnicode_FromString(a->at_sup_oid)); 
   } else {
-    PyList_SetItem(py_ret, 4, PyString_FromString(""));
+    PyList_SetItem(py_ret, 4, PyUnicode_FromString(""));
   }
   if (a->at_equality_oid) {
-    PyList_SetItem(py_ret, 5, PyString_FromString(a->at_equality_oid)); 
+    PyList_SetItem(py_ret, 5, PyUnicode_FromString(a->at_equality_oid)); 
   } else {
-    PyList_SetItem(py_ret, 5, PyString_FromString(""));
+    PyList_SetItem(py_ret, 5, PyUnicode_FromString(""));
   }
   if (a->at_ordering_oid) {
-    PyList_SetItem(py_ret, 6, PyString_FromString(a->at_ordering_oid)); 
+    PyList_SetItem(py_ret, 6, PyUnicode_FromString(a->at_ordering_oid)); 
   } else {
-    PyList_SetItem(py_ret, 6, PyString_FromString(""));
+    PyList_SetItem(py_ret, 6, PyUnicode_FromString(""));
   }
   if (a->at_substr_oid) {
-    PyList_SetItem(py_ret, 7, PyString_FromString(a->at_substr_oid)); 
+    PyList_SetItem(py_ret, 7, PyUnicode_FromString(a->at_substr_oid)); 
   } else {
-    PyList_SetItem(py_ret, 7, PyString_FromString(""));
+    PyList_SetItem(py_ret, 7, PyUnicode_FromString(""));
   }
   if (a->at_syntax_oid) {
-    PyList_SetItem(py_ret, 8, PyString_FromString(a->at_syntax_oid)); 
+    PyList_SetItem(py_ret, 8, PyUnicode_FromString(a->at_syntax_oid)); 
   } else {
-    PyList_SetItem(py_ret, 8, PyString_FromString(""));
+    PyList_SetItem(py_ret, 8, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 9, PyInt_FromLong(a->at_syntax_len));
-  PyList_SetItem(py_ret,10, PyInt_FromLong(a->at_single_value));
-  PyList_SetItem(py_ret,11, PyInt_FromLong(a->at_collective));
-  PyList_SetItem(py_ret,12, PyInt_FromLong(a->at_no_user_mod));
-  PyList_SetItem(py_ret,13, PyInt_FromLong(a->at_usage));
+  PyList_SetItem(py_ret, 9, PyLong_FromLong(a->at_syntax_len));
+  PyList_SetItem(py_ret,10, PyLong_FromLong(a->at_single_value));
+  PyList_SetItem(py_ret,11, PyLong_FromLong(a->at_collective));
+  PyList_SetItem(py_ret,12, PyLong_FromLong(a->at_no_user_mod));
+  PyList_SetItem(py_ret,13, PyLong_FromLong(a->at_usage));
   
   PyList_SetItem(py_ret, 14, 
 		 schema_extension_to_python(a->at_extensions));
@@ -204,17 +204,17 @@ l_ldap_str2syntax(PyObject* self, PyObject *args)
     return NULL;
   s = ldap_str2syntax(syn_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyInt_FromLong(ret);
+    py_ret = PyLong_FromLong(ret);
     return py_ret;
   }
   py_ret = PyList_New(4);
-  PyList_SetItem(py_ret, 0, PyString_FromString(s->syn_oid));
+  PyList_SetItem(py_ret, 0, PyUnicode_FromString(s->syn_oid));
   syn_names = c_string_array_to_python(s->syn_names);
   PyList_SetItem(py_ret, 1, syn_names);
   if (s->syn_desc) {
-    PyList_SetItem(py_ret, 2, PyString_FromString(s->syn_desc)); 
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(s->syn_desc)); 
   } else {
-    PyList_SetItem(py_ret, 2, PyString_FromString(""));
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
   PyList_SetItem(py_ret, 3, 
 		 schema_extension_to_python(s->syn_extensions));
@@ -238,23 +238,23 @@ l_ldap_str2matchingrule(PyObject* self, PyObject *args)
     return NULL;
   m = ldap_str2matchingrule(mr_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyInt_FromLong(ret);
+    py_ret = PyLong_FromLong(ret);
     return py_ret;
   }
   py_ret = PyList_New(6);
-  PyList_SetItem(py_ret, 0, PyString_FromString(m->mr_oid));
+  PyList_SetItem(py_ret, 0, PyUnicode_FromString(m->mr_oid));
   mr_names = c_string_array_to_python(m->mr_names);
   PyList_SetItem(py_ret, 1, mr_names);
   if (m->mr_desc) {
-    PyList_SetItem(py_ret, 2, PyString_FromString(m->mr_desc)); 
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(m->mr_desc)); 
   } else {
-    PyList_SetItem(py_ret, 2, PyString_FromString(""));
+    PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 3, PyInt_FromLong(m->mr_obsolete));
+  PyList_SetItem(py_ret, 3, PyLong_FromLong(m->mr_obsolete));
   if (m->mr_syntax_oid) {
-    PyList_SetItem(py_ret, 4, PyString_FromString(m->mr_syntax_oid)); 
+    PyList_SetItem(py_ret, 4, PyUnicode_FromString(m->mr_syntax_oid)); 
   } else {
-    PyList_SetItem(py_ret, 4, PyString_FromString(""));
+    PyList_SetItem(py_ret, 4, PyUnicode_FromString(""));
   }  
   PyList_SetItem(py_ret, 5, 
 		 schema_extension_to_python(m->mr_extensions));

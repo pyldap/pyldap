@@ -75,7 +75,7 @@ LDAPerror( LDAP *l, char *msg )
     if (info == NULL)
       return NULL;
 
-    str = PyString_FromString(ldap_err2string(errnum));
+    str = PyUnicode_FromString(ldap_err2string(errnum));
     if (str)
       PyDict_SetItemString( info, "desc", str );
     Py_XDECREF(str);
@@ -83,7 +83,7 @@ LDAPerror( LDAP *l, char *msg )
     if (ldap_get_option(l, LDAP_OPT_MATCHED_DN, &matched) >= 0
       && matched != NULL) {
         if (*matched != '\0') {
-      str = PyString_FromString(matched);
+      str = PyUnicode_FromString(matched);
       if (str)
           PyDict_SetItemString( info, "matched", str );
       Py_XDECREF(str);
@@ -92,14 +92,14 @@ LDAPerror( LDAP *l, char *msg )
     }
     
     if (errnum == LDAP_REFERRAL) {
-        str = PyString_FromString(msg);
+        str = PyUnicode_FromString(msg);
         if (str)
       PyDict_SetItemString( info, "info", str );
         Py_XDECREF(str);
     } else if (ldap_get_option(l, LDAP_OPT_ERROR_STRING, &error) >= 0
       && error != NULL) {
         if (error != '\0') {
-      str = PyString_FromString(error);
+      str = PyUnicode_FromString(error);
       if (str)
           PyDict_SetItemString( info, "info", str );
       Py_XDECREF(str);

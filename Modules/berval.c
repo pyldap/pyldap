@@ -90,7 +90,7 @@ LDAPberval_to_object(const struct berval *bv)
         Py_INCREF(ret);
     }
     else {
-        ret = PyString_FromStringAndSize(bv->bv_val, bv->bv_len);
+        ret = PyUnicode_FromStringAndSize(bv->bv_val, bv->bv_len);
     }
 
     return ret;
