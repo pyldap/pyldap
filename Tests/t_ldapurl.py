@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import ldap, unittest
-import urllib
+from ldap.compat import quote
 
 from ldapurl import LDAPUrl
 
@@ -26,9 +28,9 @@ class TestLDAPUrl(unittest.TestCase):
         u = MyLDAPUrl("ldap://127.0.0.1:1234/dc=example,dc=com"
             + "?attr1,attr2,attr3"
             + "?sub"
-            + "?" + urllib.quote("(objectClass=*)")
-            + "?bindname=" + urllib.quote("cn=d,c=au")
-            + ",X-BINDPW=" + urllib.quote("???")
+            + "?" + quote("(objectClass=*)")
+            + "?bindname=" + quote("cn=d,c=au")
+            + ",X-BINDPW=" + quote("???")
             + ",trace=8"
         )
         self.assertEquals(u.urlscheme, "ldap")

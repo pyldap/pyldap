@@ -165,7 +165,7 @@ class TestLdapCExtension(unittest.TestCase):
         self.assertEquals(result, _ldap.RES_SEARCH_RESULT)
         self.assertEquals(pmsg[0][0], "") # rootDSE has no dn
         self.assertEquals(msgid, m)
-        self.assertTrue(pmsg[0][1].has_key('objectClass'))
+        self.assertIn('objectClass', pmsg[0][1])
 
     def test_unbind(self):
         l = self._init()

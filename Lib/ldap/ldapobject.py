@@ -114,15 +114,15 @@ class SimpleLDAPObject:
     return result
 
   def __setattr__(self,name,value):
-    if self.CLASSATTR_OPTION_MAPPING.has_key(name):
+    if name in self.CLASSATTR_OPTION_MAPPING:
       self.set_option(self.CLASSATTR_OPTION_MAPPING[name],value)
     else:
       self.__dict__[name] = value
 
   def __getattr__(self,name):
-    if self.CLASSATTR_OPTION_MAPPING.has_key(name):
+    if name in self.CLASSATTR_OPTION_MAPPING:
       return self.get_option(self.CLASSATTR_OPTION_MAPPING[name])
-    elif self.__dict__.has_key(name):
+    elif name in self.__dict__:
       return self.__dict__[name]
     else:
       raise AttributeError('%s has no attribute %s' % (
@@ -739,7 +739,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     """return data representation for pickled object"""
     d = {}
     for k,v in self.__dict__.items():
-      if not self.__transient_attrs__.has_key(k):
+      if k not in self.__transient_attrs__:
         d[k] = v
     return d
 
@@ -812,7 +812,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     return # reconnect()
 
   def _apply_method_s(self,func,*args,**kwargs):
-    if not self.__dict__.has_key('_l'):
+    if '_l' not in self.__dict__:
       self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
     try:
       return func(self,*args,**kwargs)
