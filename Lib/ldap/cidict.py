@@ -10,8 +10,7 @@ $Id: cidict.py,v 1.13 2009/04/17 14:34:34 stroeder Exp $
 
 __version__ = """$Revision: 1.13 $"""
 
-from UserDict import UserDict
-from string import lower
+from ldap.compat import UserDict
 
 class cidict(UserDict):
   """
@@ -24,15 +23,15 @@ class cidict(UserDict):
     self.update(default or {})
 
   def __getitem__(self,key):
-    return self.data[lower(key)]
+    return self.data[key.lower()]
 
   def __setitem__(self,key,value):
-    lower_key = lower(key)
+    lower_key = key.lower()
     self._keys[lower_key] = key
     self.data[lower_key] = value
 
   def __delitem__(self,key):
-    lower_key = lower(key)
+    lower_key = key.lower()
     del self._keys[lower_key]
     del self.data[lower_key]
 
@@ -41,7 +40,7 @@ class cidict(UserDict):
       self[key] = dict[key]
 
   def has_key(self,key):
-    return UserDict.has_key(self,lower(key))
+    return UserDict.has_key(self,key.lower())
 
   def __contains__(self,key):
     return self.has_key(key)

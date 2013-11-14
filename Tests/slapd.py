@@ -154,7 +154,8 @@ class Slapd:
             self._log.debug("deleting existing %s", path)
             os.remove(path)
         self._log.debug("writing config to %s", path)
-        file(path, "w").writelines([line + "\n" for line in self._config])
+        with open(path, 'w') as f:
+            f.writelines([line + "\n" for line in self._config])
         return path
 
     def start(self):

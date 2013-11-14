@@ -6,16 +6,10 @@ See http://www.python-ldap.org/ for details.
 \$Id: models.py,v 1.48 2015/06/06 09:21:38 stroeder Exp $
 """
 
-import UserDict,ldap.cidict
+import ldap.cidict
+from ldap.compat import UserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
-
-if __debug__:
-  from types import TupleType,StringType,IntType
-  try:
-    from types import BooleanType
-  except ImportError:
-    BooleanType = IntType
 
 
 NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
@@ -70,7 +64,7 @@ class SchemaElement:
     return self.oid
 
   def key_attr(self,key,value,quoted=0):
-    assert value is None or type(value)==StringType,TypeError("value has to be of StringType, was %s" % repr(value))
+    assert value is None or type(value)==str,TypeError("value has to be of StringType, was %s" % repr(value))
     if value:
       if quoted:
         return " %s '%s'" % (key,value.replace("'","\\'"))
@@ -80,7 +74,7 @@ class SchemaElement:
       return ""
 
   def key_list(self,key,values,sep=' ',quoted=0):
-    assert type(values)==TupleType,TypeError("values has to be of ListType")
+    assert type(values) == tuple,TypeError("values has to be of ListType")
     if not values:
       return ''
     if quoted:
@@ -161,13 +155,13 @@ class ObjectClass(SchemaElement):
       self.sup = ('top',)
     else:
       self.sup = d['SUP']
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert type(self.sup)==TupleType
-    assert type(self.kind)==IntType
-    assert type(self.must)==TupleType
-    assert type(self.may)==TupleType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert type(self.sup) == tuple
+    assert type(self.kind) == int
+    assert type(self.must) == tuple
+    assert type(self.may) == tuple
     return
 
   def __str__(self):
@@ -288,13 +282,13 @@ class AttributeType(SchemaElement):
     self.collective = d['COLLECTIVE']!=None
     self.no_user_mod = d['NO-USER-MODIFICATION']!=None
     self.usage = AttributeUsage.get(d['USAGE'][0],0)
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.sup)==TupleType,'attribute sup has type %s' % (type(self.sup))
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert type(self.single_value)==BooleanType and (self.single_value==0 or self.single_value==1)
-    assert type(self.no_user_mod)==BooleanType and (self.no_user_mod==0 or self.no_user_mod==1)
-    assert self.syntax is None or type(self.syntax)==StringType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.sup) == tuple,'attribute sup has type %s' % (type(self.sup))
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert type(self.single_value) == bool and (self.single_value==0 or self.single_value==1)
+    assert type(self.no_user_mod) == bool and (self.no_user_mod==0 or self.no_user_mod==1)
+    assert self.syntax is None or type(self.syntax) == str
     assert self.syntax_len is None or type(self.syntax_len)==type(0)
     return
 
@@ -353,7 +347,7 @@ class LDAPSyntax(SchemaElement):
       NOT_HUMAN_READABLE_LDAP_SYNTAXES.has_key(self.oid) or \
       d['X-NOT-HUMAN-READABLE'][0]=='TRUE'
     self.x_binary_transfer_required = d['X-BINARY-TRANSFER-REQUIRED'][0]=='TRUE'
-    assert self.desc is None or type(self.desc)==StringType
+    assert self.desc is None or type(self.desc) == str
     return
 
   def __str__(self):
@@ -400,10 +394,10 @@ class MatchingRule(SchemaElement):
     self.desc = d['DESC'][0]
     self.obsolete = d['OBSOLETE']!=None
     self.syntax = d['SYNTAX'][0]
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert self.syntax is None or type(self.syntax)==StringType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert self.syntax is None or type(self.syntax) == str
     return
 
   def __str__(self):
@@ -450,10 +444,10 @@ class MatchingRuleUse(SchemaElement):
     self.desc = d['DESC'][0]
     self.obsolete = d['OBSOLETE']!=None
     self.applies = d['APPLIES']
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert type(self.applies)==TupleType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert type(self.applies) == tuple
     return
 
   def __str__(self):
@@ -517,13 +511,13 @@ class DITContentRule(SchemaElement):
     self.must = d['MUST']
     self.may = d['MAY']
     self.nots = d['NOT']
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert type(self.aux)==TupleType
-    assert type(self.must)==TupleType
-    assert type(self.may)==TupleType
-    assert type(self.nots)==TupleType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert type(self.aux) == tuple
+    assert type(self.must) == tuple
+    assert type(self.may) == tuple
+    assert type(self.nots) == tuple
     return
 
   def __str__(self):
@@ -584,11 +578,11 @@ class DITStructureRule(SchemaElement):
     self.obsolete = d['OBSOLETE']!=None
     self.form = d['FORM'][0]
     self.sup = d['SUP']
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert type(self.form)==StringType
-    assert type(self.sup)==TupleType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert type(self.form) == str
+    assert type(self.sup) == tuple
     return
 
   def __str__(self):
@@ -648,12 +642,12 @@ class NameForm(SchemaElement):
     self.oc = d['OC'][0]
     self.must = d['MUST']
     self.may = d['MAY']
-    assert type(self.names)==TupleType
-    assert self.desc is None or type(self.desc)==StringType
-    assert type(self.obsolete)==BooleanType and (self.obsolete==0 or self.obsolete==1)
-    assert type(self.oc)==StringType
-    assert type(self.must)==TupleType
-    assert type(self.may)==TupleType
+    assert type(self.names) == tuple
+    assert self.desc is None or type(self.desc) == str
+    assert type(self.obsolete) == bool and (self.obsolete==0 or self.obsolete==1)
+    assert type(self.oc) == str
+    assert type(self.must) == tuple
+    assert type(self.may) == tuple
     return
 
   def __str__(self):
@@ -667,7 +661,7 @@ class NameForm(SchemaElement):
     return '( %s )' % ''.join(result)
 
 
-class Entry(UserDict.UserDict):
+class Entry(UserDict):
   """
   Schema-aware implementation of an LDAP entry class.
 

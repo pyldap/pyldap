@@ -163,6 +163,7 @@ setup(
     'dsml',
     'ldap',
     'ldap.async',
+    'ldap.compat',
     'ldap.controls',
     'ldap.controls.libldap',
     'ldap.controls.openldap',
