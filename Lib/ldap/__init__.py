@@ -82,7 +82,7 @@ class LDAPLock:
 # Create module-wide lock for serializing all calls into underlying LDAP lib
 _ldap_module_lock = LDAPLock(desc='Module wide')
 
-from functions import open,initialize,init,get_option,set_option,escape_str
+from ldap.functions import open,initialize,init,get_option,set_option,escape_str
 
 from ldapobject import NO_UNIQUE_ENTRY
 
