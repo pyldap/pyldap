@@ -4,6 +4,8 @@ Utilities for starting up a test slapd server
 and talking to it with ldapsearch/ldapadd.
 """
 
+from __future__ import unicode_literals
+
 import sys, os, socket, time, subprocess, logging
 
 _log = logging.getLogger("slapd")

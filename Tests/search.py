@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import sys,pprint,ldap
 
 from ldap.ldapobject import LDAPObject
