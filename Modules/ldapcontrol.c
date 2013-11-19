@@ -106,8 +106,8 @@ Tuple_to_LDAPControl( PyObject* tup )
     }
     else if (PyUnicode_Check(bytes)) {
         bytes_utf8 = PyUnicode_AsUTF8String(bytes);
-        berbytes.bv_len = PyBytes_Size(bytes);
-        berbytes.bv_val = PyBytes_AsString(bytes);
+        berbytes.bv_len = PyBytes_Size(bytes_utf8);
+        berbytes.bv_val = PyBytes_AsString(bytes_utf8);
     }
     else {
 	PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
