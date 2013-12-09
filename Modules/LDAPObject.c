@@ -105,7 +105,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
 {
     int op;
     char *type;
-    PyObject *list, *item, *bytes;
+    PyObject *list, *item;
     LDAPMod *lm = NULL;
     Py_ssize_t i, len, nstrs;
 
@@ -139,7 +139,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
 
     if (list == Py_None) {
         /* None indicates a NULL mod_bvals */
-    } else if (PyUnicode_Check(list)) {
+    } else if (PyBytes_Check(list)) {
         /* Single string is a singleton list */
         lm->mod_bvalues = PyMem_NEW(struct berval *, 2);
         if (lm->mod_bvalues == NULL)
@@ -147,10 +147,9 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
         lm->mod_bvalues[0] = PyMem_NEW(struct berval, 1);
         if (lm->mod_bvalues[0] == NULL)
             goto nomem;
-        bytes = PyUnicode_AsUTF8String(list);
         lm->mod_bvalues[1] = NULL;
-        lm->mod_bvalues[0]->bv_len = PyBytes_Size(bytes);
-        lm->mod_bvalues[0]->bv_val = PyBytes_AsString(bytes);
+        lm->mod_bvalues[0]->bv_len = PyBytes_Size(list);
+        lm->mod_bvalues[0]->bv_val = PyBytes_AsString(list);
     } else if (PySequence_Check(list)) {
         nstrs = PySequence_Length(list);
         lm->mod_bvalues = PyMem_NEW(struct berval *, nstrs + 1);
@@ -164,15 +163,14 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
           item = PySequence_GetItem(list, i);
           if (item == NULL)
               goto error;
-          if (!PyUnicode_Check(item)) {
+          if (!PyBytes_Check(item)) {
               PyErr_SetObject( PyExc_TypeError, Py_BuildValue( "sO",
                   "expected a string in the list", item));
               Py_DECREF(item);
               goto error;
           }
-          bytes = PyUnicode_AsUTF8String(item);
-          lm->mod_bvalues[i]->bv_len = PyBytes_Size(bytes);
-          lm->mod_bvalues[i]->bv_val = PyBytes_AsString(bytes);
+          lm->mod_bvalues[i]->bv_len = PyBytes_Size(item);
+          lm->mod_bvalues[i]->bv_val = PyBytes_AsString(item);
           Py_DECREF(item);
         }
         if (nstrs == 0)
@@ -1148,7 +1146,7 @@ l_ldap_whoami_s( LDAPObject* self, PyObject* args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_whoami_s" );
 
-    result = LDAPberval_to_object(bvalue);
+    result = LDAPberval_to_unicode_object(bvalue);
 
     return result;
 }
