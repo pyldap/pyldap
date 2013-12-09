@@ -54,7 +54,7 @@ class TestSearch(unittest.TestCase):
 
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         result.sort()
-        self.assertEquals(result,
+        self.assertEqual(result,
             [('cn=Foo1,'+base,
                {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo2,'+base,
@@ -72,7 +72,7 @@ class TestSearch(unittest.TestCase):
 
         result = l.search_s(base, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
         result.sort()
-        self.assertEquals(result,
+        self.assertEqual(result,
             [('cn=Foo1,'+base,
                {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo2,'+base,
