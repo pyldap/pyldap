@@ -192,6 +192,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 if (refs) {
 	     Py_ssize_t i;
 	     for (i=0; refs[i] != NULL; i++) {
+                 /* A referal is a distinguishedName => unicode */
 		 PyObject *refstr = PyUnicode_FromString(refs[i]);
 		 PyList_Append(reflist, refstr);
 		 Py_DECREF(refstr);

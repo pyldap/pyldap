@@ -56,13 +56,13 @@ class TestSearch(unittest.TestCase):
         result.sort()
         self.assertEquals(result,
             [('cn=Foo1,'+base,
-               {'cn': ['Foo1'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo2,'+base,
-               {'cn': ['Foo2'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo3,'+base,
-               {'cn': ['Foo3'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo4,ou=Container,'+base,
-               {'cn': ['Foo4'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}),
             ]
         )
 
@@ -74,11 +74,11 @@ class TestSearch(unittest.TestCase):
         result.sort()
         self.assertEquals(result,
             [('cn=Foo1,'+base,
-               {'cn': ['Foo1'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo2,'+base,
-               {'cn': ['Foo2'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
              ('cn=Foo3,'+base,
-               {'cn': ['Foo3'], 'objectClass': ['organizationalRole']}),
+               {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
             ]
         )
 
@@ -88,8 +88,8 @@ class TestSearch(unittest.TestCase):
 
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
         result.sort()
-        self.assertEquals(result,
-            [('cn=Foo4,ou=Container,'+base, {'cn': ['Foo4']})]
+        self.assertEqual(result,
+            [('cn=Foo4,ou=Container,'+base, {'cn': [b'Foo4']})]
         )
 
 

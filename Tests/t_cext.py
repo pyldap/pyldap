@@ -191,8 +191,8 @@ class TestLdapCExtension(unittest.TestCase):
         self.assertEquals(len(pmsg[0]), 2)
         self.assertEquals(pmsg[0][0], self.base)
         self.assertEquals(pmsg[0][0], self.base)
-        self.assertTrue('dcObject' in pmsg[0][1]['objectClass'])
-        self.assertTrue('organization' in pmsg[0][1]['objectClass'])
+        self.assertTrue(b'dcObject' in pmsg[0][1]['objectClass'])
+        self.assertTrue(b'organization' in pmsg[0][1]['objectClass'])
         self.assertEquals(msgid, m)
         self.assertEquals(ctrls, [])
 
@@ -233,9 +233,9 @@ class TestLdapCExtension(unittest.TestCase):
         l = self._init()
 
         m = l.add_ext("cn=Foo," + self.base, [
-               ('objectClass','organizationalRole'), 
-               ('cn', 'Foo'),
-               ('description', 'testing'),
+               ('objectClass', b'organizationalRole'),
+               ('cn', b'Foo'),
+               ('description', b'testing'),
             ])
 
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
@@ -254,10 +254,10 @@ class TestLdapCExtension(unittest.TestCase):
         self.assertEquals(msgid, m)
         self.assertEquals(ctrls, [])
 
-        self.assertEquals(pmsg[0], ('cn=Foo,'+self.base,
-                { 'objectClass': ['organizationalRole'],
-                  'cn': ['Foo'],
-                  'description': ['testing'] }))
+        self.assertEqual(pmsg[0], ('cn=Foo,'+self.base,
+                { 'objectClass': [b'organizationalRole'],
+                  'cn': [b'Foo'],
+                  'description': [b'testing'] }))
 
     def test_compare(self):
         l = self._init()
@@ -265,10 +265,10 @@ class TestLdapCExtension(unittest.TestCase):
         # first, add an object with a field we can compare on
         dn = "cn=CompareTest," + self.base
         m = l.add_ext(dn, [
-               ('objectClass','person'), 
-               ('sn', 'CompareTest'),
-               ('cn', 'CompareTest'),
-               ('userPassword', 'the_password'),
+               ('objectClass', b'person'),
+               ('sn', b'CompareTest'),
+               ('cn', b'CompareTest'),
+               ('userPassword', b'the_password'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
@@ -320,8 +320,8 @@ class TestLdapCExtension(unittest.TestCase):
         # first, add an object we will delete
         dn = "cn=Deleteme,"+self.base
         m = l.add_ext(dn, [
-               ('objectClass','organizationalRole'), 
-               ('cn', 'Deleteme'),
+               ('objectClass', b'organizationalRole'),
+               ('cn', b'Deleteme'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
@@ -339,7 +339,7 @@ class TestLdapCExtension(unittest.TestCase):
         # try deleting an object that doesn't exist
         not_found = False
         m = l.modify_ext("cn=DoesNotExist,"+self.base, [
-                (_ldap.MOD_ADD, 'description', ['blah']),
+                (_ldap.MOD_ADD, 'description', [b'blah']),
             ])
         try:
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
@@ -366,16 +366,16 @@ class TestLdapCExtension(unittest.TestCase):
         # first, add an object we will delete
         dn = "cn=AddToMe,"+self.base
         m = l.add_ext(dn, [
-               ('objectClass','person'), 
-               ('cn', 'AddToMe'),
-               ('sn', 'Modify'),
-               ('description', 'a description'),
+               ('objectClass', b'person'),
+               ('cn', b'AddToMe'),
+               ('sn', b'Modify'),
+               ('description', b'a description'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
 
         m = l.modify_ext(dn, [
-                (_ldap.MOD_ADD, 'description', ['b desc', 'c desc']),
+                (_ldap.MOD_ADD, 'description', [b'b desc', b'c desc']),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_MODIFY)
@@ -396,14 +396,14 @@ class TestLdapCExtension(unittest.TestCase):
         self.assertEquals(pmsg[0][0], dn)
         d = list(pmsg[0][1]['description'])
         d.sort()
-        self.assertEquals(d, ['a description', 'b desc', 'c desc'])
+        self.assertEqual(d, [b'a description', b'b desc', b'c desc'])
 
     def test_rename(self):
         l = self._init()
         dn = "cn=RenameMe,"+self.base
         m = l.add_ext(dn, [
-               ('objectClass','organizationalRole'), 
-               ('cn', 'RenameMe'),
+               ('objectClass', b'organizationalRole'),
+               ('cn', b'RenameMe'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
@@ -433,13 +433,13 @@ class TestLdapCExtension(unittest.TestCase):
         self.assertEquals(ctrls, [])
         self.assertEquals(len(pmsg), 1)
         self.assertEquals(pmsg[0][0], dn2)
-        self.assertEquals(pmsg[0][1]['cn'], ['IAmRenamed'])
+        self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamed'])
 
         # create the container
         containerDn = "ou=RenameContainer,"+self.base
         m = l.add_ext(containerDn, [
-               ('objectClass','organizationalUnit'), 
-               ('ou', 'RenameContainer'),
+               ('objectClass', b'organizationalUnit'),
+               ('ou', b'RenameContainer'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
@@ -449,8 +449,8 @@ class TestLdapCExtension(unittest.TestCase):
         # the renamed object appears to be deleted, not moved.)
         # see http://www.openldap.org/its/index.cgi/Software%20Bugs?id=5408
         m = l.add_ext("cn=Bogus," + containerDn, [
-               ('objectClass','organizationalRole'), 
-               ('cn', 'Bogus'),
+               ('objectClass', b'organizationalRole'),
+               ('cn', b'Bogus'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
@@ -485,7 +485,7 @@ class TestLdapCExtension(unittest.TestCase):
         self.assertEquals(ctrls, [])
         self.assertEquals(len(pmsg), 1)
         self.assertEquals(pmsg[0][0], dn3)
-        self.assertEquals(pmsg[0][1]['cn'], ['IAmRenamedAgain'])
+        self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamedAgain'])
 
 
     def test_whoami(self):
@@ -517,10 +517,10 @@ class TestLdapCExtension(unittest.TestCase):
         # first, create a user to change password on
         dn = "cn=PasswordTest," + self.base
         m = l.add_ext(dn, [
-               ('objectClass','person'), 
-               ('sn', 'PasswordTest'),
-               ('cn', 'PasswordTest'),
-               ('userPassword', 'initial'),
+               ('objectClass', b'person'),
+               ('sn', b'PasswordTest'),
+               ('cn', b'PasswordTest'),
+               ('userPassword', b'initial'),
             ])
         result,pmsg,msgid,ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_ADD)
