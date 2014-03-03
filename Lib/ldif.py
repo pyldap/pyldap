@@ -9,7 +9,7 @@ Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
 """
 
-__version__ = '2.4.14-py23'
+__version__ = '2.4.14-future'
 
 __all__ = [
   # constants
