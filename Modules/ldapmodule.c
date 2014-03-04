@@ -26,12 +26,8 @@ static PyMethodDef methods[]  = {
 /* module initialisation */
 
 
-PyMODINIT_FUNC
-#if PY_MAJOR_VERSION >= 3
-PyInit__ldap()
-#else
-init_ldap()
-#endif
+/* Common initialization code */
+PyObject* init_ldap_module()
 {
 	PyObject *m, *d;
 
@@ -71,3 +67,14 @@ init_ldap()
 
         return m;
 }
+
+
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC init_ldap() {
+    init_ldap_module();
+}
+#else
+PyMODINIT_FUNC PyInit__ldap() {
+    return init_ldap_module();
+}
+#endif
