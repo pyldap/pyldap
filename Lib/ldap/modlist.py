@@ -38,7 +38,7 @@ def addModlist(entry,ignore_attr_types=None):
   ignore_attr_types = list_dict(map(lower,(ignore_attr_types or [])))
   modlist = []
   for attrtype in entry.keys():
-    if ignore_attr_types.has_key(lower(attrtype)):
+    if lower(attrtype) in ignore_attr_types:
       # This attribute type is ignored
       continue
     # Eliminate empty attr value strings in list
@@ -78,12 +78,12 @@ def modifyModlist(
     attrtype_lower_map[lower(a)]=a
   for attrtype in new_entry.keys():
     attrtype_lower = lower(attrtype)
-    if ignore_attr_types.has_key(attrtype_lower):
+    if attrtype_lower in ignore_attr_types:
       # This attribute type is ignored
       continue
     # Filter away null-strings
     new_value = filter(lambda x:x!=None,new_entry[attrtype])
-    if attrtype_lower_map.has_key(attrtype_lower):
+    if attrtype_lower in attrtype_lower_map:
       old_value = old_entry.get(attrtype_lower_map[attrtype_lower],[])
       old_value = filter(lambda x:x!=None,old_value)
       del attrtype_lower_map[attrtype_lower]
@@ -96,18 +96,18 @@ def modifyModlist(
       # Replace existing attribute
       replace_attr_value = len(old_value)!=len(new_value)
       if not replace_attr_value:
-        case_insensitive = case_ignore_attr_types.has_key(attrtype_lower)
+        case_insensitive = attrtype_lower in case_ignore_attr_types
         old_value_dict=list_dict(old_value,case_insensitive)
         new_value_dict=list_dict(new_value,case_insensitive)
         delete_values = []
         for v in old_value:
-          if not new_value_dict.has_key(v):
+          if v not in new_value_dict:
             replace_attr_value = 1
             break
         add_values = []
         if not replace_attr_value:
           for v in new_value:
-            if not old_value_dict.has_key(v):
+            if v not in old_value_dict:
               replace_attr_value = 1
               break
       if replace_attr_value:
@@ -120,7 +120,7 @@ def modifyModlist(
     # Remove all attributes of old_entry which are not present
     # in new_entry at all
     for a in attrtype_lower_map.keys():
-      if ignore_attr_types.has_key(a):
+      if a in ignore_attr_types:
         # This attribute type is ignored
         continue
       attrtype = attrtype_lower_map[a]

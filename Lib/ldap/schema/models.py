@@ -344,7 +344,7 @@ class LDAPSyntax(SchemaElement):
     self.desc = d['DESC'][0]
     self.x_subst = d['X-SUBST'][0]
     self.not_human_readable = \
-      NOT_HUMAN_READABLE_LDAP_SYNTAXES.has_key(self.oid) or \
+      self.oid in NOT_HUMAN_READABLE_LDAP_SYNTAXES or \
       d['X-NOT-HUMAN-READABLE'][0]=='TRUE'
     self.x_binary_transfer_required = d['X-BINARY-TRANSFER-REQUIRED'][0]=='TRUE'
     assert self.desc is None or type(self.desc) == str
@@ -717,7 +717,7 @@ class Entry(UserDict):
 
   def has_key(self,nameoroid):
     k = self._at2key(nameoroid)
-    return self.data.has_key(k)
+    return k in self.data
 
   def get(self,nameoroid,failobj):
     try:

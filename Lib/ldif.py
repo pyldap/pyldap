@@ -126,7 +126,7 @@ class LDIFWriter:
     returns 1 if attr_value has to be base-64 encoded because
     of special chars or because attr_type is in self._base64_attrs
     """
-    return self._base64_attrs.has_key(attr_type.lower()) or \
+    return attr_type.lower() in self._base64_attrs or \
            not safe_string_re.search(attr_value) is None
 
   def _unparseAttrTypeandValue(self,attr_type,attr_value):
@@ -334,7 +334,7 @@ class LDIFParser:
       attr_value = None
       if self._process_url_schemes:
         u = urlparse.urlparse(url)
-        if self._process_url_schemes.has_key(u[0]):
+        if u[0] in self._process_url_schemes:
           attr_value = urllib.urlopen(url).read()
     elif value_spec==':\r\n' or value_spec=='\n':
       attr_value = ''

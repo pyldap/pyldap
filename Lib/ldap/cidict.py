@@ -40,10 +40,10 @@ class cidict(UserDict):
       self[key] = dict[key]
 
   def has_key(self,key):
-    return UserDict.has_key(self,key.lower())
+    return key in self
 
   def __contains__(self,key):
-    return self.has_key(key)
+    return UserDict.__contains__(self,key.lower())
 
   def get(self,key,failobj=None):
     try:
@@ -72,7 +72,7 @@ def strlist_minus(a,b):
   result = [
     elt
     for elt in a
-    if not temp.has_key(elt)
+    if elt not in temp
   ]
   return result
 
@@ -87,7 +87,7 @@ def strlist_intersection(a,b):
   result = [
     temp[elt]
     for elt in b
-    if temp.has_key(elt)
+    if elt in temp
   ]
   return result
 
@@ -120,5 +120,5 @@ if __debug__ and __name__ == '__main__':
   cix_items.sort()
   assert cix_items==[('AbCDeF',123),('xYZ',987)],ValueError(repr(cix_items))
   del cix["abcdEF"]
-  assert not cix._keys.has_key("abcdef")
-  assert not cix.has_key("AbCDef")
+  assert "abcdef" not in cix._keys
+  assert "AbCDef" not in cix

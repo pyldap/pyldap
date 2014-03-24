@@ -57,7 +57,7 @@ class DSMLWriter:
 
   def _needs_base64_encoding(self,attr_type,attr_value):
     if self._base64_attrs:
-      return self._base64_attrs.has_key(lower(attr_type))
+      return lower(attr_type) in self._base64_attrs
     else:
       try:
         unicode(attr_value,'utf-8')
@@ -235,9 +235,9 @@ else:
         raise ValueError('Unknown tag %s' % (raw_name))
 
     def characters(self,ch):
-      if self.__dict__.has_key('_oc_value'):
+      if '_oc_value' in self.__dict__:
         self._oc_value = self._oc_value + ch
-      elif self.__dict__.has_key('_attr_value'):
+      elif '_attr_value' in self.__dict__:
         self._attr_value = self._attr_value + ch
       else:
         pass
