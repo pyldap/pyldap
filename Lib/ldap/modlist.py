@@ -15,6 +15,8 @@ from ldap import __version__
 import string,ldap,ldap.cidict
 
 
+lower = getattr(string, 'lower', lambda s: s.lower())
+
 def list_dict(l,case_insensitive=0):
   """
   return a dictionary with all items of l being the keys of the dictionary
@@ -33,10 +35,10 @@ def list_dict(l,case_insensitive=0):
 
 def addModlist(entry,ignore_attr_types=None):
   """Build modify list for call of method LDAPObject.add()"""
-  ignore_attr_types = list_dict(map(string.lower,(ignore_attr_types or [])))
+  ignore_attr_types = list_dict(map(lower,(ignore_attr_types or [])))
   modlist = []
   for attrtype in entry.keys():
-    if ignore_attr_types.has_key(string.lower(attrtype)):
+    if ignore_attr_types.has_key(lower(attrtype)):
       # This attribute type is ignored
       continue
     # Eliminate empty attr value strings in list
@@ -68,14 +70,14 @@ def modifyModlist(
       List of attribute type names for which comparison will be made
       case-insensitive
   """
-  ignore_attr_types = list_dict(map(string.lower,(ignore_attr_types or [])))
-  case_ignore_attr_types = list_dict(map(string.lower,(case_ignore_attr_types or [])))
+  ignore_attr_types = list_dict(map(lower,(ignore_attr_types or [])))
+  case_ignore_attr_types = list_dict(map(lower,(case_ignore_attr_types or [])))
   modlist = []
   attrtype_lower_map = {}
   for a in old_entry.keys():
-    attrtype_lower_map[string.lower(a)]=a
+    attrtype_lower_map[lower(a)]=a
   for attrtype in new_entry.keys():
-    attrtype_lower = string.lower(attrtype)
+    attrtype_lower = lower(attrtype)
     if ignore_attr_types.has_key(attrtype_lower):
       # This attribute type is ignored
       continue

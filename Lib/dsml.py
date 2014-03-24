@@ -15,6 +15,8 @@ __version__ = '2.4.20'
 import string,base64
 
 
+lower = getattr(string, 'lower', lambda s: s.lower())
+
 special_entities = (
   ('&','&amp;'),
   ('<','&lt;'),
@@ -49,13 +51,13 @@ class DSMLWriter:
     self,f,base64_attrs=[],dsml_comment='',indent='    '
   ):
     self._output_file = f
-    self._base64_attrs = {}.fromkeys(map(string.lower,base64_attrs))
+    self._base64_attrs = {}.fromkeys(map(lower,base64_attrs))
     self._dsml_comment = dsml_comment
     self._indent = indent
 
   def _needs_base64_encoding(self,attr_type,attr_value):
     if self._base64_attrs:
-      return self._base64_attrs.has_key(string.lower(attr_type))
+      return self._base64_attrs.has_key(lower(attr_type))
     else:
       try:
         unicode(attr_value,'utf-8')
@@ -273,7 +275,7 @@ else:
     ):
       self._input_file = input_file
       self._max_entries = max_entries
-      self._ignored_attr_types = {}.fromkeys(map(string.lower,(ignored_attr_types or [])))
+      self._ignored_attr_types = {}.fromkeys(map(lower,(ignored_attr_types or [])))
       self._current_record = None,None
       self.records_read = 0
       self._parser = xml.sax.make_parser()
