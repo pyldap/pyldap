@@ -7,6 +7,7 @@ and talking to it with ldapsearch/ldapadd.
 from __future__ import unicode_literals
 
 import sys, os, socket, time, subprocess, logging
+import atexit
 
 _log = logging.getLogger("slapd")
 
@@ -58,7 +59,12 @@ class Slapd:
     PATH_TMPDIR = "/var/tmp/python-ldap-test"  
     PATH_SBINDIR = "/usr/sbin"
     PATH_BINDIR = "/usr/bin"
-    PATH_SCHEMA_CORE = "/etc/ldap/schema/core.schema"
+    if os.path.isdir("/etc/ldap/schema"):
+        PATH_SCHEMA_CORE = "/etc/ldap/schema/core.schema"
+    elif os.path.isdir("/etc/openldap/schema"):
+        PATH_SCHEMA_CORE = "/etc/openldap/schema/core.schema"
+    else:
+        PATH_SCHEMA_CORE = None
     PATH_LDAPADD = os.path.join(PATH_BINDIR, "ldapadd")
     PATH_LDAPSEARCH = os.path.join(PATH_BINDIR, "ldapsearch")
     PATH_SLAPD = os.path.join(PATH_SBINDIR, "slapd")
@@ -90,6 +96,8 @@ class Slapd:
         self._root_cn = "Manager"
         self._root_password = "password"
         self._slapd_debug_level = 0
+        if not os.path.isdir(self._tmpdir):
+            os.mkdir(self._tmpdir)
 
     # Setters 
     def set_port(self, port):
@@ -165,6 +173,7 @@ class Slapd:
         Starts the slapd server process running, and waits for it to come up. 
         """
         if self._proc is None:
+            atexit.register(self.stop)
             ok = False
             config_path = None
             try:
@@ -370,7 +379,7 @@ class Slapd:
 
 Slapd.check_paths()
 
-if __name__ == '__main__' and sys.argv == ['run']:
+if __name__ == '__main__' and sys.argv[1:] == ['run']:
     logging.basicConfig(level=logging.DEBUG)
     slapd = Slapd()
     print("Starting slapd...")
