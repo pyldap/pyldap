@@ -272,7 +272,7 @@ LDAP_get_option(LDAPObject *self, int option)
 	    if (self) LDAP_END_ALLOW_THREADS(self);
 	    if (res != LDAP_OPT_SUCCESS)
 		return option_error(res, "ldap_get_option");
-	    return PyLong_FromLong(intval);
+	    return PyInt_FromLong(intval);
 
     case LDAP_OPT_HOST_NAME:
     case LDAP_OPT_URI:

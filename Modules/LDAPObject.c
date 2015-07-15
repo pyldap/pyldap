@@ -446,7 +446,7 @@ l_ldap_add_ext( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_add_ext" );
 
-    return PyLong_FromLong(msgid);
+    return PyInt_FromLong(msgid);
 }
 
 /* ldap_simple_bind */
@@ -489,7 +489,7 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_simple_bind" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 
@@ -667,7 +667,7 @@ l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
             return PyBytes_FromStringAndSize( servercred->bv_val, servercred->bv_len );
     } else if (ldaperror != LDAP_SUCCESS)
         return LDAPerror( self->ldap, "l_ldap_sasl_bind_s" );
-    return PyLong_FromLong( ldaperror );
+    return PyInt_FromLong( ldaperror );
 }
 
 static PyObject* 
@@ -739,7 +739,7 @@ l_ldap_sasl_interactive_bind_s( LDAPObject* self, PyObject* args )
 
     if (msgid != LDAP_SUCCESS)
         return LDAPerror( self->ldap, "ldap_sasl_interactive_bind_s" );
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 #endif
 
@@ -783,7 +783,7 @@ l_ldap_cancel( LDAPObject* self, PyObject* args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_cancel" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 #endif
@@ -829,7 +829,7 @@ l_ldap_compare_ext( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_compare_ext" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 
@@ -870,7 +870,7 @@ l_ldap_delete_ext( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_delete_ext" );
 
-    return PyLong_FromLong(msgid);
+    return PyInt_FromLong(msgid);
 }
 
 
@@ -918,7 +918,7 @@ l_ldap_modify_ext( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_modify_ext" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 
@@ -962,7 +962,7 @@ l_ldap_rename( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_rename" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 
@@ -1157,7 +1157,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_search_ext" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }       
 
 
@@ -1311,7 +1311,7 @@ l_ldap_passwd( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_passwd" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 
@@ -1359,7 +1359,7 @@ l_ldap_extended_operation( LDAPObject* self, PyObject *args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_extended_operation" );
 
-    return PyLong_FromLong( msgid );
+    return PyInt_FromLong( msgid );
 }
 
 /* methods */

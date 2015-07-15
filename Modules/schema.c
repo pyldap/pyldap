@@ -89,7 +89,7 @@ l_ldap_str2objectclass(PyObject* self, PyObject *args)
 	return NULL;
   o = ldap_str2objectclass( oc_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyLong_FromLong(ret);
+    py_ret = PyInt_FromLong(ret);
     return py_ret;
   }
 
@@ -105,9 +105,9 @@ l_ldap_str2objectclass(PyObject* self, PyObject *args)
   } else {
     PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 3, PyLong_FromLong(o->oc_obsolete));
+  PyList_SetItem(py_ret, 3, PyInt_FromLong(o->oc_obsolete));
   PyList_SetItem(py_ret, 4, oc_sup_oids);
-  PyList_SetItem(py_ret, 5, PyLong_FromLong(o->oc_kind));
+  PyList_SetItem(py_ret, 5, PyInt_FromLong(o->oc_kind));
   PyList_SetItem(py_ret, 6, oc_at_oids_must);
   PyList_SetItem(py_ret, 7, oc_at_oids_may);
 
@@ -136,7 +136,7 @@ l_ldap_str2attributetype(PyObject* self, PyObject *args)
     return NULL;
   a = ldap_str2attributetype( at_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyLong_FromLong(ret);
+    py_ret = PyInt_FromLong(ret);
     return py_ret;
   }
   
@@ -149,7 +149,7 @@ l_ldap_str2attributetype(PyObject* self, PyObject *args)
   } else {
     PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 3, PyLong_FromLong(a->at_obsolete));
+  PyList_SetItem(py_ret, 3, PyInt_FromLong(a->at_obsolete));
   if (a->at_sup_oid) {
     PyList_SetItem(py_ret, 4, PyUnicode_FromString(a->at_sup_oid)); 
   } else {
@@ -175,11 +175,11 @@ l_ldap_str2attributetype(PyObject* self, PyObject *args)
   } else {
     PyList_SetItem(py_ret, 8, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 9, PyLong_FromLong(a->at_syntax_len));
-  PyList_SetItem(py_ret,10, PyLong_FromLong(a->at_single_value));
-  PyList_SetItem(py_ret,11, PyLong_FromLong(a->at_collective));
-  PyList_SetItem(py_ret,12, PyLong_FromLong(a->at_no_user_mod));
-  PyList_SetItem(py_ret,13, PyLong_FromLong(a->at_usage));
+  PyList_SetItem(py_ret, 9, PyInt_FromLong(a->at_syntax_len));
+  PyList_SetItem(py_ret,10, PyInt_FromLong(a->at_single_value));
+  PyList_SetItem(py_ret,11, PyInt_FromLong(a->at_collective));
+  PyList_SetItem(py_ret,12, PyInt_FromLong(a->at_no_user_mod));
+  PyList_SetItem(py_ret,13, PyInt_FromLong(a->at_usage));
   
   PyList_SetItem(py_ret, 14, 
 		 schema_extension_to_python(a->at_extensions));
@@ -204,7 +204,7 @@ l_ldap_str2syntax(PyObject* self, PyObject *args)
     return NULL;
   s = ldap_str2syntax(syn_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyLong_FromLong(ret);
+    py_ret = PyInt_FromLong(ret);
     return py_ret;
   }
   py_ret = PyList_New(4);
@@ -238,7 +238,7 @@ l_ldap_str2matchingrule(PyObject* self, PyObject *args)
     return NULL;
   m = ldap_str2matchingrule(mr_string, &ret, &errp, flag);
   if (ret) {
-    py_ret = PyLong_FromLong(ret);
+    py_ret = PyInt_FromLong(ret);
     return py_ret;
   }
   py_ret = PyList_New(6);
@@ -250,7 +250,7 @@ l_ldap_str2matchingrule(PyObject* self, PyObject *args)
   } else {
     PyList_SetItem(py_ret, 2, PyUnicode_FromString(""));
   }
-  PyList_SetItem(py_ret, 3, PyLong_FromLong(m->mr_obsolete));
+  PyList_SetItem(py_ret, 3, PyInt_FromLong(m->mr_obsolete));
   if (m->mr_syntax_oid) {
     PyList_SetItem(py_ret, 4, PyUnicode_FromString(m->mr_syntax_oid)); 
   } else {

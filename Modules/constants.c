@@ -14,7 +14,7 @@ static PyObject* forward;
 
 PyObject*
 LDAPconstant( int val ) {
-    PyObject *i = PyLong_FromLong( val );
+    PyObject *i = PyInt_FromLong( val );
     PyObject *s = PyObject_GetItem( reverse, i );
     if (s == NULL) {
       PyErr_Clear();
@@ -39,7 +39,7 @@ LDAPinit_constants( PyObject* d )
 
 #define add_int(d, name) \
   { \
-    PyObject *i = PyLong_FromLong(LDAP_##name); \
+    PyObject *i = PyInt_FromLong(LDAP_##name); \
     PyDict_SetItemString( d, #name, i ); \
     Py_DECREF(i); \
   }
@@ -92,7 +92,7 @@ LDAPinit_constants( PyObject* d )
 
   /* reversibles */
 
-  zero = PyLong_FromLong( 0 );
+  zero = PyInt_FromLong( 0 );
   PyDict_SetItem( reverse, zero, Py_None );
   Py_DECREF( zero );
 
@@ -266,11 +266,11 @@ LDAPinit_constants( PyObject* d )
   add_int(d,AVA_NONPRINTABLE);
   
   /*add_int(d,OPT_ON);*/
-  obj = PyLong_FromLong(1);
+  obj = PyInt_FromLong(1);
   PyDict_SetItemString( d, "OPT_ON", obj );
   Py_DECREF(obj);
   /*add_int(d,OPT_OFF);*/
-  obj = PyLong_FromLong(0);
+  obj = PyInt_FromLong(0);
   PyDict_SetItemString( d, "OPT_OFF", obj );      
   Py_DECREF(obj);
   
@@ -289,27 +289,27 @@ LDAPinit_constants( PyObject* d )
 
   /* add_int(d,LIBLDAP_R); */
 #ifdef HAVE_LIBLDAP_R
-  obj = PyLong_FromLong(1);
+  obj = PyInt_FromLong(1);
 #else
-  obj = PyLong_FromLong(0);
+  obj = PyInt_FromLong(0);
 #endif
   PyDict_SetItemString( d, "LIBLDAP_R", obj );
   Py_DECREF(obj);
 
   /* add_int(d,SASL); */
 #ifdef HAVE_SASL
-  obj = PyLong_FromLong(1);
+  obj = PyInt_FromLong(1);
 #else
-  obj = PyLong_FromLong(0);
+  obj = PyInt_FromLong(0);
 #endif
   PyDict_SetItemString( d, "SASL_AVAIL", obj );
   Py_DECREF(obj);
 
   /* add_int(d,TLS); */
 #ifdef HAVE_TLS
-  obj = PyLong_FromLong(1);
+  obj = PyInt_FromLong(1);
 #else
-  obj = PyLong_FromLong(0);
+  obj = PyInt_FromLong(0);
 #endif
   PyDict_SetItemString( d, "TLS_AVAIL", obj );
   Py_DECREF(obj);
