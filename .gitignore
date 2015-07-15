@@ -3,6 +3,7 @@
 .*.swp
 *.pyc
 __pycache__/
+.tox
 
 # Build related
 *.egg-info
