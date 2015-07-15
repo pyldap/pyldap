@@ -82,10 +82,10 @@ def modifyModlist(
       # This attribute type is ignored
       continue
     # Filter away null-strings
-    new_value = filter(lambda x:x!=None,new_entry[attrtype])
+    new_value = list(filter(lambda x:x!=None,new_entry[attrtype]))
     if attrtype_lower in attrtype_lower_map:
       old_value = old_entry.get(attrtype_lower_map[attrtype_lower],[])
-      old_value = filter(lambda x:x!=None,old_value)
+      old_value = list(filter(lambda x:x!=None,old_value))
       del attrtype_lower_map[attrtype_lower]
     else:
       old_value = []
