@@ -664,10 +664,10 @@ l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
 
     if (ldaperror == LDAP_SASL_BIND_IN_PROGRESS) {
         if (servercred && servercred->bv_val && *servercred->bv_val)
-            return PyString_FromStringAndSize( servercred->bv_val, servercred->bv_len );
+            return PyBytes_FromStringAndSize( servercred->bv_val, servercred->bv_len );
     } else if (ldaperror != LDAP_SUCCESS)
         return LDAPerror( self->ldap, "l_ldap_sasl_bind_s" );
-    return PyInt_FromLong( ldaperror );
+    return PyLong_FromLong( ldaperror );
 }
 
 static PyObject* 

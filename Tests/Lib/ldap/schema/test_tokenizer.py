@@ -25,6 +25,6 @@ testcases_split_tokens = (
 for t,r in testcases_split_tokens:
   l = ldap.schema.tokenizer.split_tokens(t,{'MUST':None})
   if l!=r:
-    print 'String:',repr(t)
-    print '=>',l
-    print 'differs from',r
+    print('String:',repr(t))
+    print('=>',l)
+    print('differs from',r)

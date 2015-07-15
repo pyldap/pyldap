@@ -6,7 +6,7 @@ import ldap
 
 from ldap.modlist import addModlist,modifyModlist
   
-print '\nTesting function addModlist():'
+print('\nTesting function addModlist():')
 addModlist_tests = [
   (
     {
@@ -31,11 +31,11 @@ for entry,test_modlist in addModlist_tests:
   result_modlist = addModlist(entry)
   result_modlist.sort()
   if test_modlist!=result_modlist:
-    print 'addModlist(%s) returns\n%s\ninstead of\n%s.' % (
+    print('addModlist(%s) returns\n%s\ninstead of\n%s.' % (
       repr(entry),repr(result_modlist),repr(test_modlist)
-    )
+    ))
 
-print '\nTesting function modifyModlist():'
+print('\nTesting function modifyModlist():')
 modifyModlist_tests = [
 
   (
@@ -129,9 +129,9 @@ for old_entry,new_entry,case_ignore_attr_types,test_modlist in modifyModlist_tes
   result_modlist.sort()
 
   if test_modlist!=result_modlist:
-    print 'modifyModlist(%s,%s) returns\n%s\ninstead of\n%s.' % (
+    print('modifyModlist(%s,%s) returns\n%s\ninstead of\n%s.' % (
       repr(old_entry),
       repr(new_entry),
       repr(result_modlist),
       repr(test_modlist)
-    )
+    ))

@@ -40,6 +40,7 @@ void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #define PyBytes_Check PyString_Check
 #define PyBytes_Size PyString_Size
 #define PyBytes_AsString PyString_AsString
+#define PyBytes_FromStringAndSize PyString_FromStringAndSize
 #endif
 
 #endif /* __h_common_ */

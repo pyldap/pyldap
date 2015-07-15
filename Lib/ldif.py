@@ -576,7 +576,7 @@ if __name__ == '__main__':
     parser_method()
     end_time = time.time()
     input_file.close()
-    print '***Time needed:',end_time-start_time,'seconds'
-    print '***Records read:',ldif_parser.records_read
-    print '***Lines read:',ldif_parser.line_counter
-    print '***Bytes read:',ldif_parser.byte_counter,'of',input_file_size
+    print('***Time needed:',end_time-start_time,'seconds')
+    print('***Records read:',ldif_parser.records_read)
+    print('***Lines read:',ldif_parser.line_counter)
+    print('***Bytes read:',ldif_parser.byte_counter,'of',input_file_size)

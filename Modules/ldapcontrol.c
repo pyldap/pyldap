@@ -69,7 +69,6 @@ Tuple_to_LDAPControl( PyObject* tup )
     char iscritical;
     struct berval berbytes;
     PyObject *bytes;
-    PyObject *bytes_utf8;
     LDAPControl *lc = NULL;
     Py_ssize_t len;
 

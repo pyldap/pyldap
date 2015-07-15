@@ -5,7 +5,7 @@ Performes various tests for module ldapurl
 import ldapurl
 from ldapurl import *
 
-print '\nTesting function isLDAPUrl():'
+print('\nTesting function isLDAPUrl():')
 is_ldap_url_tests = {
   # Examples from RFC2255
   'ldap:///o=University%20of%20Michigan,c=US':1,
@@ -28,11 +28,11 @@ is_ldap_url_tests = {
 for ldap_url in is_ldap_url_tests.keys():
   result_is_ldap_url = isLDAPUrl(ldap_url)
   if result_is_ldap_url !=is_ldap_url_tests[ldap_url]:
-    print 'isLDAPUrl("%s") returns %d instead of %d.' % (
+    print('isLDAPUrl("%s") returns %d instead of %d.' % (
       repr(ldap_url),result_is_ldap_url,is_ldap_url_tests[ldap_url]
-    )
+    ))
 
-print '\nTesting class LDAPUrl:'
+print('\nTesting class LDAPUrl:')
 parse_ldap_url_tests = [
   (
     'ldap://root.openldap.org/dc=openldap,dc=org',
@@ -130,25 +130,25 @@ parse_ldap_url_tests = [
 for ldap_url_str,test_ldap_url_obj in parse_ldap_url_tests:
 #  print '\nTesting LDAP URL:',repr(ldap_url)
   ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
-  print '#'*72
-  print test_ldap_url_obj.unparse()
+  print('#'*72)
+  print(test_ldap_url_obj.unparse())
   if ldap_url_obj.__ne__(test_ldap_url_obj):
-    print '-'*72
-    print 'Parsing error! Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
+    print('-'*72)
+    print('Parsing error! Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
       repr(ldap_url_str),
       repr(ldap_url_obj),
       repr(test_ldap_url_obj)
-    )
+    ))
   else:
-    print 'Parsing ok'
+    print('Parsing ok')
     unparsed_ldap_url_str = test_ldap_url_obj.unparse()
     unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
     if unparsed_ldap_url_obj.__ne__(test_ldap_url_obj):
-      print '-'*72
-      print 'Unparsing error! Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
+      print('-'*72)
+      print('Unparsing error! Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
         repr(unparsed_ldap_url_str),
         repr(unparsed_ldap_url_obj),
         repr(test_ldap_url_obj)
-      )
+      ))
     else:
-      print 'Unparsing ok'
+      print('Unparsing ok')

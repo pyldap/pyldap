@@ -377,7 +377,7 @@ if __name__ == '__main__' and sys.argv == ['run']:
     slapd.start()
     print("Contents of LDAP server follow:\n")
     for dn,attrs in slapd.ldapsearch():
-        print("dn: " + dn)
+        print(("dn: " + dn))
         for name,val in attrs:
             print(name + ": " + val)
         print("")
