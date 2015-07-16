@@ -14,6 +14,7 @@ pyasn1 0.1.4+
 pyasn1-modules
 python-ldap 2.4.10+
 """
+from __future__ import print_function
 
 # Import the python-ldap modules
 import ldap,ldapurl
@@ -66,7 +67,7 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
         attributes['dn'] = dn
         self.__data[uuid] = attributes
         # Debugging
-        print 'Detected', change_type, 'of entry:', dn
+        print('Detected', change_type, 'of entry:', dn)
         # If we have a cookie then this is not our first time being run, so it must be a change
         if 'ldap_cookie' in self.__data:
                 self.perform_application_sync(dn, attributes, previous_attributes)
@@ -76,7 +77,7 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
         uuids = [uuid for uuid in uuids if uuid in self.__data]
         # Delete all the UUID values we know of
         for uuid in uuids:
-            print 'Detected deletion of entry:', self.__data[uuid]['dn']
+            print('Detected deletion of entry:', self.__data[uuid]['dn'])
             del self.__data[uuid]
 
     def syncrepl_present(self,uuids,refreshDeletes=False):
@@ -94,10 +95,10 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
                     self.__presentUUIDs[uuid] = True
 
     def syncrepl_refreshdone(self):
-        print 'Initial synchronization is now done, persist phase begins'
+        print('Initial synchronization is now done, persist phase begins')
 
     def perform_application_sync(self,dn,attributes,previous_attributes):
-        print 'Performing application sync for:', dn
+        print('Performing application sync for:', dn)
         return True
 
 
@@ -105,7 +106,7 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
 def commenceShutdown(signum, stack):
     # Declare the needed global variables
     global watcher_running, ldap_connection
-    print 'Shutting down!'
+    print('Shutting down!')
 
     # We are no longer running
     watcher_running = False
@@ -127,22 +128,22 @@ signal.signal(signal.SIGINT,commenceShutdown)
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
   database_path = sys.argv[2]
-except IndexError,e:
-    print 'Usage:'
-    print sys.argv[0], '<LDAP URL> <pathname of database>'
-    print sys.argv[0], '\'ldap://127.0.0.1/cn=users,dc=test'\
+except IndexError as e:
+    print('Usage:')
+    print(sys.argv[0], '<LDAP URL> <pathname of database>')
+    print(sys.argv[0], '\'ldap://127.0.0.1/cn=users,dc=test'\)
                        '?*'\
                        '?sub'\
                        '?(objectClass=*)'\
                        '?bindname=uid=admin%2ccn=users%2cdc=test,'\
                        'X-BINDPW=password\' db.shelve'
     sys.exit(1)
-except ValueError,e:
-  print 'Error parsing command-line arguments:',str(e)
+except ValueError as e:
+  print('Error parsing command-line arguments:',str(e))
   sys.exit(1)
 
 while watcher_running:
-    print 'Connecting to LDAP server now...'
+    print('Connecting to LDAP server now...')
     # Prepare the LDAP server connection (triggers the connection as well)
     ldap_connection = SyncReplConsumer(database_path,ldap_url.initializeUrl())
 
@@ -150,15 +151,15 @@ while watcher_running:
     try:
         ldap_connection.simple_bind_s(ldap_url.who,ldap_url.cred)
     except ldap.INVALID_CREDENTIALS as e:
-        print 'Login to LDAP server failed: ', str(e)
+        print('Login to LDAP server failed: ', str(e))
         sys.exit(1)
     except ldap.SERVER_DOWN:
-        print 'LDAP server is down, going to retry.'
+        print('LDAP server is down, going to retry.')
         time.sleep(5)
         continue
 
     # Commence the syncing
-    print 'Commencing sync process'
+    print('Commencing sync process')
     ldap_search = ldap_connection.syncrepl_search(
       ldap_url.dn or '',
       ldap_url.scope or ldap.SCOPE_SUBTREE,
@@ -177,6 +178,6 @@ while watcher_running:
     except Exception as e:
         # Handle any exception
         if watcher_running:
-            print 'Encountered a problem, going to retry. Error:', str(e)
+            print('Encountered a problem, going to retry. Error:', str(e))
             time.sleep(5)
         pass

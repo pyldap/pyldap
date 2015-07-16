@@ -6,6 +6,7 @@ Originally contributed by Andreas Hasenack <ahasenack@terra.com.br>
 
 Requires module pyasn1 (see http://pyasn1.sourceforge.net/)
 """
+from __future__ import print_function
 
 import pprint,ldap,ldap.modlist
 
@@ -16,10 +17,10 @@ uri = "ldap://localhost:2071/"
 l = ldap.initialize(uri,trace_level=2)
 l.simple_bind_s('uid=diradm,ou=schulung,dc=stroeder,dc=local','testsecret')
 
-print """#---------------------------------------------------------------------------
+print("""#---------------------------------------------------------------------------
 # Add new entry
 #---------------------------------------------------------------------------
-"""
+""")
 
 new_test_dn = "uid=ablume,ou=Users,ou=schulung,dc=stroeder,dc=local"
 new_test_dn2 = "uid=ablume2,ou=Users,ou=schulung,dc=stroeder,dc=local"
@@ -40,13 +41,13 @@ msg_id = l.add_ext(
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
-print "resp_ctrls[0].dn:",resp_ctrls[0].dn
-print "resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry)
+print("resp_ctrls[0].dn:",resp_ctrls[0].dn)
+print("resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry))
 
-print """#---------------------------------------------------------------------------
+print("""#---------------------------------------------------------------------------
 # Modify entry
 #---------------------------------------------------------------------------
-"""
+""")
 
 pr = PreReadControl(criticality=True,attrList=['uidNumber','gidNumber','entryCSN'])
 
@@ -56,8 +57,8 @@ msg_id = l.modify_ext(
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
-print "resp_ctrls[0].dn:",resp_ctrls[0].dn
-print "resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry)
+print("resp_ctrls[0].dn:",resp_ctrls[0].dn)
+print("resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry))
 
 pr = PostReadControl(criticality=True,attrList=['uidNumber','gidNumber','entryCSN'])
 
@@ -67,13 +68,13 @@ msg_id = l.modify_ext(
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
-print "resp_ctrls[0].dn:",resp_ctrls[0].dn
-print "resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry)
+print("resp_ctrls[0].dn:",resp_ctrls[0].dn)
+print("resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry))
 
-print """#---------------------------------------------------------------------------
+print("""#---------------------------------------------------------------------------
 # Rename entry
 #---------------------------------------------------------------------------
-"""
+""")
 
 pr = PostReadControl(criticality=True,attrList=['uid'])
 msg_id = l.rename(
@@ -83,8 +84,8 @@ msg_id = l.rename(
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
-print "resp_ctrls[0].dn:",resp_ctrls[0].dn
-print "resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry)
+print("resp_ctrls[0].dn:",resp_ctrls[0].dn)
+print("resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry))
 
 pr = PreReadControl(criticality=True,attrList=['uid'])
 msg_id = l.rename(
@@ -94,13 +95,13 @@ msg_id = l.rename(
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
-print "resp_ctrls[0].dn:",resp_ctrls[0].dn
-print "resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry)
+print("resp_ctrls[0].dn:",resp_ctrls[0].dn)
+print("resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry))
 
-print """#---------------------------------------------------------------------------
+print("""#---------------------------------------------------------------------------
 # Delete entry
 #---------------------------------------------------------------------------
-"""
+""")
 
 pr = PreReadControl(criticality=True,attrList=['*','+'])
 msg_id = l.delete_ext(
@@ -108,5 +109,5 @@ msg_id = l.delete_ext(
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
-print "resp_ctrls[0].dn:",resp_ctrls[0].dn
-print "resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry)
+print("resp_ctrls[0].dn:",resp_ctrls[0].dn)
+print("resp_ctrls[0].entry:";pprint.pprint(resp_ctrls[0].entry))

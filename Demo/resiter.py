@@ -9,6 +9,7 @@ See http://www.python-ldap.org for details.
 Python compability note:
 Requires Python 2.3+
 """
+from __future__ import print_function
 
 import ldap,ldap.resiter
 
@@ -21,6 +22,6 @@ msgid = l.search('dc=stroeder,dc=de',ldap.SCOPE_SUBTREE,'(cn=m*)')
 
 result_iter = l.allresults(msgid)
 for result_type,result_list,result_msgid,result_serverctrls in result_iter:
-  print result_type,result_list,result_msgid,result_serverctrls
+  print(result_type,result_list,result_msgid,result_serverctrls)
 
 l.unbind_s()

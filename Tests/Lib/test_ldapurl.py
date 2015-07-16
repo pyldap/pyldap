@@ -128,7 +128,7 @@ parse_ldap_url_tests = [
 ]
 
 for ldap_url_str,test_ldap_url_obj in parse_ldap_url_tests:
-#  print '\nTesting LDAP URL:',repr(ldap_url)
+#  print('\nTesting LDAP URL:',repr(ldap_url))
   ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
   print('#'*72)
   print(test_ldap_url_obj.unparse())
