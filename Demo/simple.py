@@ -1,9 +1,9 @@
 from __future__ import print_function
 import sys,getpass
-import ldap
+import pyldap
 
-#l = ldap.open("localhost", 31001)
-l = ldap.open("marta.it.uq.edu.au")
+#l = pyldap.open("localhost", 31001)
+l = pyldap.open("marta.it.uq.edu.au")
 
 login_dn = "cn=root,ou=CSEE,o=UQ,c=AU"
 login_pw = getpass.getpass("Password for %s: " % login_dn)
@@ -25,7 +25,7 @@ try:
 	 ]
        )
 
-except _ldap.LDAPError:
+except _pyldap.LDAPError:
     pass
 
 #
@@ -98,7 +98,7 @@ l.add_s(dn,
 
 res = l.search_s(
 	"ou=CSEE, o=UQ, c=AU", 
-	_ldap.SCOPE_SUBTREE, 
+	_pyldap.SCOPE_SUBTREE, 
 	"objectclass=*",
       )
 print(res)

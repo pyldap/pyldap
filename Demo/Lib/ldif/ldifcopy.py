@@ -14,7 +14,8 @@ Python compability note:
 Tested on Python 2.0+, should run on Python 1.5.x.
 """
 
-import sys,ldif
+import sys
+from pyldap import ldif
 
 infile = sys.stdin
 outfile = sys.stdout

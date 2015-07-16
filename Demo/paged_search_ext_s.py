@@ -5,10 +5,10 @@ search_flt = r'(objectClass=*)'
 
 searchreq_attrlist=['cn','entryDN','entryUUID','mail','objectClass']
 
-from ldap.ldapobject import ReconnectLDAPObject
+from pyldap.ldapobject import ReconnectLDAPObject
 
-import ldap,pprint
-from ldap.controls import SimplePagedResultsControl
+import pyldap,pprint
+from pyldap.controls import SimplePagedResultsControl
 
 
 class PagedResultsSearchObject:
@@ -73,7 +73,7 @@ class PagedResultsSearchObject:
             else:
               break # no more pages available
 
-      except ldap.SERVER_DOWN as e:
+      except pyldap.SERVER_DOWN as e:
         try:
           self.reconnect(self._uri)
         except AttributeError:
@@ -87,8 +87,8 @@ class MyLDAPObject(ReconnectLDAPObject,PagedResultsSearchObject):
   pass
 
 
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
-ldap.set_option(ldap.OPT_REFERRALS, 0)
+#pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,255)
+pyldap.set_option(pyldap.OPT_REFERRALS, 0)
 l = MyLDAPObject(url,trace_level=2,retry_max=100,retry_delay=2)
 l.protocol_version = 3
 l.simple_bind_s("", "")
@@ -97,7 +97,7 @@ l.page_size=10
 # Send search request
 result_pages,all_results = l.paged_search_ext_s(
   base,
-  ldap.SCOPE_SUBTREE,
+  pyldap.SCOPE_SUBTREE,
   search_flt,
   attrlist=searchreq_attrlist,
   serverctrls=None

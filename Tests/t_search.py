@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
-import ldap, unittest
+import pyldap, unittest
 import slapd
 
-from ldap.ldapobject import LDAPObject
+from pyldap.ldapobject import LDAPObject
 
 server = None
 
@@ -42,7 +42,7 @@ class TestSearch(unittest.TestCase):
 
         l = LDAPObject(server.get_url())
         l.protocol_version = 3
-        l.set_option(ldap.OPT_REFERRALS,0)
+        l.set_option(pyldap.OPT_REFERRALS,0)
         l.simple_bind_s(server.get_root_dn(), 
                 server.get_root_password())
         self.ldap = l
@@ -52,7 +52,7 @@ class TestSearch(unittest.TestCase):
         base = self.server.get_dn_suffix()
         l = self.ldap
 
-        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
+        result = l.search_s(base, pyldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         result.sort()
         self.assertEqual(result,
             [('cn=Foo1,'+base,
@@ -70,7 +70,7 @@ class TestSearch(unittest.TestCase):
         base = self.server.get_dn_suffix()
         l = self.ldap
 
-        result = l.search_s(base, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
+        result = l.search_s(base, pyldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
         result.sort()
         self.assertEqual(result,
             [('cn=Foo1,'+base,
@@ -86,7 +86,7 @@ class TestSearch(unittest.TestCase):
         base = self.server.get_dn_suffix()
         l = self.ldap
 
-        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
+        result = l.search_s(base, pyldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
         result.sort()
         self.assertEqual(result,
             [('cn=Foo4,ou=Container,'+base, {'cn': [b'Foo4']})]

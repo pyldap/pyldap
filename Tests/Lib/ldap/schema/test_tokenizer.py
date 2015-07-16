@@ -1,5 +1,5 @@
-import ldap.schema
-from ldap.schema.tokenizer import split_tokens,extract_tokens
+import pyldap.schema
+from pyldap.schema.tokenizer import split_tokens,extract_tokens
 
 testcases_split_tokens = (
   (" BLUBBER DI BLUBB ", ["BLUBBER", "DI", "BLUBB"]),
@@ -23,7 +23,7 @@ testcases_split_tokens = (
 )
 
 for t,r in testcases_split_tokens:
-  l = ldap.schema.tokenizer.split_tokens(t,{'MUST':None})
+  l = pyldap.schema.tokenizer.split_tokens(t,{'MUST':None})
   if l!=r:
     print('String:',repr(t))
     print('=>',l)

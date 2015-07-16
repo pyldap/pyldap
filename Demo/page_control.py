@@ -9,18 +9,18 @@ binddn = ''
 bindpw = ''
 trace_level = 0
 
-import ldap,pprint
+import pyldap,pprint
 
 try:
-  from ldap.controls.pagedresults import SimplePagedResultsControl
+  from pyldap.controls.pagedresults import SimplePagedResultsControl
 except ImportError:
-  from ldap.controls.libldap import SimplePagedResultsControl
+  from pyldap.controls.libldap import SimplePagedResultsControl
 
 searchreq_attrlist=['cn','entryDN','entryUUID','mail','objectClass']
 
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
-ldap.set_option(ldap.OPT_REFERRALS, 0)
-l = ldap.initialize(url,trace_level=trace_level)
+#pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,255)
+pyldap.set_option(pyldap.OPT_REFERRALS, 0)
+l = pyldap.initialize(url,trace_level=trace_level)
 l.protocol_version = 3
 l.simple_bind_s(binddn,bindpw)
 
@@ -33,7 +33,7 @@ known_ldap_resp_ctrls = {
 # Send search request
 msgid = l.search_ext(
   base,
-  ldap.SCOPE_SUBTREE,
+  pyldap.SCOPE_SUBTREE,
   search_flt,
   attrlist=searchreq_attrlist,
   serverctrls=[req_ctrl]
@@ -61,7 +61,7 @@ while True:
             req_ctrl.cookie = pctrls[0].cookie
             msgid = l.search_ext(
               base,
-              ldap.SCOPE_SUBTREE,
+              pyldap.SCOPE_SUBTREE,
               search_flt,
               attrlist=searchreq_attrlist,
               serverctrls=[req_ctrl]

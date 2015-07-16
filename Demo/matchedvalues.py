@@ -29,8 +29,8 @@
 # mail: jsmith@example.org
 from __future__ import print_function
 
-import ldap
-from ldap.controls import MatchedValuesControl
+import pyldap
+from pyldap.controls import MatchedValuesControl
 
 def print_result(search_result):
     for n in range(len(search_result)):
@@ -43,11 +43,11 @@ def print_result(search_result):
 
 uri = "ldap://ldap.example.com"
 base = "dc=example,dc=com"
-scope = ldap.SCOPE_SUBTREE
+scope = pyldap.SCOPE_SUBTREE
 filter = "(&(objectClass=inetOrgPerson)(mail=*@example.org))"
 control_filter = "(mail=*@example.org)"
 
-ld = ldap.initialize(uri)
+ld = pyldap.initialize(uri)
 
 mv = MatchedValuesControl(criticality=True, controlValue=control_filter)
 

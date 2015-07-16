@@ -12,9 +12,9 @@ from __future__ import print_function
 
 __version__ = '0.1'
 
-import sys,getpass,ldap,ldapurl
+import sys,getpass,pyldap,ldapurl
 
-from ldap.controls.sessiontrack import SessionTrackingControl,SESSION_TRACKING_FORMAT_OID_USERNAME
+from pyldap.controls.sessiontrack import SessionTrackingControl,SESSION_TRACKING_FORMAT_OID_USERNAME
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
@@ -23,11 +23,11 @@ except (IndexError, ValueError):
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+#pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(
+ldap_conn = pyldap.ldapobject.LDAPObject(
   ldap_url.initializeUrl(),
   trace_level=ldapmodule_trace_level,
   trace_file=ldapmodule_trace_file
@@ -40,7 +40,7 @@ if ldap_url.who and ldap_url.cred is None:
 try:
   ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
 
-except ldap.INVALID_CREDENTIALS as e:
+except pyldap.INVALID_CREDENTIALS as e:
   print('Simple bind failed:',str(e))
   sys.exit(1)
 
@@ -53,7 +53,7 @@ st_ctrl = SessionTrackingControl(
 
 ldap_conn.search_ext_s(
   ldap_url.dn or '',
-  ldap_url.scope or ldap.SCOPE_SUBTREE,
+  ldap_url.scope or pyldap.SCOPE_SUBTREE,
   ldap_url.filterstr or '(objectClass=*)',
   ldap_url.attrs or ['*'],
   serverctrls=[st_ctrl]

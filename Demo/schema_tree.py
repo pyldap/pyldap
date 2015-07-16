@@ -6,10 +6,10 @@ Usage: schema_oc_tree.py [--html] [LDAP URL]
 """
 from __future__ import print_function
 
-import sys,getopt,ldap,ldap.schema
+import sys,getopt,pyldap,pyldap.schema
 
 
-ldap.trace_level = 1
+pyldap.trace_level = 1
 
 def PrintSchemaTree(schema,se_class,se_tree,se_oid,level):
   """ASCII text output for console"""
@@ -40,11 +40,11 @@ def HTMLSchemaTree(schema,se_class,se_tree,se_oid,level):
   print('</dd>')
 
 
-ldap.set_option(ldap.OPT_DEBUG_LEVEL,0)
+pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,0)
 
-ldap._trace_level = 0
+pyldap._trace_level = 0
 
-subschemasubentry_dn,schema = ldap.schema.urlfetch(sys.argv[-1],ldap.trace_level)
+subschemasubentry_dn,schema = pyldap.schema.urlfetch(sys.argv[-1],pyldap.trace_level)
 
 if subschemasubentry_dn is None:
   print('No sub schema sub entry found!')
@@ -57,8 +57,8 @@ except getopt.error:
 
 html_output = options and options[0][0]=='--html'
 
-oc_tree = schema.tree(ldap.schema.ObjectClass)
-at_tree = schema.tree(ldap.schema.AttributeType)
+oc_tree = schema.tree(pyldap.schema.ObjectClass)
+at_tree = schema.tree(pyldap.schema.AttributeType)
 
 #for k,v in oc_tree.items():
 #  print(k,'->',v)
@@ -75,14 +75,14 @@ if html_output:
 <h1>Object class tree</h1>
 <dl>
 """)
-  HTMLSchemaTree(schema,ldap.schema.ObjectClass,oc_tree,'2.5.6.0',0)
+  HTMLSchemaTree(schema,pyldap.schema.ObjectClass,oc_tree,'2.5.6.0',0)
   print("""</dl>
 <h1>Attribute type tree</h1>
 <dl>
 """)
-  for a in schema.listall(ldap.schema.AttributeType):
+  for a in schema.listall(pyldap.schema.AttributeType):
     if at_tree[a]:
-      HTMLSchemaTree(schema,ldap.schema.AttributeType,at_tree,a,0)
+      HTMLSchemaTree(schema,pyldap.schema.AttributeType,at_tree,a,0)
       print
 
   print("""</dl>
@@ -94,8 +94,8 @@ else:
 
   print('*** Object class tree ***\n')
   print
-  PrintSchemaTree(schema,ldap.schema.ObjectClass,oc_tree,'2.5.6.0',0)
+  PrintSchemaTree(schema,pyldap.schema.ObjectClass,oc_tree,'2.5.6.0',0)
 
   print('\n*** Attribute types tree ***\n')
-  PrintSchemaTree(schema,ldap.schema.AttributeType,at_tree,'_',0)
+  PrintSchemaTree(schema,pyldap.schema.AttributeType,at_tree,'_',0)
 

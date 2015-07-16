@@ -11,9 +11,9 @@ python-ldap 2.4+
 """
 from __future__ import print_function
 
-import sys,ldap,ldapurl,getpass
+import sys,pyldap,ldapurl,getpass
 
-from ldap.controls.ppolicy import PasswordPolicyError,PasswordPolicyControl
+from pyldap.controls.ppolicy import PasswordPolicyError,PasswordPolicyControl
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
@@ -22,11 +22,11 @@ except (IndexError,ValueError):
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+#pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(
+ldap_conn = pyldap.ldapobject.LDAPObject(
   ldap_url.initializeUrl(),
   trace_level=ldapmodule_trace_level,
   trace_file=ldapmodule_trace_file
@@ -39,7 +39,7 @@ if ldap_url.cred is None:
 try:
   msgid = ldap_conn.simple_bind(ldap_url.who,ldap_url.cred,serverctrls=[PasswordPolicyControl()])
   res_type,res_data,res_msgid,res_ctrls = ldap_conn.result3(msgid)
-except ldap.INVALID_CREDENTIALS as e:
+except pyldap.INVALID_CREDENTIALS as e:
   print('Simple bind failed:',str(e))
   sys.exit(1)
 else:

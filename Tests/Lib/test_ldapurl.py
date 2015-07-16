@@ -2,8 +2,8 @@
 Performes various tests for module ldapurl
 """
 
-import ldapurl
-from ldapurl import *
+from pyldap import ldapurl
+from pyldap.ldapurl import *
 
 print('\nTesting function isLDAPUrl():')
 is_ldap_url_tests = {

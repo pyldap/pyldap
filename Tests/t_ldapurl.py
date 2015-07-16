@@ -2,10 +2,10 @@
 
 from __future__ import unicode_literals
 
-import ldap, unittest
-from ldap.compat import quote
+import pyldap, unittest
+from pyldap.compat import quote
 
-from ldapurl import LDAPUrl
+from pyldap.ldapurl import LDAPUrl
 
 class MyLDAPUrl(LDAPUrl):
   attr2extype = {
@@ -39,7 +39,7 @@ class TestLDAPUrl(unittest.TestCase):
         self.assertEqual(u.hostport, "127.0.0.1:1234")
         self.assertEqual(u.dn, "dc=example,dc=com")
         self.assertEqual(u.attrs, ["attr1","attr2","attr3"])
-        self.assertEqual(u.scope, ldap.SCOPE_SUBTREE)
+        self.assertEqual(u.scope, pyldap.SCOPE_SUBTREE)
         self.assertEqual(u.filterstr, "(objectClass=*)")
         self.assertEqual(len(u.extensions), 3)
         self.assertEqual(u.who, "cn=d,c=au")
@@ -147,17 +147,17 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_scope(self):
         u = LDAPUrl("ldap:///??sub")
-        self.assertEqual(u.scope, ldap.SCOPE_SUBTREE)
+        self.assertEqual(u.scope, pyldap.SCOPE_SUBTREE)
         u = LDAPUrl("ldap:///??sub?")
-        self.assertEqual(u.scope, ldap.SCOPE_SUBTREE)
+        self.assertEqual(u.scope, pyldap.SCOPE_SUBTREE)
         u = LDAPUrl("ldap:///??base")
-        self.assertEqual(u.scope, ldap.SCOPE_BASE)
+        self.assertEqual(u.scope, pyldap.SCOPE_BASE)
         u = LDAPUrl("ldap:///??base?")
-        self.assertEqual(u.scope, ldap.SCOPE_BASE)
+        self.assertEqual(u.scope, pyldap.SCOPE_BASE)
         u = LDAPUrl("ldap:///??one")
-        self.assertEqual(u.scope, ldap.SCOPE_ONELEVEL)
+        self.assertEqual(u.scope, pyldap.SCOPE_ONELEVEL)
         u = LDAPUrl("ldap:///??one?")
-        self.assertEqual(u.scope, ldap.SCOPE_ONELEVEL)
+        self.assertEqual(u.scope, pyldap.SCOPE_ONELEVEL)
 
     def test_parse_filter(self):
         u = LDAPUrl("ldap:///???(cn=Bob)")

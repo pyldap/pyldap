@@ -8,13 +8,13 @@ Requires module pyasn1 (see http://pyasn1.sourceforge.net/)
 """
 from __future__ import print_function
 
-import pprint,ldap,ldap.modlist
+import pprint,pyldap,pyldap.modlist
 
-from ldap.controls.readentry import PreReadControl,PostReadControl
+from pyldap.controls.readentry import PreReadControl,PostReadControl
 
 uri = "ldap://localhost:2071/"
 
-l = ldap.initialize(uri,trace_level=2)
+l = pyldap.initialize(uri,trace_level=2)
 l.simple_bind_s('uid=diradm,ou=schulung,dc=stroeder,dc=local','testsecret')
 
 print("""#---------------------------------------------------------------------------
@@ -37,7 +37,7 @@ pr = PostReadControl(criticality=True,attrList=['entryUUID','entryCSN'])
 
 msg_id = l.add_ext(
   new_test_dn,
-  ldap.modlist.addModlist(new_test_entry),
+  pyldap.modlist.addModlist(new_test_entry),
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
@@ -53,7 +53,7 @@ pr = PreReadControl(criticality=True,attrList=['uidNumber','gidNumber','entryCSN
 
 msg_id = l.modify_ext(
   new_test_dn,
-  [(ldap.MOD_INCREMENT, "uidNumber", "1"),(ldap.MOD_INCREMENT, "gidNumber", "1")],
+  [(pyldap.MOD_INCREMENT, "uidNumber", "1"),(pyldap.MOD_INCREMENT, "gidNumber", "1")],
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)
@@ -64,7 +64,7 @@ pr = PostReadControl(criticality=True,attrList=['uidNumber','gidNumber','entryCS
 
 msg_id = l.modify_ext(
   new_test_dn,
-  [(ldap.MOD_INCREMENT, "uidNumber", "1"),(ldap.MOD_INCREMENT, "gidNumber", "1")],
+  [(pyldap.MOD_INCREMENT, "uidNumber", "1"),(pyldap.MOD_INCREMENT, "gidNumber", "1")],
   serverctrls = [pr]
 )
 _,_,_,resp_ctrls = l.result3(msg_id)

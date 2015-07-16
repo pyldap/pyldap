@@ -1,5 +1,5 @@
 """
-ldifwriter - using ldap.async module for output of LDIF stream
+ldifwriter - using pyldap.async module for output of LDIF stream
              of LDAP search results
 
 Written by Michael Stroeder <michael@stroeder.com>
@@ -14,22 +14,22 @@ Python compability note:
 Tested on Python 2.0+, should run on Python 1.5.x.
 """
 
-import sys,ldap,ldap.async
+import sys,pyldap,pyldap.async
 
-s = ldap.async.LDIFWriter(
-  ldap.initialize('ldap://localhost:1390'),
+s = pyldap.async.LDIFWriter(
+  pyldap.initialize('ldap://localhost:1390'),
   sys.stdout
 )
 
 s.startSearch(
   'dc=stroeder,dc=de',
-  ldap.SCOPE_SUBTREE,
+  pyldap.SCOPE_SUBTREE,
   '(objectClass=*)',
 )
 
 try:
   partial = s.processResults()
-except ldap.SIZELIMIT_EXCEEDED:
+except pyldap.SIZELIMIT_EXCEEDED:
   sys.stderr.write('Warning: Server-side size limit exceeded.\n')
 else:
   if partial:

@@ -1,10 +1,10 @@
 """
-Tests for module ldap.modlist
+Tests for module pyldap.modlist
 """
 
-import ldap
+import pyldap
 
-from ldap.modlist import addModlist,modifyModlist
+from pyldap.modlist import addModlist,modifyModlist
   
 print('\nTesting function addModlist():')
 addModlist_tests = [
@@ -55,13 +55,13 @@ modifyModlist_tests = [
     },
     [],
     [
-      (ldap.MOD_DELETE,'objectClass',None),
-      (ldap.MOD_ADD,'objectClass',['person','inetOrgPerson']),
-      (ldap.MOD_DELETE,'c',None),
-      (ldap.MOD_DELETE,'sn',None),
-      (ldap.MOD_ADD,'mail',['michael@stroeder.com']),
-      (ldap.MOD_DELETE,'enum',None),
-      (ldap.MOD_ADD,'enum',['a','b','d']),
+      (pyldap.MOD_DELETE,'objectClass',None),
+      (pyldap.MOD_ADD,'objectClass',['person','inetOrgPerson']),
+      (pyldap.MOD_DELETE,'c',None),
+      (pyldap.MOD_DELETE,'sn',None),
+      (pyldap.MOD_ADD,'mail',['michael@stroeder.com']),
+      (pyldap.MOD_DELETE,'enum',None),
+      (pyldap.MOD_ADD,'enum',['a','b','d']),
     ]
   ),
 
@@ -74,8 +74,8 @@ modifyModlist_tests = [
     },
     [],
     [
-      (ldap.MOD_DELETE,'c',None),
-      (ldap.MOD_ADD,'c',['FR']),
+      (pyldap.MOD_DELETE,'c',None),
+      (pyldap.MOD_ADD,'c',['FR']),
     ]
   ),
 
@@ -95,9 +95,9 @@ modifyModlist_tests = [
     },
     [],
     [
-      (ldap.MOD_DELETE,'c',None),
-      (ldap.MOD_DELETE,'objectClass',None),
-      (ldap.MOD_DELETE,'sn',None),
+      (pyldap.MOD_DELETE,'c',None),
+      (pyldap.MOD_DELETE,'objectClass',None),
+      (pyldap.MOD_DELETE,'sn',None),
     ]
   ),
 
@@ -116,9 +116,9 @@ modifyModlist_tests = [
     },
     ['objectClass'],
     [
-      (ldap.MOD_DELETE,'sn',None),
-      (ldap.MOD_DELETE,'enum',None),
-      (ldap.MOD_ADD,'enum',['a','b','c']),
+      (pyldap.MOD_DELETE,'sn',None),
+      (pyldap.MOD_DELETE,'enum',None),
+      (pyldap.MOD_ADD,'enum',['a','b','c']),
     ]
   ),
 

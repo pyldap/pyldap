@@ -3,10 +3,10 @@ Example showing the use of the password extended operation.
 """
 from __future__ import print_function
 
-import sys,ldap,ldapurl,getpass
+import sys,pyldap,ldapurl,getpass
 
 # Set debugging level
-ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
@@ -19,12 +19,12 @@ newpw = getpass.getpass()
 
 # Set path name of file containing all CA certificates
 # needed to validate server certificates
-ldap.set_option(ldap.OPT_X_TLS_CACERTFILE,'/etc/httpd/ssl.crt/myCA-cacerts.pem')
+pyldap.set_option(pyldap.OPT_X_TLS_CACERTFILE,'/etc/httpd/ssl.crt/myCA-cacerts.pem')
 
 # Create LDAPObject instance
-l = ldap.initialize(lu.initializeUrl(),trace_level=ldapmodule_trace_level,trace_file=ldapmodule_trace_file)
+l = pyldap.initialize(lu.initializeUrl(),trace_level=ldapmodule_trace_level,trace_file=ldapmodule_trace_file)
 
-l.protocol_version=ldap.VERSION3
+l.protocol_version=pyldap.VERSION3
 
 l.simple_bind_s(lu.dn,oldpw)
 

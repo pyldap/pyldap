@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 
-import sys,pprint,ldap
+import sys,pprint,pyldap
 
-from ldap.ldapobject import LDAPObject
+from pyldap.ldapobject import LDAPObject
 from ldapurl import LDAPUrl
 
 class MyLDAPUrl(LDAPUrl):
@@ -19,7 +19,7 @@ trace_level = int(ldap_url.trace_level or '0')
 
 print('***trace_level',trace_level)
 
-ldap.trace_level = trace_level
+pyldap.trace_level = trace_level
 
 l = LDAPObject(
   ldap_url.initializeUrl(),
@@ -27,18 +27,18 @@ l = LDAPObject(
 )
 
 l.protocol_version = 3
-l.set_option(ldap.OPT_REFERRALS,0)
+l.set_option(pyldap.OPT_REFERRALS,0)
 l.simple_bind_s((ldap_url.who or ''),(ldap_url.cred or ''))
 
 result = l.search_s(
   ldap_url.dn,
-  ldap_url.scope or ldap.SCOPE_SUBTREE,
+  ldap_url.scope or pyldap.SCOPE_SUBTREE,
   ldap_url.filterstr or '(objectClass=*)',
   ldap_url.attrs or ['*']
 )
 
 pprint.pprint(result)
 
-print('***DIAGNOSTIC_MESSAGE',repr(l.get_option(ldap.OPT_DIAGNOSTIC_MESSAGE)))
+print('***DIAGNOSTIC_MESSAGE',repr(l.get_option(pyldap.OPT_DIAGNOSTIC_MESSAGE)))
 
 l.unbind_s()

@@ -34,7 +34,7 @@ else:
 # Weird Hack to grab release version of python-ldap from local dir
 ##################################################################
 exec_startdir = os.path.dirname(os.path.abspath(sys.argv[0]))
-package_init_file_name = reduce_fun(os.path.join,[exec_startdir,'Lib','ldap','__init__.py'])
+package_init_file_name = reduce_fun(os.path.join,[exec_startdir,'Lib','pyldap','__init__.py'])
 f = open(package_init_file_name,'r')
 s = f.readline()
 while s:
@@ -58,14 +58,14 @@ class OpenLDAP2:
 
 LDAP_CLASS = OpenLDAP2
 
-#-- Read the [_ldap] section of setup.cfg
+#-- Read the [_pyldap] section of setup.cfg
 cfg = ConfigParser()
 cfg.read('setup.cfg')
-if cfg.has_section('_ldap'):
+if cfg.has_section('_pyldap'):
   for name in dir(LDAP_CLASS):
-    if cfg.has_option('_ldap', name):
-      print(name + ': ' + cfg.get('_ldap', name))
-      setattr(LDAP_CLASS, name, string_split(cfg.get('_ldap', name)))
+    if cfg.has_option('_pyldap', name):
+      print(name + ': ' + cfg.get('_pyldap', name))
+      setattr(LDAP_CLASS, name, string_split(cfg.get('_pyldap', name)))
 
 for i in range(len(LDAP_CLASS.defines)):
   LDAP_CLASS.defines[i]=((LDAP_CLASS.defines[i],None))
@@ -127,7 +127,7 @@ setup(
   #-- C extension modules
   ext_modules = [
     Extension(
-      '_ldap',
+      '_pyldap',
       [
         'Modules/LDAPObject.c',
         'Modules/ldapcontrol.c',
@@ -157,40 +157,12 @@ setup(
     ),
   ],
   #-- Python "stand alone" modules
-  py_modules = [
-    'ldapurl',
-    'ldif',
-    'dsml',
-    'ldap',
-    'ldap.async',
-    'ldap.compat',
-    'ldap.controls',
-    'ldap.controls.libldap',
-    'ldap.controls.openldap',
-    'ldap.controls.ppolicy',
-    'ldap.controls.psearch',
-    'ldap.controls.pwdpolicy',
-    'ldap.controls.readentry',
-    'ldap.controls.sessiontrack',
-    'ldap.controls.simple',
-    'ldap.cidict',
-    'ldap.dn',
-    'ldap.extop',
-    'ldap.extop.dds',
-    'ldap.filter',
-    'ldap.functions',
-    'ldap.ldapobject',
-    'ldap.logger',
-    'ldap.modlist',
-    'ldap.resiter',
-    'ldap.sasl',
-    'ldap.schema',
-    'ldap.schema.models',
-    'ldap.schema.subentry',
-    'ldap.schema.tokenizer',
-    'ldap.syncrepl',
+  packages = [
+    'pyldap',
+    'pyldap.controls',
+    'pyldap.schema',
   ],
-  package_dir = {'': 'Lib',},
+  package_dir = {'': 'Lib'},
   data_files = LDAP_CLASS.extra_files,
   **kwargs
 )

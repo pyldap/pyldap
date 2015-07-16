@@ -1,9 +1,9 @@
 from __future__ import print_function
-import ldap
+import pyldap
 from getpass import getpass
 
 # Create LDAPObject instance
-l = ldap.initialize('ldap://localhost:1389',trace_level=1)
+l = pyldap.initialize('ldap://localhost:1389',trace_level=1)
 
 print('Password:')
 cred = getpass()
@@ -11,10 +11,10 @@ cred = getpass()
 try:
 
   # Set LDAP protocol version used
-  l.set_option(ldap.OPT_PROTOCOL_VERSION,3)
+  l.set_option(pyldap.OPT_PROTOCOL_VERSION,3)
 
   # Try a bind to provoke failure if protocol version is not supported
-  l.bind_s('cn=root,dc=stroeder,dc=com',cred,ldap.AUTH_SIMPLE)
+  l.bind_s('cn=root,dc=stroeder,dc=com',cred,pyldap.AUTH_SIMPLE)
 
   print('Using rename_s():')
 

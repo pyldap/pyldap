@@ -5,7 +5,7 @@
 #
 from __future__ import print_function
 
-import ldap
+import pyldap
 import string
 from traceback import print_exc
 
@@ -14,8 +14,8 @@ dn = "dc=openldap,dc=org"
 
 print("Connecting to", url)
 
-l = ldap.initialize(url)
-l.bind_s("", "", ldap.AUTH_SIMPLE);
+l = pyldap.initialize(url)
+l.bind_s("", "", pyldap.AUTH_SIMPLE);
 
 lastdn = dn
 dnlist = None
@@ -51,7 +51,7 @@ while 1:
 		# We're not interested in attributes at this stage, so
 		# we specify [] as the list of attribute names to retreive.
 		#
-		for name,attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL, 
+		for name,attrs in l.search_s(dn, pyldap.SCOPE_ONELEVEL, 
 		    "objectclass=*", []):
 			#-- shorten resulting dns for output brevity
 			if name.startswith(dn+", "):
@@ -72,7 +72,7 @@ while 1:
 		if arg == '-':
 			lastdn,dn = dn,lastdn
 		elif arg == '..':
-			dn = string.join(ldap.explode_dn(dn)[1:], ",")
+			dn = string.join(pyldap.explode_dn(dn)[1:], ",")
 			dn = string.strip(dn)
                 else:
 		        try:
@@ -96,7 +96,7 @@ while 1:
 		# the client to receive all attributes on the DN.
 		#
 		print("Attributes of", `dn`, ":")
-		for name,attrs in l.search_s(dn, ldap.SCOPE_BASE,
+		for name,attrs in l.search_s(dn, pyldap.SCOPE_BASE,
 		    "objectclass=*"):
 			print("  %-24s" % name)
 			for k,vals in attrs.items():
@@ -117,7 +117,7 @@ while 1:
 		#
 		expr = cmd[1:]
 		print("Descendents matching filter", `expr`, ":")
-		for name,attrs in l.search_s(dn, ldap.SCOPE_SUBTREE,
+		for name,attrs in l.search_s(dn, pyldap.SCOPE_SUBTREE,
 		    expr, []):
 			print("  %24s", name)
 

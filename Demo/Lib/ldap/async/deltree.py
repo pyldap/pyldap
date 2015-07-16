@@ -1,26 +1,26 @@
 from __future__ import print_function
 
-import ldap,ldap.async
+import pyldap,pyldap.async
 
-class DeleteLeafs(ldap.async.AsyncSearchHandler):
+class DeleteLeafs(pyldap.async.AsyncSearchHandler):
   """
   Class for deleting entries which are results of a search.
   
   DNs of Non-leaf entries are collected in DeleteLeafs.nonLeafEntries.
   """
-  _entryResultTypes = ldap.async._entryResultTypes
+  _entryResultTypes = pyldap.async._entryResultTypes
 
   def __init__(self,l):
-    ldap.async.AsyncSearchHandler.__init__(self,l)
+    pyldap.async.AsyncSearchHandler.__init__(self,l)
     self.nonLeafEntries = []
     self.deletedEntries = 0
 
   def startSearch(self,searchRoot,searchScope):
-    if not searchScope in [ldap.SCOPE_ONELEVEL,ldap.SCOPE_SUBTREE]:
-      raise ValueError("Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE.")
+    if not searchScope in [pyldap.SCOPE_ONELEVEL,pyldap.SCOPE_SUBTREE]:
+      raise ValueError("Parameter searchScope must be either pyldap.SCOPE_ONELEVEL or pyldap.SCOPE_SUBTREE.")
     self.nonLeafEntries = []
     self.deletedEntries = 0
-    ldap.async.AsyncSearchHandler.startSearch(
+    pyldap.async.AsyncSearchHandler.startSearch(
       self,
       searchRoot,
       searchScope,
@@ -47,13 +47,13 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
       else:
         try:
           self._l.delete_s(dn)
-        except ldap.NOT_ALLOWED_ON_NONLEAF as e:
+        except pyldap.NOT_ALLOWED_ON_NONLEAF as e:
           self.nonLeafEntries.append(dn)
         else:
           self.deletedEntries = self.deletedEntries+1
 
 
-def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
+def DelTree(l,dn,scope=pyldap.SCOPE_ONELEVEL):
   """
   Recursively delete entries below or including entry with name dn.
   """
@@ -65,7 +65,7 @@ def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
   while non_leaf_entries:
     dn = non_leaf_entries.pop()
     print(deleted_entries,len(non_leaf_entries),dn)
-    leafs_deleter.startSearch(dn,ldap.SCOPE_SUBTREE)
+    leafs_deleter.startSearch(dn,pyldap.SCOPE_SUBTREE)
     leafs_deleter.processResults()
     deleted_entries = deleted_entries+leafs_deleter.deletedEntries
     non_leaf_entries.extend(leafs_deleter.nonLeafEntries)
@@ -73,10 +73,10 @@ def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
 
 
 # Create LDAPObject instance
-l = ldap.initialize('ldap://localhost:1390')
+l = pyldap.initialize('ldap://localhost:1390')
 
 # Try a bind to provoke failure if protocol version is not supported
 l.simple_bind_s('cn=Directory Manager,dc=IMC,dc=org','controller')
 
 # Delete all entries *below* the entry dc=Delete,dc=IMC,dc=org
-DelTree(l,'dc=Delete,dc=IMC,dc=org',ldap.SCOPE_ONELEVEL)
+DelTree(l,'dc=Delete,dc=IMC,dc=org',pyldap.SCOPE_ONELEVEL)

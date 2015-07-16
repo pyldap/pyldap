@@ -11,11 +11,11 @@ python-ldap 2.4+
 """
 from __future__ import print_function
 
-import sys,ldap,ldapurl,getpass
+import sys,pyldap,ldapurl,getpass
 
-from ldap.controls.openldap import SearchNoOpControl
+from pyldap.controls.openldap import SearchNoOpControl
 
-LDAPLimitErrors = (ldap.TIMEOUT,ldap.TIMELIMIT_EXCEEDED,ldap.SIZELIMIT_EXCEEDED,ldap.ADMINLIMIT_EXCEEDED)
+LDAPLimitErrors = (pyldap.TIMEOUT,pyldap.TIMELIMIT_EXCEEDED,pyldap.SIZELIMIT_EXCEEDED,pyldap.ADMINLIMIT_EXCEEDED)
 
 SEARCH_TIMEOUT=30.0
 
@@ -26,11 +26,11 @@ except IndexError:
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+#pyldap.set_option(pyldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(
+ldap_conn = pyldap.ldapobject.LDAPObject(
   ldap_url.initializeUrl(),
   trace_level=ldapmodule_trace_level,
   trace_file=ldapmodule_trace_file
@@ -43,7 +43,7 @@ if ldap_url.who and ldap_url.cred is None:
 try:
   ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
 
-except ldap.INVALID_CREDENTIALS as e:
+except pyldap.INVALID_CREDENTIALS as e:
   print('Simple bind failed:',str(e))
   sys.exit(1)
 

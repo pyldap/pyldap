@@ -4,7 +4,7 @@ Do a search with the LDAP URL specified at command-line.
 No output of LDAP data is produced except trace output.
 """
 from __future__ import print_function
-import sys,getpass,ldap,ldapurl
+import sys,getpass,pyldap,ldapurl
 
 try:
   ldapUrl = ldapurl.LDAPUrl(ldapUrl=sys.argv[1])
@@ -18,7 +18,7 @@ for a in [
 ]:
   print(a,repr(getattr(ldapUrl,a)))
 
-l = ldap.initialize(ldapUrl.initializeUrl(),trace_level=1)
+l = pyldap.initialize(ldapUrl.initializeUrl(),trace_level=1)
 if ldapUrl.who!=None:
   if ldapUrl.cred!=None:
     cred=ldapUrl.cred

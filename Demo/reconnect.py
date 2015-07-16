@@ -1,21 +1,21 @@
-import sys,time,ldap,ldap.ldapobject,ldapurl
+import sys,time,pyldap,pyldap.ldapobject,ldapurl
 
-from ldap.ldapobject import *
+from pyldap.ldapobject import *
 
 ldap_url = ldapurl.LDAPUrl(sys.argv[1])
 ldap_url.applyDefaults({
   'who':'',
   'cred':'',
   'filterstr':'(objectClass=*)',
-  'scope':ldap.SCOPE_BASE
+  'scope':pyldap.SCOPE_BASE
 })
 
-ldap.trace_level=1
+pyldap.trace_level=1
 
-l = ldap.ldapobject.ReconnectLDAPObject(
-  ldap_url.initializeUrl(),trace_level=ldap.trace_level
+l = pyldap.ldapobject.ReconnectLDAPObject(
+  ldap_url.initializeUrl(),trace_level=pyldap.trace_level
 )
-l.protocol_version = ldap.VERSION3
+l.protocol_version = pyldap.VERSION3
 
 l.simple_bind_s(ldap_url.who,ldap_url.cred)
 

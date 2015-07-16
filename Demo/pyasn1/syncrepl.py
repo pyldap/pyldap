@@ -17,10 +17,10 @@ python-ldap 2.4.10+
 from __future__ import print_function
 
 # Import the python-ldap modules
-import ldap,ldapurl
+import pyldap,ldapurl
 # Import specific classes from python-ldap
-from ldap.ldapobject import ReconnectLDAPObject
-from ldap.syncrepl import SyncreplConsumer
+from pyldap.ldapobject import ReconnectLDAPObject
+from pyldap.syncrepl import SyncreplConsumer
 
 # Import modules from Python standard lib
 import shelve,signal,time,sys,logging
@@ -38,7 +38,7 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
 
     def __init__(self,db_path,*args,**kwargs):
         # Initialise the LDAP Connection first
-        ldap.ldapobject.ReconnectLDAPObject.__init__(self, *args, **kwargs)
+        pyldap.ldapobject.ReconnectLDAPObject.__init__(self, *args, **kwargs)
         # Now prepare the data store
         self.__data = shelve.open(db_path, 'c')
         # We need this for later internal use
@@ -150,10 +150,10 @@ while watcher_running:
     # Now we login to the LDAP server
     try:
         ldap_connection.simple_bind_s(ldap_url.who,ldap_url.cred)
-    except ldap.INVALID_CREDENTIALS as e:
+    except pyldap.INVALID_CREDENTIALS as e:
         print('Login to LDAP server failed: ', str(e))
         sys.exit(1)
-    except ldap.SERVER_DOWN:
+    except pyldap.SERVER_DOWN:
         print('LDAP server is down, going to retry.')
         time.sleep(5)
         continue
@@ -162,7 +162,7 @@ while watcher_running:
     print('Commencing sync process')
     ldap_search = ldap_connection.syncrepl_search(
       ldap_url.dn or '',
-      ldap_url.scope or ldap.SCOPE_SUBTREE,
+      ldap_url.scope or pyldap.SCOPE_SUBTREE,
       mode = 'refreshAndPersist',
       attrlist=ldap_url.attrs,
       filterstr = ldap_url.filterstr or '(objectClass=*)'
