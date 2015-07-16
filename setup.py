@@ -76,7 +76,7 @@ for i in range(len(LDAP_CLASS.extra_files)):
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 #-- Let distutils/setuptools do the rest
-name = 'python-ldap'
+name = 'pyldap'
 
 # Python 2.3.6+ and setuptools are needed to build eggs, so
 # let's handle setuptools' additional  keyword arguments to
