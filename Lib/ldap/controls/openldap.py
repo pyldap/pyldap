@@ -62,7 +62,7 @@ class SearchNoOpMixIn:
         serverctrls=[SearchNoOpControl(criticality=True)],
       )
       _,_,_,search_response_ctrls = self.result3(msg_id,all=1,timeout=timeout)
-    except LDAPLimitErrors,e:
+    except LDAPLimitErrors as e:
       self.abandon(msg_id)
       raise e
     else:
