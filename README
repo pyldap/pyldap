@@ -1,3 +1,25 @@
+======
+pyldap
+======
+
+pyldap is a fork of the excellent ``python-ldap`` Python project.
+
+The goals of this fork are the following:
+
+* Bring Python 3 support to ``python-ldap`` while keeping a PY2-compatible codebase
+* Improve tooling and code quality
+* Keep backwards compatibility whenever possible
+
+-----------------------
+Backwards compatibility
+-----------------------
+
+Users should be able to replace ``python-ldap`` with ``pyldap`` with minimal impact on their code.
+According to this, releases of ``pyldap`` will stick to the numbering of the upstream ``python-ldap`` releases they are based on.
+
+However, some compatibility toggles will be added to bring cleaner APIs for PY3 code.
+
+
 ---------------------------------------
 python-ldap: LDAP client API for Python
 ---------------------------------------
@@ -22,12 +44,15 @@ For module documentation, see:
 	http://www.python-ldap.org/
 
 Quick usage example:
+
+.. code-block:: python
+
     import ldap
     l = ldap.initialize("ldap://my_ldap_server.my_domain")
     l.simple_bind_s("","")
     l.search_s("o=My Organisation, c=AU", ldap.SCOPE_SUBTREE, "objectclass=*")
 
-See directory Demo/ of source distribution package for more
+See directory ``Demo/`` of source distribution package for more
 example code.
 
 Author(s) contact and documentation:
@@ -50,13 +75,13 @@ Acknowledgements:
    on support for OpenLDAP 2.0.x features.
 
    Thanks to Michael Stroeder <michael at stroeder.com> for the
-   modules ldif, ldapurl, ldap/schema/*.py, ldap/*.py and ldap/controls/*.py.
+   modules ``ldif``, ``ldapurl``, ``ldap/schema/*.py``, ``ldap/*.py`` and ``ldap/controls/*.py``.
 
    Thanks to Hans Aschauer <Hans.Aschauer at Physik.uni-muenchen.de>
    for the C wrapper schema and SASL support.
 
    Thanks to Mauro Cicognini <mcicogni at siosistemi.it> for the
-   WIN32/MSVC6 bits, and the pre-built WIN32 ldap.pyd.
+   WIN32/MSVC6 bits, and the pre-built WIN32 ``ldap.pyd``.
 
    Thanks to Waldemar Osuch <waldemar.osuch at gmail.com> for contributing
    the new-style docs based on reStructuredText.
@@ -65,7 +90,7 @@ Acknowledgements:
    easy_install support.
 
    Thanks to James Andrewartha <jamesa at daa.com.au> for
-   significant contribution to Doc/*.tex.
+   significant contribution to ``Doc/*.tex``.
 
    Thanks to Rich Megginson <rmeggins at redhat.com> for extending
    support for LDAPv3 controls and adding support for LDAPv3 extended
@@ -99,4 +124,4 @@ Acknowledgements:
    Thanks! We may have missed someone: please mail us if we have omitted
    your name.
 
-$Id: README,v 1.25 2011/10/26 18:43:21 stroeder Exp $
+.. $Id: README,v 1.25 2011/10/26 18:43:21 stroeder Exp $
