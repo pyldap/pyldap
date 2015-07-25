@@ -115,7 +115,7 @@ class SimpleLDAPObject:
       return value
     elif self.bytes_mode:
       if not isinstance(value, bytes):
-        raise TypeError("All provided fields *must* be bytes in bytes mode; got %r" % (value,))
+        raise TypeError("All provided fields *must* be bytes when bytes mode is on; got %r" % (value,))
       return value.decode('utf-8')
     else:
       if not isinstance(value, text_type):
