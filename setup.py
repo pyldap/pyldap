@@ -96,17 +96,16 @@ setup(
   name = name,
   version = version,
   description = 'Python modules for implementing LDAP clients',
-  long_description = """python-ldap:
-  python-ldap provides an object-oriented API to access LDAP directory servers
-  from Python programs. Mainly it wraps the OpenLDAP 2.x libs for that purpose.
+  long_description = """pyldap:
+  pyldap is a fork of python-ldap, and provides an object-oriented API to access LDAP
+  directory servers from Python programs. Mainly it wraps the OpenLDAP 2.x libs for that purpose.
   Additionally the package contains modules for other LDAP-related stuff
   (e.g. processing LDIF, LDAPURLs, LDAPv3 schema, LDAPv3 extended operations
   and controls, etc.). 
   """,
-  author = 'python-ldap project',
-  author_email = 'python-ldap@python.org',
-  url = 'http://www.python-ldap.org/',
-  download_url = 'http://pypi.python.org/pypi/python-ldap/',
+  author = 'pyldap project',
+  url = 'https://github.com/pyldap/pyldap/',
+  download_url = 'http://pypi.python.org/pypi/pyldap/',
   classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
