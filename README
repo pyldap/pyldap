@@ -43,7 +43,8 @@ through the ``bytes_mode`` flag to ``ldap.initialize()``.
 When porting from ``python-ldap``, users are advised to update their code to set ``bytes_mode=False``
 on calls to these methods.
 Under Python 2, ``pyldap`` checks aggressively the type of provided arguments, and will raise a ``TypeError``
-for any invalid parameter.
+for any invalid parameter; however, if the ``bytes_mode`` kwarg isn't provided, ``pyldap`` will only
+raise warnings.
 
 The typical usage is as follow; note that only the result's *values* are of the bytes type:
 

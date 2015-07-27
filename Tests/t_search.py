@@ -81,8 +81,12 @@ class TestSearch(unittest.TestCase):
             for value in values:
                 self.assertEqual(type(value), bytes)
 
-    def _get_bytes_ldapobject(self):
-        l = LDAPObject(server.get_url(), bytes_mode=True)
+    def _get_bytes_ldapobject(self, explicit=True):
+        if explicit:
+            kwargs = {'bytes_mode': True}
+        else:
+            kwargs = {}
+        l = LDAPObject(server.get_url(), **kwargs)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
         l.simple_bind_s(self.server.get_root_dn().encode('utf-8'),
@@ -114,6 +118,15 @@ class TestSearch(unittest.TestCase):
             self.assertEqual(type(key), bytes)
             for value in values:
                 self.assertEqual(type(value), bytes)
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_unset_bytesmode_search_warns_bytes(self):
+        l = self._get_bytes_ldapobject(explicit=False)
+        base = self.server.get_dn_suffix()
+
+        l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
+        l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
+        l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
 
     def test_search_subtree(self):
         base = self.server.get_dn_suffix()
