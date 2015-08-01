@@ -1,6 +1,10 @@
 language: python
 sudo: false
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 addons:
   apt:
     packages:
@@ -16,6 +20,7 @@ matrix:
     - python: "3.4"
       env: TOXENV=py34
 install:
+  - pip install "pip>=7.1.0"
   - pip install tox
 
 script: tox
