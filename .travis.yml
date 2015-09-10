@@ -1,5 +1,16 @@
 language: python
-sudo: true
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+addons:
+  apt:
+    packages:
+      - ldap-utils
+      - slapd
+
 matrix:
   include:
     - python: "2.7"
@@ -8,10 +19,8 @@ matrix:
       env: TOXENV=py33
     - python: "3.4"
       env: TOXENV=py34
-before_install:
-  - sudo apt-get update -qq
 install:
-  - sudo apt-get install -qq ldap-utils slapd
+  - pip install "pip>=7.1.0"
   - pip install tox
 
 script: tox
