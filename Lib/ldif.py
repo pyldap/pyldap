@@ -23,12 +23,17 @@ __all__ = [
   'LDIFCopy',
 ]
 
-import urlparse,urllib,base64,re,types
+import urllib
+import base64
+import re
+import types
 
 try:
   from cStringIO import StringIO
+  import urlparse import urlparse
 except ImportError:
   from StringIO import StringIO
+  import urllib.parse import urlparse
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
@@ -333,7 +338,7 @@ class LDIFParser:
       url = unfolded_line[colon_pos+2:].strip()
       attr_value = None
       if self._process_url_schemes:
-        u = urlparse.urlparse(url)
+        u = urlparse(url)
         if u[0] in self._process_url_schemes:
           attr_value = urllib.urlopen(url).read()
     elif value_spec==':\r\n' or value_spec=='\n':
