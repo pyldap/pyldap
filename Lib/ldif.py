@@ -365,7 +365,7 @@ class LDIFParser:
         if u[0] in self._process_url_schemes:
           attr_value = urllib.urlopen(url).read()
     else:
-      attr_value = unfolded_line[colon_pos+1:]
+      attr_value = unfolded_line[colon_pos+1:].encode('utf-8')
     return attr_type,attr_value
 
   def parse_entry_records(self):
