@@ -46,6 +46,8 @@ class sasl:
         SASL callback id's. The mech argument is a string that specifies
         the SASL mechaninsm to be uesd."""
         self.cb_value_dict = cb_value_dict or {}
+        if not isinstance(mech, bytes):
+            mech = mech.encode('utf-8')
         self.mech = mech
 
     def callback(self,cb_id,challenge,prompt,defresult):
@@ -62,7 +64,10 @@ class sasl:
         cb_value_dictionary. Note that the current callback interface is not very
         useful for writing generic sasl GUIs, which would need to know all
         the questions to ask, before the answers are returned to the sasl
-        lib (in contrast to one question at a time)."""
+        lib (in contrast to one question at a time).
+
+        Unicode strings are always converted to bytes.
+        """
 
         # The following print command might be useful for debugging
         # new sasl mechanisms. So it is left here
@@ -72,6 +77,8 @@ class sasl:
             _trace_file.write("*** id=%d, challenge=%s, prompt=%s, defresult=%s\n-> %s\n" % (
                 cb_id, challenge, prompt, repr(defresult), repr(self.cb_value_dict.get(cb_result))
               ))
+        if not isinstance(cb_result, bytes):
+            cb_result = cb_result.encode('utf-8')
         return cb_result
 
 
