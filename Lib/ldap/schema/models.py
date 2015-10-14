@@ -6,6 +6,8 @@ See http://www.python-ldap.org/ for details.
 \$Id: models.py,v 1.48 2015/06/06 09:21:38 stroeder Exp $
 """
 
+import sys
+
 import ldap.cidict
 from ldap.compat import UserDict
 
