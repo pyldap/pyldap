@@ -2,6 +2,10 @@
 pyldap
 ======
 
+.. image:: https://travis-ci.org/pyldap/pyldap.svg?branch=master
+    :target: https://travis-ci.org/pyldap/pyldap
+    :alt: Continuous integration status
+
 pyldap is a fork of the excellent ``python-ldap`` Python project.
 
 The goals of this fork are the following:
