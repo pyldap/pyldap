@@ -8,7 +8,7 @@ Lib/
   after the colon.
 
 ----------------------------------------------------------------
-Released 2.4.21 2015-09-25
+Released 2.4.21 2015-09-25 (upstream), 2015-10-19 (pyldap)
 
 Changes since 2.4.20:
 
