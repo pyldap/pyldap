@@ -37,13 +37,7 @@ except ImportError:
   except ImportError:
     from io import StringIO
 
-try:
-  from urllib.parse import urlparse
-except ImportError:
-  from urlparse import urlparse
-
-if sys.version_info > (3, 0):
-  unicode = str
+from ldap.compat import urlparse
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
@@ -155,7 +149,7 @@ class LDIFWriter:
     """
     if self._needs_base64_encoding(attr_type,attr_value):
       # Encode with base64
-      if isinstance(attr_value, unicode):
+      if not isinstance(attr_value, bytes):
           attr_value = attr_value.encode('utf-8')
       encoded = base64.encodestring(attr_value).decode('ascii')
       encoded = encoded.replace('\n','')
@@ -213,7 +207,7 @@ class LDIFWriter:
           or a list with a modify list like for LDAPObject.modify().
     """
     # Start with line containing the distinguished name
-    if isinstance(dn, unicode):
+    if not isinstance(dn, bytes):
         dn = dn.encode('utf-8')
     self._unparseAttrTypeandValue('dn', dn)
     # Dispatch to record type specific writers
@@ -348,12 +342,12 @@ class LDIFParser:
     value_spec = unfolded_line[colon_pos:colon_pos+2]
     if value_spec==': ':
       attr_value = unfolded_line[colon_pos+2:].lstrip()
-      if isinstance(unfolded_line, unicode):
+      if not isinstance(unfolded_line, bytes):
         attr_value = attr_value.encode('utf-8')
     elif value_spec=='::':
       # attribute value needs base64-decoding
       attr_value = unfolded_line[colon_pos+2:]
-      if isinstance(attr_value, unicode):
+      if not isinstance(attr_value, bytes):
         attr_value = attr_value.encode('ascii')
       attr_value = base64.decodestring(attr_value)
     elif value_spec==':<':
