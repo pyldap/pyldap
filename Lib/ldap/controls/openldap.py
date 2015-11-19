@@ -4,7 +4,7 @@ ldap.controls.openldap - classes for OpenLDAP-specific controls
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: openldap.py,v 1.4 2015/09/18 17:24:39 stroeder Exp $
+$Id: openldap.py,v 1.6 2015/10/24 16:21:56 stroeder Exp $
 """
 
 import ldap.controls
@@ -15,7 +15,8 @@ from pyasn1.codec.ber import decoder
 
 
 __all__ = [
-  'SearchNoOpControl'
+  'SearchNoOpControl',
+  'SearchNoOpMixIn',
 ]
 
 
@@ -63,7 +64,12 @@ class SearchNoOpMixIn:
         serverctrls=[SearchNoOpControl(criticality=True)],
       )
       _,_,_,search_response_ctrls = self.result3(msg_id,all=1,timeout=timeout)
-    except LDAPLimitErrors as e:
+    except (
+      ldap.TIMEOUT,
+      ldap.TIMELIMIT_EXCEEDED,
+      ldap.SIZELIMIT_EXCEEDED,
+      ldap.ADMINLIMIT_EXCEEDED
+    ) as e:
       self.abandon(msg_id)
       raise e
     else:

@@ -1,11 +1,23 @@
 ----------------------------------------------------------------
-Released 2.4.22 2015-10-xx
+Released 2.4.22 2015-10-25
 
 Changes since 2.4.21:
 
 Lib/
 * LDIFParser now also accepts value-spec without a space
   after the colon.
+* Added key-word argument authz_id to LDAPObject methods
+  sasl_non_interactive_bind_s(), sasl_external_bind_s() and 
+  sasl_gssapi_bind_s()
+* Hmmpf! Added missing self to LDAPObject.fileno().
+* ReconnectLDAPObject.sasl_bind_s() now correctly uses
+  generic wrapper arguments *args,**kwargs
+* LDIFParser.parse_change_records() now correctly calls
+  LDIFParser.handle_change_modify()
+* Corrected ldap.controls.pwdpolicy.__all__
+
+Doc/
+* Started missing docs for sub-module ldap.sasl.
 
 ----------------------------------------------------------------
 Released 2.4.21 2015-09-25 (upstream), 2015-10-19 (pyldap)
@@ -1204,4 +1216,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.358 2015/09/30 17:17:28 stroeder Exp $
+$Id: CHANGES,v 1.363 2015/10/24 15:55:07 stroeder Exp $
