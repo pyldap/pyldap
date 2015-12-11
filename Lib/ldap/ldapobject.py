@@ -185,14 +185,27 @@ class SimpleLDAPObject:
     else:
       return value.encode('utf-8')
 
-  def _bytesify_keys(self, dct):
-    """Applies bytes_mode to the keys of a dict."""
+  def _bytesify_result_value(self, result_value):
+    """Applies bytes_mode to a result value.
+
+    Such a value can either be:
+    - a dict mapping an attribute name to its list of values
+      (where attribute names are unicode and values bytes)
+    - a list of referals (which are unicode)
+    """
     if not PY2:
-      return dct
-    return dict(
-      (self._bytesify_value(key), value)
-      for (key, value) in dct.items()
-    )
+      return result_value
+    if hasattr(result_value, 'items'):
+      # It's a attribute_name: [values] dict
+      return dict(
+        (self._bytesify_value(key), value)
+        for (key, value) in result_value.items()
+      )
+    else:
+      # It's a list of referals
+      # Example value:
+      # [u'ldap://DomainDnsZones.xxxx.root.local/DC=DomainDnsZones,DC=xxxx,DC=root,DC=local']
+      return [self._bytesify_value(referal) for referal in result_value]
 
   def _bytesify_results(self, results, with_ctrls=False):
     """Converts a "results" object according to bytes_mode.
@@ -207,12 +220,12 @@ class SimpleLDAPObject:
       return results
     if with_ctrls:
       return [
-        (self._bytesify_value(dn), self._bytesify_keys(fields), ctrls)
+        (self._bytesify_value(dn), self._bytesify_result_value(fields), ctrls)
         for (dn, fields, ctrls) in results
       ]
     else:
       return [
-        (self._bytesify_value(dn), self._bytesify_keys(fields))
+        (self._bytesify_value(dn), self._bytesify_result_value(fields))
         for (dn, fields) in results
       ]
 
