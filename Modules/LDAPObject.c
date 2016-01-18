@@ -15,7 +15,11 @@
 #include "options.h"
 
 #ifdef HAVE_SASL
+#ifdef __APPLE__
+#include <sasl/sasl.h>
+#else
 #include <sasl.h>
+#endif
 #endif
 
 static void free_attrs(char***);
