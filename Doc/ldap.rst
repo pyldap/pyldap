@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.29 2015/11/19 05:16:46 stroeder Exp $
+.. % $Id: ldap.rst,v 1.31 2015/12/09 17:57:18 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -10,13 +10,20 @@
 .. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
 
 
-This module provides access to the LDAP  (Lightweight Directory Access Protocol)
-C API implemented  in OpenLDAP 2.3 or newer.  It is similar to the C API, with
-the notable differences  that lists are manipulated via Python  list operations
-and errors appear as exceptions.    For far more detailed information on the C
-interface,   please see the (expired) draft-ietf-ldapext-ldap-c-api-04.    This
-documentation is current for the Python LDAP module, version  |release|.  Source
-and binaries are available from http://www.python-ldap.org/.
+This module provides access to the LDAP (Lightweight Directory Access Protocol)
+C API implemented in OpenLDAP.  It is similar to the C API, with
+the notable differences that lists are manipulated via Python list operations
+and errors appear as exceptions.
+
+   .. seealso::
+
+      For more detailed information on the C interface, please see the (expired)
+      `draft-ietf-ldapext-ldap-c-api <https://tools.ietf.org/html/draft-ietf-ldapext-ldap-c-api>`_
+
+
+This documentation is current for the Python LDAP module, version  
+|release|.  Source and binaries are available from 
+http://www.python-ldap.org/.
 
 
 Functions
@@ -961,7 +968,7 @@ and wait for and return with the server's result, or with
    values are lists of strings.
 
    The DN in *dn* is automatically extracted using the underlying libldap
-   function :cfunc:`ldap_get_dn()`, which may raise an exception if the
+   function :c:func:`ldap_get_dn()`, which may raise an exception if the
    DN is malformed.
 
    If *attrsonly* is non-zero, the values of *attrs* will be meaningless
