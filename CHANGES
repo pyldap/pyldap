@@ -1,4 +1,23 @@
 ----------------------------------------------------------------
+Released 2.4.25 2016-01-18
+
+Changes since 2.4.23:
+(2.4.24 is missing because of foolish pypi version madness)
+
+Lib/
+* Fix for attrlist=None regression introduced in 2.4.23
+  by ref count patch
+
+----------------------------------------------------------------
+Released 2.4.23 2016-01-17
+
+Changes since 2.4.22:
+
+Modules/
+* Ref count issue in attrs_from_List() was fixed
+  (thanks to Elmir Jagudin)
+
+----------------------------------------------------------------
 Released 2.4.22 2015-10-25
 
 Changes since 2.4.21:
@@ -12,9 +31,9 @@ Lib/
 * Hmmpf! Added missing self to LDAPObject.fileno().
 * ReconnectLDAPObject.sasl_bind_s() now correctly uses
   generic wrapper arguments *args,**kwargs
-* LDIFParser.parse_change_records() now correctly calls
-  LDIFParser.handle_change_modify()
-* Corrected ldap.controls.pwdpolicy.__all__
+* Correct method name LDIFParser.handle_modify()
+* Corrected __all__ in modules ldap.controls.pwdpolicy and 
+  ldap.controls.openldap
 
 Doc/
 * Started missing docs for sub-module ldap.sasl.
@@ -1216,4 +1235,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.363 2015/10/24 15:55:07 stroeder Exp $
+$Id: CHANGES,v 1.370 2016/01/18 15:16:29 stroeder Exp $
