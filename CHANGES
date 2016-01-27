@@ -1,5 +1,5 @@
 ----------------------------------------------------------------
-Released 2.4.25 2016-01-18
+Released 2.4.25 2016-01-18 (upstream), 2016-01-27 (pyldap)
 
 Changes since 2.4.23:
 (2.4.24 is missing because of foolish pypi version madness)
