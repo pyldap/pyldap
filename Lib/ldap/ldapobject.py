@@ -151,7 +151,7 @@ class SimpleLDAPObject:
       for value in values
     )
 
-  def _unbytesify_modlist(self, modlist):
+  def _unbytesify_modlist(self, modlist, with_opcode):
     """Adapt a modlist according to bytes_mode.
 
     A modlist is a tuple of (op, attr, value), where:
@@ -161,10 +161,16 @@ class SimpleLDAPObject:
     """
     if not PY2:
       return modlist
-    return tuple(
-      (op, self._unbytesify_value(attr), val)
-      for op, attr, val in modlist
-    )
+    if with_opcode:
+      return tuple(
+        (op, self._unbytesify_value(attr), val)
+        for op, attr, val in modlist
+      )
+    else:
+      return tuple(
+        (self._unbytesify_value(attr), val)
+        for attr, val in modlist
+      )
 
   def _bytesify_value(self, value):
     """Adapt a returned value according to bytes_mode.
@@ -340,7 +346,7 @@ class SimpleLDAPObject:
         except that no operation integer need be included in the tuples.
     """
     dn = self._unbytesify_value(dn)
-    modlist = self._unbytesify_modlist(modlist)
+    modlist = self._unbytesify_modlist(modlist, with_opcode=False)
     return self._ldap_call(self._l.add_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def add_ext_s(self,dn,modlist,serverctrls=None,clientctrls=None):
@@ -524,7 +530,7 @@ class SimpleLDAPObject:
     modify_ext(dn, modlist[,serverctrls=None[,clientctrls=None]]) -> int
     """
     dn = self._unbytesify_value(dn)
-    modlist = self._unbytesify_modlist(modlist)
+    modlist = self._unbytesify_modlist(modlist, with_opcode=True)
     return self._ldap_call(self._l.modify_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def modify_ext_s(self,dn,modlist,serverctrls=None,clientctrls=None):
