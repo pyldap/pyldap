@@ -22,6 +22,8 @@ if __debug__:
 import _ldap
 from _ldap import *
 
+PYLDAP_VERSION = __version__
+
 OPT_NAMES_DICT = {}
 for k,v in vars(_ldap).items():
   if k.startswith('OPT_'):
