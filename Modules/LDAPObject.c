@@ -169,7 +169,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
               goto error;
           if (!PyBytes_Check(item)) {
               PyErr_SetObject( PyExc_TypeError, Py_BuildValue( "sO",
-                  "expected a string in the list", item));
+                  "expected a byte string in the list", item));
               Py_DECREF(item);
               goto error;
           }
