@@ -460,7 +460,7 @@ def urlfetch(uri,trace_level=0,bytes_mode=None):
     l=ldap.initialize(ldap_url.initializeUrl(),trace_level,bytes_mode=bytes_mode)
     l.protocol_version = ldap.VERSION3
     l.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
-    subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn)
+    subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn).decode('utf-8')
     if subschemasubentry_dn is None:
       s_temp = None
     else:
