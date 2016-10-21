@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.31 2015/12/09 17:57:18 stroeder Exp $
+.. % $Id: ldap.rst,v 1.34 2016/07/24 16:12:55 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -7,7 +7,7 @@
 .. py:module:: ldap
     :platform: Posix, Windows
     :synopsis: Access to an underlying LDAP C library.
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 This module provides access to the LDAP (Lightweight Directory Access Protocol)
@@ -23,7 +23,7 @@ and errors appear as exceptions.
 
 This documentation is current for the Python LDAP module, version  
 |release|.  Source and binaries are available from 
-http://www.python-ldap.org/.
+https://www.python-ldap.org/.
 
 
 Functions
@@ -129,7 +129,8 @@ following option identifiers are defined as constants:
 
 .. py:data:: OPT_DEBUG_LEVEL
 
-   Sets the debug level within the underlying LDAP C lib.
+   Sets the debug level within the underlying OpenLDAP C lib (libldap).
+   libldap sends the log messages to stderr.
 
 .. py:data:: OPT_DEFBASE
 

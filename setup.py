@@ -3,7 +3,7 @@ setup.py - Setup package with the help Python's DistUtils
 
 See http://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.73 2015/09/19 13:38:30 stroeder Exp $
+$Id: setup.py,v 1.75 2016/04/07 20:17:16 stroeder Exp $
 """
 
 import sys,os,string,time
@@ -105,7 +105,7 @@ setup(
   """,
   author = 'pyldap project',
   url = 'https://github.com/pyldap/pyldap/',
-  download_url = 'http://pypi.python.org/pypi/pyldap/',
+  download_url = 'https://pypi.python.org/pypi/pyldap/',
   classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
@@ -175,6 +175,7 @@ setup(
     'ldap.controls.readentry',
     'ldap.controls.sessiontrack',
     'ldap.controls.simple',
+    'ldap.controls.sss',
     'ldap.cidict',
     'ldap.dn',
     'ldap.extop',

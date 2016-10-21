@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.151 2016/01/18 10:38:26 stroeder Exp $
+\$Id: ldapobject.py,v 1.156 2016/07/24 16:22:32 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -794,13 +794,21 @@ class SimpleLDAPObject:
         The unbind and unbind_s methods are identical, and are
         synchronous in nature
     """
-    return self._ldap_call(self._l.unbind_ext,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    res = self._ldap_call(self._l.unbind_ext,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    try:
+      del self._l
+    except AttributeError:
+      pass
+    return res
 
   def unbind_ext_s(self,serverctrls=None,clientctrls=None):
     msgid = self.unbind_ext(serverctrls,clientctrls)
     if msgid!=None:
-      resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
-      return resp_type, resp_data, resp_msgid, resp_ctrls
+      result = self.result3(msgid,all=1,timeout=self.timeout)
+    else:
+      result = None
+    self._trace_file.flush()
+    return result
 
   def unbind(self):
     return self.unbind_ext(None,None)
@@ -907,6 +915,26 @@ class SimpleLDAPObject:
     if len(r)!=1:
       raise NO_UNIQUE_ENTRY('No or non-unique search result for %s' % (repr(filterstr)))
     return r[0]
+
+  def read_rootdse_s(self, filterstr='(objectClass=*)', attrlist=None):
+    """
+    convenience wrapper around read_s() for reading rootDSE
+    """
+    ldap_rootdse = self.read_s(
+      '',
+      filterstr=filterstr,
+      attrlist=attrlist or ['*', '+'],
+    )
+    return ldap_rootdse  # read_rootdse_s()
+
+  def get_naming_contexts(self):
+    """
+    returns all attribute values of namingContexts in rootDSE
+    if namingContexts is not present (not readable) then empty list is returned
+    """
+    return self.read_rootdse_s(
+      attrlist=['namingContexts']
+    ).get('namingContexts', [])
 
 
 class NonblockingLDAPObject(SimpleLDAPObject):
@@ -1052,7 +1080,6 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             self._trace_file.write('=> delay %s...\n' % (retry_delay))
           time.sleep(retry_delay)
           SimpleLDAPObject.unbind_s(self)
-          del self._l
         else:
           if __debug__ and self._trace_level>=1:
             self._trace_file.write('*** %s reconnect to %s successful => repeat last operation\n' % (
@@ -1071,7 +1098,6 @@ class ReconnectLDAPObject(SimpleLDAPObject):
       return func(self,*args,**kwargs)
     except ldap.SERVER_DOWN:
       SimpleLDAPObject.unbind_s(self)
-      del self._l
       # Try to reconnect
       self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
       # Re-try last operation

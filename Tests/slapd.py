@@ -1,6 +1,6 @@
 
 """
-Utilities for starting up a test slapd server 
+Utilities for starting up a test slapd server
 and talking to it with ldapsearch/ldapadd.
 """
 
@@ -24,10 +24,10 @@ def mkdirs(path):
 
 def delete_directory_content(path):
     for dirpath,dirnames,filenames in os.walk(path, topdown=False):
-        for n in filenames: 
+        for n in filenames:
             _log.info("remove %s", os.path.join(dirpath, n))
             os.remove(os.path.join(dirpath, n))
-        for n in dirnames: 
+        for n in dirnames:
             _log.info("rmdir %s", os.path.join(dirpath, n))
             os.rmdir(os.path.join(dirpath, n))
 
@@ -56,13 +56,13 @@ class Slapd:
     _log = logging.getLogger("Slapd")
 
     # Use /var/tmp to placate apparmour on Ubuntu:
-    PATH_TMPDIR = "/var/tmp/python-ldap-test"  
+    PATH_TMPDIR = "/var/tmp/python-ldap-test"
     PATH_SBINDIR = "/usr/sbin"
     PATH_BINDIR = "/usr/bin"
-    if os.path.isdir("/etc/ldap/schema"):
-        PATH_SCHEMA_CORE = "/etc/ldap/schema/core.schema"
-    elif os.path.isdir("/etc/openldap/schema"):
+    if os.path.isdir("/etc/openldap/schema"):
         PATH_SCHEMA_CORE = "/etc/openldap/schema/core.schema"
+    elif os.path.isdir("/etc/ldap/schema"):
+        PATH_SCHEMA_CORE = "/etc/ldap/schema/core.schema"
     else:
         PATH_SCHEMA_CORE = None
     PATH_LDAPADD = os.path.join(PATH_BINDIR, "ldapadd")
@@ -99,7 +99,7 @@ class Slapd:
         if not os.path.isdir(self._tmpdir):
             os.mkdir(self._tmpdir)
 
-    # Setters 
+    # Setters
     def set_port(self, port):
         self._port = port
     def set_dn_suffix(self, dn):
@@ -130,7 +130,7 @@ class Slapd:
     def get_root_password(self):
         return self._root_password
     def get_tmpdir(self):
-        return self._tmpdir
+        return os.environ.get('TMP',self._tmpdir)
 
     def __del__(self):
         self.stop()
@@ -170,7 +170,7 @@ class Slapd:
 
     def start(self):
         """
-        Starts the slapd server process running, and waits for it to come up. 
+        Starts the slapd server process running, and waits for it to come up.
         """
         if self._proc is None:
             atexit.register(self.stop)
@@ -196,9 +196,9 @@ class Slapd:
         # Spawns/forks the slapd process
         config_path = self._write_config()
         self._log.info("starting slapd")
-        self._proc = subprocess.Popen([self.PATH_SLAPD, 
-                "-f", config_path, 
-                "-h", self.get_url(), 
+        self._proc = subprocess.Popen([self.PATH_SLAPD,
+                "-f", config_path,
+                "-h", self.get_url(),
                 "-d", str(self._slapd_debug_level),
                 ])
         self._proc_config = config_path
@@ -251,9 +251,9 @@ class Slapd:
         if self._proc is not None:
             self._log.info("slapd terminated")
             self._proc = None
-            try: 
+            try:
                 os.remove(self._proc_config)
-            except os.error: 
+            except os.error:
                 self._log.debug("could not remove %s", self._proc_config)
 
     def _test_configuration(self):
@@ -264,8 +264,8 @@ class Slapd:
             if self._log.isEnabledFor(logging.DEBUG):
                 verboseflag = "-v"
             p = subprocess.Popen([
-                self.PATH_SLAPTEST, 
-                verboseflag, 
+                self.PATH_SLAPTEST,
+                verboseflag,
                 "-f", config_path
             ])
             if p.wait() != 0:
@@ -277,7 +277,7 @@ class Slapd:
     def ldapadd(self, ldif, extra_args=[]):
         """Runs ldapadd on this slapd instance, passing it the ldif content"""
         self._log.debug("adding %s", repr(ldif))
-        p = subprocess.Popen([self.PATH_LDAPADD, 
+        p = subprocess.Popen([self.PATH_LDAPADD,
                 "-x",
                 "-D", self.get_root_dn(),
                 "-w", self.get_root_password(),
@@ -291,7 +291,7 @@ class Slapd:
         scope='sub', extra_args=[]):
         if base is None: base = self.get_dn_suffix()
         self._log.debug("ldapsearch filter=%s", repr(filter))
-        p = subprocess.Popen([self.PATH_LDAPSEARCH, 
+        p = subprocess.Popen([self.PATH_LDAPSEARCH,
                 "-x",
                 "-D", self.get_root_dn(),
                 "-w", self.get_root_password(),

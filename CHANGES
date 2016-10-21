@@ -1,4 +1,51 @@
 ----------------------------------------------------------------
+Released 2.4.27 2016-08-01 (upstream)
+
+Changes since 2.4.26:
+
+Lib/
+* added 'strf_secs' and 'strp_secs' to ldap.functions.__all__
+* fixed regression introduced with 2.4.26:
+  ldif.LDIFParser did not fully parse LDIF records without trailing empty
+  separator line
+
+----------------------------------------------------------------
+Released 2.4.26 2016-07-24 (upstream)
+
+Changes since 2.4.25:
+
+Installation:
+* added ldap.controls.sss to py_modules in setup.py
+
+Lib/
+* LDAPObject.unbind_ext() now removes class attribute
+  LDAPObject._l to completely invalidate C wrapper object
+* LDAPObject.unbind_ext() now flushes trace file
+* ldap.ldapobject.SimpleLDAPObject:
+  added convenience methods read_rootdse_s() and get_naming_contexts()
+* added functions ldap.strf_secs() and ldap.strp_secs()
+* added function ldap.filter.time_span_filter()
+* Refactored ldif.LDIFParser
+  * ldif.LDIFParser.version ís now Integer
+  * ignore multiple empty lines between records
+* Fixed ldap.dn.is_dn()
+
+Modules/
+* Fixed #69 Segmentation fault on whoami_s after unbind
+  (thanks to Christian Heimes and Petr Viktorin)
+
+Tests/
+* Fixed result3() being used instead of correct result4()
+  (see #66, thanks to David D. Riddle)
+* Tests/slapd.py honors env var $TMP instead of just using
+  hard-coded /var/tmp
+* Tests/slapd.py now expects schema to be in /etc/openldap/
+* Tests/t_ldapurl.py now independent of module ldap
+* Tests/t_ldif.py now has more test-cases including change records
+* added some more test scripts for sub-modules ldap.dn, ldap.filter and
+  ldap.functions (not complete yet)
+
+----------------------------------------------------------------
 Released 2.4.25.1 2016-03-10 (pyldap)
 
 Lib/
@@ -33,13 +80,13 @@ Lib/
 * LDIFParser now also accepts value-spec without a space
   after the colon.
 * Added key-word argument authz_id to LDAPObject methods
-  sasl_non_interactive_bind_s(), sasl_external_bind_s() and 
+  sasl_non_interactive_bind_s(), sasl_external_bind_s() and
   sasl_gssapi_bind_s()
 * Hmmpf! Added missing self to LDAPObject.fileno().
 * ReconnectLDAPObject.sasl_bind_s() now correctly uses
   generic wrapper arguments *args,**kwargs
 * Correct method name LDIFParser.handle_modify()
-* Corrected __all__ in modules ldap.controls.pwdpolicy and 
+* Corrected __all__ in modules ldap.controls.pwdpolicy and
   ldap.controls.openldap
 
 Doc/
@@ -51,11 +98,11 @@ Released 2.4.21 2015-09-25 (upstream), 2015-10-19 (pyldap)
 Changes since 2.4.20:
 
 Lib/
-* LDAPObject.read_s() now returns None instead of raising 
+* LDAPObject.read_s() now returns None instead of raising
   ldap.NO_SUCH_OBJECT in case the search operation returned emtpy result.
 * ldap.resiter.ResultProcessor.allresults() now takes new key-word
   argument add_ctrls which is internally passed to LDAPObject.result4()
-  and lets the method also return response control along with the search 
+  and lets the method also return response control along with the search
   results.
 * Added ldap.controls.deref implementing support for dereference control
 
@@ -71,7 +118,7 @@ Changes since 2.4.19:
   to intercept the SASL handshake (thanks to René Kijewski)
 
 Modules/
-* Added exceptions ldap.VLV_ERROR, ldap.X_PROXY_AUTHZ_FAILURE and 
+* Added exceptions ldap.VLV_ERROR, ldap.X_PROXY_AUTHZ_FAILURE and
   ldap.AUTH_METHOD_NOT_SUPPORTED
 
 Lib/
@@ -1242,4 +1289,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.370 2016/01/18 15:16:29 stroeder Exp $
+$Id: CHANGES,v 1.393 2016/08/01 10:15:39 stroeder Exp $

@@ -3,7 +3,7 @@ dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: dn.py,v 1.13 2015/06/06 09:21:37 stroeder Exp $
+\$Id: dn.py,v 1.16 2016/07/24 15:58:26 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+
@@ -110,13 +110,13 @@ def explode_rdn(rdn,notypes=0,flags=0):
     return ['='.join((atype,escape_dn_chars(avalue or ''))) for atype,avalue,dummy in rdn_decomp]
 
 
-def is_dn(s):
+def is_dn(s,flags=0):
   """
-  Returns True is `s' can be parsed by ldap.dn.dn2str() like as a
+  Returns True is `s' can be parsed by ldap.dn.str2dn() like as a
   distinguished host_name (DN), otherwise False is returned.
   """
   try:
-    dn2str(s)
+    str2dn(s,flags)
   except Exception:
     return False
   else:

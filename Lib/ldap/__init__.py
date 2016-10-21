@@ -3,12 +3,12 @@ ldap - base module
 
 See http://www.python-ldap.org/ for details.
 
-$Id: __init__.py,v 1.102 2016/01/18 15:17:30 stroeder Exp $
+$Id: __init__.py,v 1.105 2016/07/30 16:18:47 stroeder Exp $
 """
 
 # This is also the overall release version number
 
-__version__ = '2.4.25.1'
+__version__ = '2.4.27'
 
 import sys
 
@@ -84,7 +84,7 @@ class LDAPLock:
 # Create module-wide lock for serializing all calls into underlying LDAP lib
 _ldap_module_lock = LDAPLock(desc='Module wide')
 
-from ldap.functions import open,initialize,init,get_option,set_option,escape_str
+from ldap.functions import open,initialize,init,get_option,set_option,escape_str,strf_secs,strp_secs
 
 from ldap.ldapobject import NO_UNIQUE_ENTRY
 
