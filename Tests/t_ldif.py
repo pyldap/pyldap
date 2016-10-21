@@ -186,7 +186,7 @@ class TestEntryRecords(TestLDIFParser):
              value
             attrib2: %s
 
-            """ % (b'asdf.'*20), [
+            """ % ('asdf.'*20), [
                 (
                     'cn=x,cn=y,cn=z',
                     {

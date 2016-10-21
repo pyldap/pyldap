@@ -163,9 +163,9 @@ class LDIFWriter:
     """
     mod_len = len(modlist[0])
     if mod_len==2:
-      changetype = 'add'
+      changetype = b'add'
     elif mod_len==3:
-      changetype = 'modify'
+      changetype = b'modify'
     else:
       raise ValueError("modlist item of wrong length: %d" % (mod_len))
     self._unparseAttrTypeandValue('changetype',changetype)
@@ -174,7 +174,8 @@ class LDIFWriter:
         mod_type,mod_vals = mod
       elif mod_len==3:
         mod_op,mod_type,mod_vals = mod
-        self._unparseAttrTypeandValue(MOD_OP_STR[mod_op],mod_type)
+        self._unparseAttrTypeandValue(MOD_OP_STR[mod_op],
+                                      mod_type.encode('ascii'))
       else:
         raise ValueError("Subsequent modlist item of wrong length")
       if mod_vals:
@@ -459,6 +460,8 @@ class LDIFParser:
       # Consume first line which must start with "dn: "
       if k!='dn':
         raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
+      if isinstance(v, bytes):
+        v = v.decode('utf-8')
       if not is_dn(v):
         raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
       dn = v
@@ -479,6 +482,8 @@ class LDIFParser:
       changetype = None
       # Consume changetype line of record
       if k=='changetype':
+        if isinstance(v, bytes):
+          v = v.decode('ascii')
         if not v in valid_changetype_dict:
           raise ValueError('Invalid changetype: %s' % repr(v))
         changetype = v
@@ -498,6 +503,8 @@ class LDIFParser:
             except KeyError:
               raise ValueError('Line %d: Invalid mod-op string: %s' % (self.line_counter,repr(k)))
             # we now have the attribute name to be modified
+            if isinstance(v, bytes):
+              v = v.decode('utf-8')
             modattr = v
             modvalues = []
             try:
