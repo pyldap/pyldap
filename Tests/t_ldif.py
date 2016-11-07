@@ -7,6 +7,8 @@ See http://www.python-ldap.org/ for details.
 $Id: t_ldif.py,v 1.22 2016/07/30 17:15:22 stroeder Exp $
 """
 
+from __future__ import unicode_literals
+
 # from Python's standard lib
 import unittest
 import textwrap
@@ -251,10 +253,13 @@ class TestEntryRecords(TestLDIFParser):
         )
 
     def test_unicode(self):
+        # Encode "Ströder" as UTF-8+Base64
+        # Putting "Ströder" in a single line would be an invalid LDIF file
+        # per https://tools.ietf.org/html/rfc2849 (only safe ascii is allowed in a file)
         self.check_records(
             """
             dn: cn=Michael Stroeder,dc=stroeder,dc=com
-            lastname: Ströder
+            lastname:: U3Ryw7ZkZXI=
 
             """,
             [
