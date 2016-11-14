@@ -312,7 +312,9 @@ class LDIFParser:
   def _readline(self):
     s = self._input_file.readline()
     if self._file_sends_bytes:
-      s = s.decode('ascii')
+      # The RFC does not allow UTF-8 values, but some implementations do,
+      # including upstream.
+      s = s.decode('utf-8')
     self.line_counter = self.line_counter + 1
     self.byte_counter = self.byte_counter + len(s)
     if not s:
@@ -366,10 +368,12 @@ class LDIFParser:
     value_spec = unfolded_line[colon_pos:colon_pos+2]
     if value_spec==': ':
       attr_value = unfolded_line[colon_pos+2:].lstrip()
-      # All values should be valid ascii.
-      attr_value = attr_value.encode('ascii')
+      # All values should be valid ascii; we support UTF-8 as a
+      # non-official, backwards compatibility layer.
+      attr_value = attr_value.encode('utf-8')
     elif value_spec=='::':
       # attribute value needs base64-decoding
+      # base64 makes sens only for ascii
       attr_value = unfolded_line[colon_pos+2:]
       attr_value = attr_value.encode('ascii')
       attr_value = self._base64_decodestring(attr_value)
@@ -382,7 +386,9 @@ class LDIFParser:
         if u[0] in self._process_url_schemes:
           attr_value = urllib.urlopen(url).read()
     else:
-      attr_value = unfolded_line[colon_pos+1:].encode('ascii')
+      # All values should be valid ascii; we support UTF-8 as a
+      # non-official, backwards compatibility layer.
+      attr_value = unfolded_line[colon_pos+1:].encode('utf-8')
     return attr_type,attr_value
 
   def _consume_empty_lines(self):

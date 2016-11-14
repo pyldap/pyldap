@@ -270,6 +270,23 @@ class TestEntryRecords(TestLDIFParser):
             ]
         )
 
+    def test_unencoded_unicode(self):
+        # Encode "Ströder" as UTF-8, without base64
+        # This is an invalid LDIF file, but such files are often found in the wild.
+        self.check_records(
+            """
+            dn: cn=Michael Stroeder,dc=stroeder,dc=com
+            lastname: Ströder
+
+            """,
+            [
+                (
+                    'cn=Michael Stroeder,dc=stroeder,dc=com',
+                    {'lastname': [b'Str\303\266der']},
+                ),
+            ]
+        )
+
     def test_sorted(self):
         self.check_records(
             """
