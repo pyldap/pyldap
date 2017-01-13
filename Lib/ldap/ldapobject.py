@@ -939,9 +939,13 @@ class SimpleLDAPObject:
 
 class NonblockingLDAPObject(SimpleLDAPObject):
 
-  def __init__(self,uri,trace_level=0,trace_file=None,result_timeout=-1):
+  def __init__(
+    self,uri,
+    trace_level=0,trace_file=None,bytes_mode=None,
+    result_timeout=-1
+  ):
     self._result_timeout = result_timeout
-    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file)
+    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file,bytes_mode)
 
   def result(self,msgid=ldap.RES_ANY,all=1,timeout=-1):
     """
@@ -993,7 +997,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def __init__(
     self,uri,
-    trace_level=0,trace_file=None,trace_stack_limit=5,
+    trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
     retry_max=1,retry_delay=60.0
   ):
     """
@@ -1008,7 +1012,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._uri = uri
     self._options = []
     self._last_bind = None
-    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file,trace_stack_limit)
+    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file,trace_stack_limit,bytes_mode)
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     self._retry_max = retry_max
     self._retry_delay = retry_delay
