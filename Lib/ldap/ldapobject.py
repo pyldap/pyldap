@@ -845,11 +845,16 @@ class SimpleLDAPObject:
         if search_subschemasubentry_dn is None:
           if dn:
             # Try to find sub schema sub entry in root DSE
-            return self.search_subschemasubentry_s(dn='')
+            subschemasubentry_dn = self.search_subschemasubentry_s(dn='')
+            if isinstance(subschemasubentry_dn, bytes):
+              subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
+            return search_subschemasubentry_dn
           else:
             # If dn was already root DSE we can return here
             return None
         else:
+          if isinstance(subschemasubentry_dn, bytes):
+            subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
           return search_subschemasubentry_dn
     except IndexError:
       return None

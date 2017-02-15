@@ -464,8 +464,6 @@ def urlfetch(uri,trace_level=0,bytes_mode=None):
     if subschemasubentry_dn is None:
       s_temp = None
     else:
-      if isinstance(subschemasubentry_dn, bytes):
-        subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
       if ldap_url.attrs is None:
         schema_attrs = SCHEMA_ATTRS
       else:
