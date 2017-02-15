@@ -848,13 +848,13 @@ class SimpleLDAPObject:
             subschemasubentry_dn = self.search_subschemasubentry_s(dn='')
             if isinstance(subschemasubentry_dn, bytes):
               subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
-            return search_subschemasubentry_dn
+            return subschemasubentry_dn
           else:
             # If dn was already root DSE we can return here
             return None
         else:
-          if isinstance(subschemasubentry_dn, bytes):
-            subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
+          if isinstance(search_subschemasubentry_dn, bytes):
+            search_subschemasubentry_dn = search_subschemasubentry_dn.decode('utf-8')
           return search_subschemasubentry_dn
     except IndexError:
       return None
