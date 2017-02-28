@@ -2,14 +2,17 @@
 python-ldap tests module package
 """
 
-import t_cext 
-import t_ldap_dn 
-import t_ldap_filter 
-import t_ldap_functions 
-import t_ldap_modlist 
-import t_ldap_schema_tokenizer 
-import t_ldapurl 
-import t_ldif 
-import t_search 
+from __future__ import absolute_import
 
-import slapd
+from . import t_cext
+from . import t_ldap_dn
+from . import t_ldap_filter
+from . import t_ldap_functions
+from . import t_ldap_modlist
+from . import t_ldap_schema_tokenizer
+from . import t_ldapurl
+from . import t_ldif
+from . import t_search
+from . import t_edit
+
+from . import slapd
