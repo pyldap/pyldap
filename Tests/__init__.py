@@ -14,5 +14,6 @@ from . import t_ldapurl
 from . import t_ldif
 from . import t_search
 from . import t_edit
+from . import t_ldap_schema_subentry
 
 from . import slapd
