@@ -3,17 +3,17 @@ setup.py - Setup package with the help Python's DistUtils
 
 See http://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.76 2016/08/13 09:44:08 stroeder Exp $
+$Id: setup.py,v 1.78 2017/02/14 21:38:13 stroeder Exp $
 """
 
 import sys,os,string,time
 
 has_setuptools = False
 try:
-        from setuptools import setup, Extension
-        has_setuptools = True
+  from setuptools import setup, Extension
+  has_setuptools = True
 except ImportError:
-        from distutils.core import setup, Extension
+  from distutils.core import setup, Extension
 
 if sys.version_info[0] >= 3:
     from configparser import ConfigParser
@@ -195,5 +195,6 @@ setup(
   ],
   package_dir = {'': 'Lib',},
   data_files = LDAP_CLASS.extra_files,
+  test_suite = 'Tests',
   **kwargs
 )
