@@ -50,7 +50,7 @@ class EditionTests(unittest.TestCase):
                 "",
             ])+"\n")
 
-        l = LDAPObject(server.get_url(), bytes_mode=False)
+        l = LDAPObject(server.ldap_uri, bytes_mode=False)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
         l.simple_bind_s(server.root_dn,
