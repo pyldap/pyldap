@@ -24,7 +24,7 @@ class EditionTests(unittest.TestCase):
         if server is None:
             server = slapd.Slapd()
             server.start()
-            base = server.get_dn_suffix()
+            base = server.suffix
 
             # insert some Foo* objects via ldapadd
             server.ldapadd("\n".join([
@@ -53,13 +53,13 @@ class EditionTests(unittest.TestCase):
         l = LDAPObject(server.get_url(), bytes_mode=False)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(server.get_root_dn(), 
-                server.get_root_password())
+        l.simple_bind_s(server.root_dn,
+                server.root_password)
         self.ldap = l
         self.server = server
 
     def test_add_object(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         dn = "cn=Added,ou=Container," + base
         self.ldap.add_ext_s(dn, [
             ("objectClass", [b'organizationalRole']),

@@ -23,7 +23,7 @@ class TestSearch(unittest.TestCase):
         if server is None:
             server = slapd.Slapd()
             server.start()
-            base = server.get_dn_suffix()
+            base = server.suffix
 
             # insert some Foo* objects via ldapadd
             server.ldapadd("\n".join([
@@ -52,13 +52,13 @@ class TestSearch(unittest.TestCase):
         l = LDAPObject(server.get_url(), bytes_mode=False)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(server.get_root_dn(), 
-                server.get_root_password())
+        l.simple_bind_s(server.root_dn,
+                server.root_password)
         self.ldap = l
         self.server = server
 
     def test_reject_bytes_base(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         with self.assertRaises(TypeError):
@@ -69,7 +69,7 @@ class TestSearch(unittest.TestCase):
             l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
 
     def test_search_keys_are_text(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         result.sort()
@@ -89,14 +89,14 @@ class TestSearch(unittest.TestCase):
         l = LDAPObject(server.get_url(), **kwargs)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(self.server.get_root_dn().encode('utf-8'),
-                self.server.get_root_password().encode('utf-8'))
+        l.simple_bind_s(self.server.root_dn.encode('utf-8'),
+                self.server.root_password.encode('utf-8'))
         return l
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_bytesmode_search_requires_bytes(self):
         l = self._get_bytes_ldapobject()
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
 
         with self.assertRaises(TypeError):
             l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
@@ -108,7 +108,7 @@ class TestSearch(unittest.TestCase):
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_bytesmode_search_results_have_bytes(self):
         l = self._get_bytes_ldapobject()
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         result = l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
         result.sort()
         dn, fields = result[0]
@@ -122,14 +122,14 @@ class TestSearch(unittest.TestCase):
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_unset_bytesmode_search_warns_bytes(self):
         l = self._get_bytes_ldapobject(explicit=False)
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
 
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
         l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
 
     def test_search_subtree(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
@@ -147,7 +147,7 @@ class TestSearch(unittest.TestCase):
         )
 
     def test_search_onelevel(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         result = l.search_s(base, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
@@ -163,7 +163,7 @@ class TestSearch(unittest.TestCase):
         )
 
     def test_search_oneattr(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
