@@ -10,7 +10,7 @@ else:
     text_type = str
 
 import ldap, unittest
-from .slapd import SlapdObject
+from slapdtest import SlapdObject
 
 from ldap.ldapobject import LDAPObject
 
