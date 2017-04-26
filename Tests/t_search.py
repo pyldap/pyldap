@@ -9,9 +9,14 @@ else:
     PY2 = False
     text_type = str
 
+import os
 import ldap, unittest
-from . import slapd
+from .slapd import SlapdObject
 
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
+import ldap
 from ldap.ldapobject import LDAPObject
 
 server = None
@@ -21,7 +26,7 @@ class TestSearch(unittest.TestCase):
     def setUp(self):
         global server
         if server is None:
-            server = slapd.Slapd()
+            server = SlapdObject()
             server.start()
             base = server.suffix
 
@@ -52,8 +57,8 @@ class TestSearch(unittest.TestCase):
         l = LDAPObject(server.get_url(), bytes_mode=False)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(server.root_dn,
-                server.root_password)
+        l.simple_bind_s(server.root_dn, 
+                server.root_pw)
         self.ldap = l
         self.server = server
 
@@ -90,7 +95,7 @@ class TestSearch(unittest.TestCase):
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
         l.simple_bind_s(self.server.root_dn.encode('utf-8'),
-                self.server.root_password.encode('utf-8'))
+                self.server.root_pw.encode('utf-8'))
         return l
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")

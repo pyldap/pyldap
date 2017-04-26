@@ -10,7 +10,7 @@ else:
     text_type = str
 
 import ldap, unittest
-from . import slapd
+from .slapd import SlapdObject
 
 from ldap.ldapobject import LDAPObject
 
@@ -22,7 +22,7 @@ class EditionTests(unittest.TestCase):
     def setUp(self):
         global server
         if server is None:
-            server = slapd.Slapd()
+            server = SlapdObject()
             server.start()
             base = server.suffix
 
@@ -54,7 +54,7 @@ class EditionTests(unittest.TestCase):
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
         l.simple_bind_s(server.root_dn,
-                server.root_password)
+                server.root_pw)
         self.ldap = l
         self.server = server
 
