@@ -1,12 +1,89 @@
 ----------------------------------------------------------------
+Released 2.4.35 2017-04-25 (upstream)
+
+Changes since 2.4.33:
+(2.4.34 is missing because of foolish pypi version madness)
+
+Modules/
+* use errno in a safer way
+* set errno as LDAPError class item
+* do not use strerror() which is not thread-safe and platform-specific
+
+Lib/
+* LDAPObject._ldap_call() sets LDAPError info to value returned
+  by platform-neutral os.stderror()
+
+----------------------------------------------------------------
+Released 2.4.33 2017-04-25 (upstream)
+
+Lib/
+* faster implementation of ldap.schema.tokenizer.split_tokens()
+  (thanks to Christian Heimes)
+* removed unused 2nd argument of ldap.schema.tokenizer.split_tokens()
+* fixed method calls in ReconnectLDAPObject (thanks to Philipp Hahn)
+
+Modules/
+* an empty info message is replaced with strerror(errno) if errno is non-zero
+  which gives more information e.g. in case of ldap.SERVER_DOWN
+  (thanks to Markus Klein)
+* removed superfluous ldap_memfree(error) from LDAPerror()
+  (thanks to Markus Klein)
+
+Tests/
+* re-factored t_ldap_schema_tokenizer.py
+
+----------------------------------------------------------------
+Released 2.4.32 2017-02-14 (upstream)
+
+Running tests made easier:
+- python setup.py test
+- added tox.ini
+
+----------------------------------------------------------------
+Released 2.4.31 2017-02-14 (upstream)
+
+Changes since 2.4.30:
+
+Tests/
+* new test scripts t_ldap_schema_tokenizer.py and t_ldap_modlist.py
+  on former raw scripts (thanks to Petr Viktorin)
+* new test-cases in t_ldapurl.py based on former raw scripts
+  (thanks to Petr Viktorin)
+* new test-cases in t_ldap_dn.py
+* moved a script to Demo/
+
+----------------------------------------------------------------
+Released 2.4.30 2017-02-08 (upstream)
+
+Changes since 2.4.29:
+
+Lib/
+* compability fix in ldap.controls.deref to be compatible to
+  recent pyasn1 0.2.x (thanks to Ilya Etingof)
+
+----------------------------------------------------------------
+Released 2.4.29 2017-01-25 (upstream)
+
+Changes since 2.4.28:
+
+Modules/
+* Fixed checking for empty server error message
+  (thanks to Bradley Baetz)
+* Fixed releasing GIL when calling ldap_start_tls_s()
+  (thanks to Lars Munch)
+
+----------------------------------------------------------------
 Released 2.4.28 2016-11-17 (upstream)
 
 Changes since 2.4.27:
 
 Lib/
+* LDAPObject.unbind_ext_s() invokes LDAPObject._trace_file.flush()
+  only if LDAPObject._trace_level is non-zero and Python is running
+  in debug mode
 * LDAPObject.unbind_ext_s() now ignores AttributeError
-  in case _trace_file has no flush() method
-* added dummy method logging_file_class.flush() because
+  in case LDAPObject._trace_file has no flush() method
+* added dummy method ldap.logger.logging_file_class.flush() because
   LDAPObject.unbind_ext_s() invokes it
 
 ----------------------------------------------------------------
@@ -1300,4 +1377,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.397 2016/11/17 12:08:59 stroeder Exp $
+$Id: CHANGES,v 1.422 2017/04/25 13:52:48 stroeder Exp $

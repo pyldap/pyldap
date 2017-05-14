@@ -2,10 +2,12 @@
  * errors that arise from ldap use
  * Most errors become their own exception
  * See http://www.python-ldap.org/ for details.
- * $Id: errors.c,v 1.25 2015/06/23 09:45:09 stroeder Exp $ */
+ * $Id: errors.c,v 1.30 2017/04/25 13:40:52 stroeder Exp $ */
 
 #include "common.h"
 #include "errors.h"
+#include <errno.h>
+#include <string.h>
 
 /* the base exception class */
 
@@ -52,10 +54,14 @@ LDAPerror( LDAP *l, char *msg )
     return NULL;
   }
   else {
-    int errnum, opt_errnum;
+    int myerrno, errnum, opt_errnum;
     PyObject *errobj;
     PyObject *info;
     PyObject *str;
+    PyObject *pyerrno;
+
+    /* at first save errno for later use before it gets overwritten by another call */
+    myerrno = errno;
 
     char *matched, *error;
 
@@ -80,6 +86,13 @@ LDAPerror( LDAP *l, char *msg )
       PyDict_SetItemString( info, "desc", str );
     Py_XDECREF(str);
 
+    if (myerrno != 0) {
+        pyerrno = PyInt_FromLong(myerrno);
+        if (pyerrno)
+            PyDict_SetItemString( info, "errno", pyerrno );
+        Py_XDECREF(pyerrno);
+    }
+
     if (ldap_get_option(l, LDAP_OPT_MATCHED_DN, &matched) >= 0
       && matched != NULL) {
         if (*matched != '\0') {
@@ -96,13 +109,12 @@ LDAPerror( LDAP *l, char *msg )
         if (str)
       PyDict_SetItemString( info, "info", str );
         Py_XDECREF(str);
-    } else if (ldap_get_option(l, LDAP_OPT_ERROR_STRING, &error) >= 0
-      && error != NULL) {
-        if (error != '\0') {
-      str = PyUnicode_FromString(error);
-      if (str)
-          PyDict_SetItemString( info, "info", str );
-      Py_XDECREF(str);
+    } else if (ldap_get_option(l, LDAP_OPT_ERROR_STRING, &error) >= 0) {
+        if (error != NULL && *error != '\0') {
+            str = PyUnicode_FromString(error);
+            if (str)
+                PyDict_SetItemString( info, "info", str );
+            Py_XDECREF(str);
         }
         ldap_memfree(error);
     }

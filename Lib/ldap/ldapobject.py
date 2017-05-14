@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.157 2016/11/17 12:08:30 stroeder Exp $
+\$Id: ldapobject.py,v 1.160 2017/04/25 13:40:52 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -19,6 +19,8 @@ lock self._ldap_object_lock.
 """
 
 from __future__ import unicode_literals
+
+from os import strerror
 
 from ldap import __version__
 
@@ -267,6 +269,8 @@ class SimpleLDAPObject:
       finally:
         self._ldap_object_lock.release()
     except LDAPError as e:
+      if 'info' not in e.args[0]:
+        e.args[0]['info'] = strerror(e.args[0]['errno'])
       if __debug__ and self._trace_level>=2:
         self._trace_file.write('=> LDAPError - %s: %s\n' % (e.__class__.__name__,str(e)))
       raise
@@ -365,8 +369,7 @@ class SimpleLDAPObject:
     return self.add_ext(dn,modlist,None,None)
 
   def add_s(self,dn,modlist):
-    msgid = self.add(dn,modlist)
-    return self.result(msgid,all=1,timeout=self.timeout)
+    return self.add_ext_s(dn,modlist,None,None)
 
   def simple_bind(self,who='',cred='',serverctrls=None,clientctrls=None):
     """
@@ -562,8 +565,7 @@ class SimpleLDAPObject:
     return self.modify_ext(dn,modlist,None,None)
 
   def modify_s(self,dn,modlist):
-    msgid = self.modify(dn,modlist)
-    return self.result(msgid,all=1,timeout=self.timeout)
+    return self.modify_ext_s(dn,modlist,None,None)
 
   def modrdn(self,dn,newrdn,delold=1):
     """
@@ -807,10 +809,11 @@ class SimpleLDAPObject:
       result = self.result3(msgid,all=1,timeout=self.timeout)
     else:
       result = None
-    try:
-      self._trace_file.flush()
-    except AttributeError:
-      pass
+    if __debug__ and self._trace_level>=1:
+      try:
+        self._trace_file.flush()
+      except AttributeError:
+        pass
     return result
 
   def unbind(self):
@@ -856,11 +859,16 @@ class SimpleLDAPObject:
         if search_subschemasubentry_dn is None:
           if dn:
             # Try to find sub schema sub entry in root DSE
-            return self.search_subschemasubentry_s(dn='')
+            subschemasubentry_dn = self.search_subschemasubentry_s(dn='')
+            if isinstance(subschemasubentry_dn, bytes):
+              subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
+            return subschemasubentry_dn
           else:
             # If dn was already root DSE we can return here
             return None
         else:
+          if isinstance(search_subschemasubentry_dn, bytes):
+            search_subschemasubentry_dn = search_subschemasubentry_dn.decode('utf-8')
           return search_subschemasubentry_dn
     except IndexError:
       return None
@@ -1054,6 +1062,9 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     for k,v in self._options:
       SimpleLDAPObject.set_option(self,k,v)
 
+  def passwd_s(self,*args,**kwargs):
+    return self._apply_method_s(SimpleLDAPObject.passwd_s,*args,**kwargs)
+
   def reconnect(self,uri,retry_max=1,retry_delay=60.0):
     # Drop and clean up old connection completely
     # Reconnect
@@ -1148,8 +1159,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   def cancel_s(self,*args,**kwargs):
     return self._apply_method_s(SimpleLDAPObject.cancel_s,*args,**kwargs)
 
-  def compare_s(self,*args,**kwargs):
-    return self._apply_method_s(SimpleLDAPObject.compare_s,*args,**kwargs)
+  def compare_ext_s(self,*args,**kwargs):
+    return self._apply_method_s(SimpleLDAPObject.compare_ext_s,*args,**kwargs)
 
   def delete_ext_s(self,*args,**kwargs):
     return self._apply_method_s(SimpleLDAPObject.delete_ext_s,*args,**kwargs)

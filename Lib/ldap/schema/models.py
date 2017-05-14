@@ -3,7 +3,7 @@ schema.py - support for subSchemaSubEntry information
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: models.py,v 1.48 2015/06/06 09:21:38 stroeder Exp $
+\$Id: models.py,v 1.49 2017/02/18 15:32:01 stroeder Exp $
 """
 
 import sys
@@ -53,7 +53,7 @@ class SchemaElement:
     if sys.version_info >= (3, 0) and isinstance(schema_element_str, bytes):
       schema_element_str = schema_element_str.decode('utf-8')
     if schema_element_str:
-      l = split_tokens(schema_element_str,self.token_defaults)
+      l = split_tokens(schema_element_str)
       self.set_id(l[1])
       d = extract_tokens(l,self.token_defaults)
       self._set_attrs(l,d)
@@ -280,9 +280,9 @@ class AttributeType(SchemaElement):
           self.syntax_len = None
           for i in l:
             if i.startswith("{") and i.endswith("}"):
-              self.syntax_len=long(i[1:-1])
+              self.syntax_len = int(i[1:-1])
         else:
-          self.syntax_len = long(syntax_len[:-1])
+          self.syntax_len = int(syntax_len[:-1])
     self.single_value = d['SINGLE-VALUE']!=None
     self.collective = d['COLLECTIVE']!=None
     self.no_user_mod = d['NO-USER-MODIFICATION']!=None
