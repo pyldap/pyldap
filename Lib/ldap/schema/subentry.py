@@ -445,7 +445,7 @@ class SubSchema:
     return r_must,r_may # attribute_types()
 
 
-def urlfetch(uri,trace_level=0,bytes_mode=None):
+def urlfetch(uri,trace_level=0):
   """
   Fetches a parsed schema entry by uri.
 
@@ -457,7 +457,9 @@ def urlfetch(uri,trace_level=0,bytes_mode=None):
   if uri.startswith('ldap:') or uri.startswith('ldaps:') or uri.startswith('ldapi:'):
     import ldapurl
     ldap_url = ldapurl.LDAPUrl(uri)
-    l=ldap.initialize(ldap_url.initializeUrl(),trace_level,bytes_mode=bytes_mode)
+
+    # This is an internal function; don't enable bytes_mode.
+    l=ldap.initialize(ldap_url.initializeUrl(),trace_level,bytes_mode=False)
     l.protocol_version = ldap.VERSION3
     l.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
     subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn)

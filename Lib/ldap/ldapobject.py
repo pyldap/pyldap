@@ -843,6 +843,8 @@ class SimpleLDAPObject:
 
     None as result indicates that the DN of the sub schema sub entry could
     not be determined.
+
+    Returns: None or text/bytes depending on bytes_mode.
     """
     try:
       r = self.search_s(
@@ -859,17 +861,14 @@ class SimpleLDAPObject:
         if search_subschemasubentry_dn is None:
           if dn:
             # Try to find sub schema sub entry in root DSE
-            subschemasubentry_dn = self.search_subschemasubentry_s(dn='')
-            if isinstance(subschemasubentry_dn, bytes):
-              subschemasubentry_dn = subschemasubentry_dn.decode('utf-8')
-            return subschemasubentry_dn
+            return self.search_subschemasubentry_s(dn='')
           else:
             # If dn was already root DSE we can return here
             return None
         else:
-          if isinstance(search_subschemasubentry_dn, bytes):
-            search_subschemasubentry_dn = search_subschemasubentry_dn.decode('utf-8')
-          return search_subschemasubentry_dn
+          # With legacy bytes mode, return bytes; otherwise, since this is a DN,
+          # RFCs impose that the field value *can* be decoded to UTF-8.
+          return self._unbytesify_value(search_subschemasubentry_dn)
     except IndexError:
       return None
 
