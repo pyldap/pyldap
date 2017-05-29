@@ -132,7 +132,9 @@ class SyncStateControl(ResponseControl):
     def decodeControlValue(self, encodedControlValue):
         d = decoder.decode(encodedControlValue, asn1Spec = syncStateValue())
         state = d[0].getComponentByName('state')
-        uuid = UUID(bytes=d[0].getComponentByName('entryUUID'))
+        # In Python 3, pyasn1.char overrides bytes() to do encoding for us.
+        # See also http://pyasn1.sourceforge.net/docs/type/univ/octetstring.html
+        uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         self.cookie = d[0].getComponentByName('cookie')
         self.state = self.__class__.opnames[int(state)]
         self.entryUUID = str(uuid)
@@ -283,7 +285,10 @@ class SyncInfoMessage:
                     uuids = []
                     ids = comp.getComponentByName('syncUUIDs')
                     for i in range(len(ids)):
-                        uuid = UUID(bytes=str(ids.getComponentByPosition(i)))
+                        # In Python 3, pyasn1.char overrides bytes() to do
+                        # encoding for us.  See also:
+                        # http://pyasn1.sourceforge.net/docs/type/univ/octetstring.html
+                        uuid = UUID(bytes=bytes(ids.getComponentByPosition(i)))
                         uuids.append(str(uuid))
                     val['syncUUIDs'] = uuids
                     val['refreshDeletes'] = bool(comp.getComponentByName('refreshDeletes'))
