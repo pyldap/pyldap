@@ -109,11 +109,13 @@ class SimpleLDAPObject:
     # On by default on Py2, off on Py3.
     self.bytes_mode = bytes_mode
 
-  def _unbytesify_value(self, value):
-    """Adapt a value following bytes_mode.
+  def _bytesify_input(self, value):
+    """Adapt a value following bytes_mode in Python 2.
 
-    With bytes_mode ON, takes bytes or None and returns unicode or None.
-    With bytes_mode OFF, takes unicode or None and returns unicode or None.
+    In Python 3, is a no-op.
+
+    With bytes_mode ON, takes bytes or None and returns bytes or None.
+    With bytes_mode OFF, takes unicode or None and returns bytes or None.
     """
     if not PY2:
       return value
@@ -121,7 +123,9 @@ class SimpleLDAPObject:
     if value is None:
       return value
     elif self.bytes_mode:
-      if not isinstance(value, bytes):
+      if isinstance(value, bytes):
+        return value
+      else:
         if self.bytes_mode_hardfail:
           raise TypeError("All provided fields *must* be bytes when bytes mode is on; got %r" % (value,))
         else:
@@ -131,46 +135,46 @@ class SimpleLDAPObject:
             BytesWarning,
             stacklevel=6,
           )
-      return value.decode('utf-8')
+          return value.encode('utf-8')
     else:
       if not isinstance(value, text_type):
         raise TypeError("All provided fields *must* be text when bytes mode is off; got %r" % (value,))
       assert not isinstance(value, bytes)
-      return value
+      return value.encode('utf-8')
 
-  def _unbytesify_values(self, *values):
+  def _bytesify_inputs(self, *values):
     """Adapt values following bytes_mode.
 
-    Applies _unbytesify_value on each arg.
+    Applies _bytesify_input on each arg.
 
     Usage:
-    >>> a, b, c= self._unbytesify_values(a, b, c)
+    >>> a, b, c = self._bytesify_inputs(a, b, c)
     """
     if not PY2:
       return values
     return (
-      self._unbytesify_value(value)
+      self._bytesify_input(value)
       for value in values
     )
 
-  def _unbytesify_modlist(self, modlist, with_opcode):
+  def _bytesify_modlist(self, modlist, with_opcode):
     """Adapt a modlist according to bytes_mode.
 
     A modlist is a tuple of (op, attr, value), where:
-    - With bytes_mode ON, attr is converted from bytes to unicode
-    - With bytes_mode OFF, attr is checked to be unicode
+    - With bytes_mode ON, attr is checked to be bytes
+    - With bytes_mode OFF, attr is converted from unicode to bytes
     - value is *always* bytes
     """
     if not PY2:
       return modlist
     if with_opcode:
       return tuple(
-        (op, self._unbytesify_value(attr), val)
+        (op, self._bytesify_input(attr), val)
         for op, attr, val in modlist
       )
     else:
       return tuple(
-        (self._unbytesify_value(attr), val)
+        (self._bytesify_input(attr), val)
         for attr, val in modlist
       )
 
@@ -370,8 +374,8 @@ class SimpleLDAPObject:
         The parameter modlist is similar to the one passed to modify(),
         except that no operation integer need be included in the tuples.
     """
-    dn = self._unbytesify_value(dn)
-    modlist = self._unbytesify_modlist(modlist, with_opcode=False)
+    dn = self._bytesify_input(dn)
+    modlist = self._bytesify_modlist(modlist, with_opcode=False)
     return self._ldap_call(self._l.add_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def add_ext_s(self,dn,modlist,serverctrls=None,clientctrls=None):
@@ -396,7 +400,7 @@ class SimpleLDAPObject:
     """
     simple_bind([who='' [,cred='']]) -> int
     """
-    who, cred = self._unbytesify_values(who, cred)
+    who, cred = self._bytesify_inputs(who, cred)
     return self._ldap_call(self._l.simple_bind,who,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def simple_bind_s(self,who='',cred='',serverctrls=None,clientctrls=None):
@@ -475,7 +479,7 @@ class SimpleLDAPObject:
         A design bug in the library prevents value from containing
         nul characters.
     """
-    dn, attr = self._unbytesify_values(dn, attr)
+    dn, attr = self._bytesify_inputs(dn, attr)
     return self._ldap_call(self._l.compare_ext,dn,attr,value,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def compare_ext_s(self,dn,attr,value,serverctrls=None,clientctrls=None):
@@ -504,7 +508,7 @@ class SimpleLDAPObject:
         form returns the message id of the initiated request, and the
         result can be obtained from a subsequent call to result().
     """
-    dn = self._unbytesify_value(dn)
+    dn = self._bytesify_input(dn)
     return self._ldap_call(self._l.delete_ext,dn,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def delete_ext_s(self,dn,serverctrls=None,clientctrls=None):
@@ -553,8 +557,8 @@ class SimpleLDAPObject:
     """
     modify_ext(dn, modlist[,serverctrls=None[,clientctrls=None]]) -> int
     """
-    dn = self._unbytesify_value(dn)
-    modlist = self._unbytesify_modlist(modlist, with_opcode=True)
+    dn = self._bytesify_input(dn)
+    modlist = self._bytesify_modlist(modlist, with_opcode=True)
     return self._ldap_call(self._l.modify_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def modify_ext_s(self,dn,modlist,serverctrls=None,clientctrls=None):
@@ -608,7 +612,7 @@ class SimpleLDAPObject:
     return self.rename_s(dn,newrdn,None,delold)
 
   def passwd(self,user,oldpw,newpw,serverctrls=None,clientctrls=None):
-    user, oldpw, newpw = self._unbytesify_values(user, oldpw, newpw)
+    user, oldpw, newpw = self._bytesify_inputs(user, oldpw, newpw)
     return self._ldap_call(self._l.passwd,user,oldpw,newpw,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def passwd_s(self,user,oldpw,newpw,serverctrls=None,clientctrls=None):
@@ -630,7 +634,7 @@ class SimpleLDAPObject:
         This actually corresponds to the rename* routines in the
         LDAP-EXT C API library.
     """
-    dn, newrdn, newsuperior = self._unbytesify_values(dn, newrdn, newsuperior)
+    dn, newrdn, newsuperior = self._bytesify_inputs(dn, newrdn, newsuperior)
     return self._ldap_call(self._l.rename,dn,newrdn,newsuperior,delold,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def rename_s(self,dn,newrdn,newsuperior=None,delold=1,serverctrls=None,clientctrls=None):
@@ -768,9 +772,9 @@ class SimpleLDAPObject:
         The amount of search results retrieved can be limited with the
         sizelimit parameter if non-zero.
     """
-    base, filterstr = self._unbytesify_values(base, filterstr)
+    base, filterstr = self._bytesify_inputs(base, filterstr)
     if attrlist is not None:
-      attrlist = tuple(self._unbytesify_values(*attrlist))
+      attrlist = tuple(self._bytesify_inputs(*attrlist))
     return self._ldap_call(
       self._l.search_ext,
       base,scope,filterstr,

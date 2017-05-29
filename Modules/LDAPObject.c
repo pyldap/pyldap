@@ -263,13 +263,17 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
 
     char **attrs = NULL;
     Py_ssize_t i, len;
-    PyObject *item, *bytes;
+    PyObject *item;
 
     *seq = NULL;
 
     if (attrlist == Py_None) {
         /* None means a NULL attrlist */
+#if PY_MAJOR_VERSION == 2
+    } else if (PyBytes_Check(attrlist)) {
+#else
     } else if (PyUnicode_Check(attrlist)) {
+#endif
         /* caught by John Benninghoff <johnb@netscape.com> */
         PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
                   "expected *list* of strings, not a string", attrlist ));
@@ -290,13 +294,21 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
             item = PySequence_Fast_GET_ITEM(*seq, i);
             if (item == NULL)
                 goto error;
+#if PY_MAJOR_VERSION == 2
+            /* Encoded by Python to UTF-8 */
+            if (!PyBytes_Check(item)) {
+#else
             if (!PyUnicode_Check(item)) {
+#endif
                 PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
                                 "expected string in list", item));
                 goto error;
             }
-            bytes = PyUnicode_AsUTF8String(item);
-            attrs[i] = PyBytes_AsString(bytes);
+#if PY_MAJOR_VERSION == 2
+            attrs[i] = PyBytes_AsString(item);
+#else
+            attrs[i] = PyUnicode_AsUTF8(item);
+#endif
         }
         attrs[len] = NULL;
     }
