@@ -1,4 +1,13 @@
 ----------------------------------------------------------------
+Released 2.4.35.1 2017-05-29 (pyldap)
+
+Changes since 2.4.36:
+
+Lib/
+* fixed errno-related regression introduced in 2.4.35
+* fixed errno-related ldap.TIMEOUT regression
+
+----------------------------------------------------------------
 Released 2.4.35 2017-04-25 (upstream)
 
 Changes since 2.4.33:
