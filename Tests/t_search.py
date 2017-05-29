@@ -172,6 +172,17 @@ class TestSearch(unittest.TestCase):
             [('cn=Foo4,ou=Container,'+base, {'cn': [b'Foo4']})]
         )
 
+    def test_search_subschema(self):
+        dn = self.ldap.search_subschemasubentry_s()
+        self.assertIsInstance(dn, text_type)
+        self.assertEqual(dn, "cn=Subschema")
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_search_subschema_have_bytes(self):
+        l = self._get_bytes_ldapobject(explicit=False)
+        dn = l.search_subschemasubentry_s()
+        self.assertIsInstance(dn, bytes)
+        self.assertEqual(dn, b"cn=Subschema")
 
 if __name__ == '__main__':
     unittest.main()
