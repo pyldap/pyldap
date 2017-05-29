@@ -174,6 +174,24 @@ class SimpleLDAPObject:
         for attr, val in modlist
       )
 
+  def _unbytesify_result(self, value):
+    """Adapt a value following bytes_mode.
+
+    With bytes_mode ON, takes bytes or None and returns bytes or None.
+    With bytes_mode OFF, takes bytes or None and returns unicode or None.
+    """
+    if value is None:
+        return value
+
+    # Preserve logic of assertions only under Python 2
+    if PY2:
+      assert isinstance(value, bytes), "Expected bytes value, got text instead (%r)" % (value,)
+
+    if self.bytes_mode:
+        return value
+    else:
+        return value.decode('utf-8')
+
   def _bytesify_value(self, value):
     """Adapt a returned value according to bytes_mode.
 
@@ -871,7 +889,7 @@ class SimpleLDAPObject:
         else:
           # With legacy bytes mode, return bytes; otherwise, since this is a DN,
           # RFCs impose that the field value *can* be decoded to UTF-8.
-          return self._unbytesify_value(search_subschemasubentry_dn)
+          return self._unbytesify_result(search_subschemasubentry_dn)
     except IndexError:
       return None
 
