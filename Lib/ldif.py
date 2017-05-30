@@ -403,7 +403,7 @@ class LDIFParser:
     # Consume empty lines
     try:
       k,v = next_key_and_value()
-      while k==v==None:
+      while k is None and v is None:
         k,v = next_key_and_value()
     except EOFError:
       k,v = None,None
