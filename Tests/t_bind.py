@@ -24,7 +24,6 @@ class TestBinds(unittest.TestCase):
         if server is None:
             server = slapd.Slapd()
             server.start()
-            base = server.get_dn_suffix()
 
         self.server = server
         self.unicode_val = "abc\U0001f498def"
@@ -68,8 +67,13 @@ class TestBinds(unittest.TestCase):
         l = self._get_ldapobject(False)
         with self.assertRaises(TypeError):
             l.simple_bind_s(self.dn_bytes, self.unicode_val)
+
+        # Works fine in Python 3 because 'cred' (the password) is read in
+        # using the "s#" format which, unlike "s", accepts either a str
+        # (unicode) *or* bytes.
+        #
         # with self.assertRaises(TypeError):
-        #     l.simple_bind_s(self.root_dn_unicode, self.root_pass_bytes)
+        #     l.simple_bind_s(self.dn_unicode, self.unicode_val_bytes)
 
         with self.assertRaises(ldap.INVALID_CREDENTIALS):
             l.simple_bind_s(self.dn_unicode, self.unicode_val)

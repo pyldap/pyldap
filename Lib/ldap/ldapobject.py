@@ -112,7 +112,7 @@ class SimpleLDAPObject:
   def _bytesify_input(self, value):
     """Adapt a value following bytes_mode in Python 2.
 
-    In Python 3, is a no-op.
+    In Python 3, returns the original value unmodified.
 
     With bytes_mode ON, takes bytes or None and returns bytes or None.
     With bytes_mode OFF, takes unicode or None and returns bytes or None.
@@ -185,16 +185,16 @@ class SimpleLDAPObject:
     With bytes_mode OFF, takes bytes or None and returns unicode or None.
     """
     if value is None:
-        return value
+      return value
 
     # Preserve logic of assertions only under Python 2
     if PY2:
       assert isinstance(value, bytes), "Expected bytes value, got text instead (%r)" % (value,)
 
     if self.bytes_mode:
-        return value
+      return value
     else:
-        return value.decode('utf-8')
+      return value.decode('utf-8')
 
   def _bytesify_value(self, value):
     """Adapt a returned value according to bytes_mode.
