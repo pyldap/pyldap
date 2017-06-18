@@ -296,7 +296,8 @@ class SubSchema:
       if oc_se and oc_se.kind==0:
         struct_ocs[oc_se.oid] = None
     result = None
-    struct_oc_list = struct_ocs.keys()
+    # Build a copy of the oid list, to be cleaned as we go.
+    struct_oc_list = list(struct_ocs)
     while struct_oc_list:
       oid = struct_oc_list.pop()
       for child_oid in oc_tree[oid]:
