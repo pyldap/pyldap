@@ -1,3 +1,7 @@
+"""
+test LDAP operations with Python wrapper module
+"""
+
 from __future__ import unicode_literals
 
 import sys
@@ -43,6 +47,9 @@ cn: Foo4
 
 
 class TestSearch(SlapdTestCase):
+    """
+    test LDAP search operations
+    """
 
     ldap_object_class = LDAPObject
 
@@ -154,40 +161,71 @@ class TestSearch(SlapdTestCase):
             self.assertEqual(attrs, {})
 
     def test_search_subtree(self):
-        l = self._ldap_conn
-        result = l.search_s(self.server.suffix, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
+        result = self._ldap_conn.search_s(
+            self.server.suffix,
+            ldap.SCOPE_SUBTREE,
+            '(cn=Foo*)',
+            attrlist=['*'],
+        )
         result.sort()
-        self.assertEqual(result,
-            [('cn=Foo1,'+self.server.suffix,
-               {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo2,'+self.server.suffix,
-               {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo3,'+self.server.suffix,
-               {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo4,ou=Container,'+self.server.suffix,
-               {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}),
+        self.assertEqual(
+            result,
+            [
+                (
+                    'cn=Foo1,'+self.server.suffix,
+                    {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo2,'+self.server.suffix,
+                    {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo3,'+self.server.suffix,
+                    {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo4,ou=Container,'+self.server.suffix,
+                    {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}
+                ),
             ]
         )
 
     def test_search_onelevel(self):
-        l = self._ldap_conn
-        result = l.search_s(self.server.suffix, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
+        result = self._ldap_conn.search_s(
+            self.server.suffix,
+            ldap.SCOPE_ONELEVEL,
+            '(cn=Foo*)',
+            ['*'],
+        )
         result.sort()
-        self.assertEqual(result,
-            [('cn=Foo1,'+self.server.suffix,
-               {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo2,'+self.server.suffix,
-               {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo3,'+self.server.suffix,
-               {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
+        self.assertEqual(
+            result,
+            [
+                (
+                    'cn=Foo1,'+self.server.suffix,
+                    {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo2,'+self.server.suffix,
+                    {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo3,'+self.server.suffix,
+                    {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}
+                ),
             ]
         )
 
     def test_search_oneattr(self):
-        l = self._ldap_conn
-        result = l.search_s(self.server.suffix, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
+        result = self._ldap_conn.search_s(
+            self.server.suffix,
+            ldap.SCOPE_SUBTREE,
+            '(cn=Foo4)',
+            ['cn'],
+        )
         result.sort()
-        self.assertEqual(result,
+        self.assertEqual(
+            result,
             [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': [b'Foo4']})]
         )
 
