@@ -128,6 +128,26 @@ class TestSearch(unittest.TestCase):
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
         l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
 
+    def test_search_accepts_unicode_dn(self):
+        base = self.server.get_dn_suffix()
+
+        with self.assertRaises(ldap.NO_SUCH_OBJECT):
+            result = self.ldap.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
+
+    def test_filterstr_accepts_unicode(self):
+        base = self.server.get_dn_suffix()
+        result = self.ldap.search_s(base, ldap.SCOPE_SUBTREE, '(cn=abc\U0001f498def)', ['*'])
+        self.assertEqual(result, [])
+
+    def test_attrlist_accepts_unicode(self):
+        base = self.server.get_dn_suffix()
+        result = self.ldap.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['abc', 'abc\U0001f498def'])
+        result.sort()
+
+        for dn, attrs in result:
+            self.assertIsInstance(dn, text_type)
+            self.assertEqual(attrs, {})
+
     def test_search_subtree(self):
         base = self.server.get_dn_suffix()
         l = self.ldap
@@ -172,6 +192,17 @@ class TestSearch(unittest.TestCase):
             [('cn=Foo4,ou=Container,'+base, {'cn': [b'Foo4']})]
         )
 
+    def test_search_subschema(self):
+        dn = self.ldap.search_subschemasubentry_s()
+        self.assertIsInstance(dn, text_type)
+        self.assertEqual(dn, "cn=Subschema")
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_search_subschema_have_bytes(self):
+        l = self._get_bytes_ldapobject(explicit=False)
+        dn = l.search_subschemasubentry_s()
+        self.assertIsInstance(dn, bytes)
+        self.assertEqual(dn, b"cn=Subschema")
 
 if __name__ == '__main__':
     unittest.main()
