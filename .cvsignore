@@ -5,3 +5,4 @@ MANIFEST
 *.pyo
 *.bck
 *~
+*.egg-info

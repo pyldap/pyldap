@@ -9,57 +9,59 @@ else:
     PY2 = False
     text_type = str
 
-import ldap, unittest
-from . import slapd
+import os
+import unittest
+from slapdtest import SlapdTestCase
 
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
+import ldap
 from ldap.ldapobject import LDAPObject
 
-server = None
+LDIF_TEMPLATE = """dn: cn=Foo1,%(suffix)s
+objectClass: organizationalRole
+cn: Foo1
 
-class TestSearch(unittest.TestCase):
+dn: cn=Foo2,%(suffix)s
+objectClass: organizationalRole
+cn: Foo2
+
+dn: cn=Foo3,%(suffix)s
+objectClass: organizationalRole
+cn: Foo3
+
+dn: ou=Container,%(suffix)s
+objectClass: organizationalUnit
+ou: Container
+
+dn: cn=Foo4,ou=Container,%(suffix)s
+objectClass: organizationalRole
+cn: Foo4
+
+"""
+
+
+class TestSearch(SlapdTestCase):
+
+    ldap_object_class = LDAPObject
+
+    @classmethod
+    def setUpClass(cls):
+        SlapdTestCase.setUpClass()
+        # insert some Foo* objects via ldapadd
+        cls.server.ldapadd(LDIF_TEMPLATE % {'suffix':cls.server.suffix})
 
     def setUp(self):
-        global server
-        if server is None:
-            server = slapd.Slapd()
-            server.start()
-            base = server.get_dn_suffix()
-
-            # insert some Foo* objects via ldapadd
-            server.ldapadd("\n".join([
-                "dn: cn=Foo1,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo1",
-                "",
-                "dn: cn=Foo2,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo2",
-                "",
-                "dn: cn=Foo3,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo3",
-                "",
-                "dn: ou=Container,"+base,
-                "objectClass: organizationalUnit",
-                "ou: Container",
-                "",
-                "dn: cn=Foo4,ou=Container,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo4",
-                "",
-            ])+"\n")
-
-        l = LDAPObject(server.get_url(), bytes_mode=False)
-        l.protocol_version = 3
-        l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(server.get_root_dn(), 
-                server.get_root_password())
-        self.ldap = l
-        self.server = server
+        try:
+            self._ldap_conn
+        except AttributeError:
+            # open local LDAP connection
+            self._ldap_conn = self._open_ldap_conn(bytes_mode=False)
 
     def test_reject_bytes_base(self):
-        base = self.server.get_dn_suffix()
-        l = self.ldap
+        base = self.server.suffix
+        l = self._ldap_conn
 
         with self.assertRaises(TypeError):
             l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
@@ -69,8 +71,8 @@ class TestSearch(unittest.TestCase):
             l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
 
     def test_search_keys_are_text(self):
-        base = self.server.get_dn_suffix()
-        l = self.ldap
+        base = self.server.suffix
+        l = self._ldap_conn
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         result.sort()
         dn, fields = result[0]
@@ -86,17 +88,16 @@ class TestSearch(unittest.TestCase):
             kwargs = {'bytes_mode': True}
         else:
             kwargs = {}
-        l = LDAPObject(server.get_url(), **kwargs)
-        l.protocol_version = 3
-        l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(self.server.get_root_dn().encode('utf-8'),
-                self.server.get_root_password().encode('utf-8'))
-        return l
+        return self._open_ldap_conn(
+            who=self.server.root_dn.encode('utf-8'),
+            cred=self.server.root_pw.encode('utf-8'),
+            **kwargs
+        )
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_bytesmode_search_requires_bytes(self):
         l = self._get_bytes_ldapobject()
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
 
         with self.assertRaises(TypeError):
             l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
@@ -108,7 +109,7 @@ class TestSearch(unittest.TestCase):
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_bytesmode_search_results_have_bytes(self):
         l = self._get_bytes_ldapobject()
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         result = l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
         result.sort()
         dn, fields = result[0]
@@ -122,26 +123,30 @@ class TestSearch(unittest.TestCase):
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_unset_bytesmode_search_warns_bytes(self):
         l = self._get_bytes_ldapobject(explicit=False)
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
 
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
         l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
 
     def test_search_accepts_unicode_dn(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
+        l = self._ldap_conn
 
         with self.assertRaises(ldap.NO_SUCH_OBJECT):
-            result = self.ldap.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
+            result = l.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
 
     def test_filterstr_accepts_unicode(self):
-        base = self.server.get_dn_suffix()
-        result = self.ldap.search_s(base, ldap.SCOPE_SUBTREE, '(cn=abc\U0001f498def)', ['*'])
+        l = self._ldap_conn
+        base = self.server.suffix
+        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=abc\U0001f498def)', ['*'])
         self.assertEqual(result, [])
 
     def test_attrlist_accepts_unicode(self):
-        base = self.server.get_dn_suffix()
-        result = self.ldap.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['abc', 'abc\U0001f498def'])
+        base = self.server.suffix
+        result = self._ldap_conn.search_s(
+            base, ldap.SCOPE_SUBTREE,
+            '(cn=Foo*)', ['abc', 'abc\U0001f498def'])
         result.sort()
 
         for dn, attrs in result:
@@ -149,51 +154,46 @@ class TestSearch(unittest.TestCase):
             self.assertEqual(attrs, {})
 
     def test_search_subtree(self):
-        base = self.server.get_dn_suffix()
-        l = self.ldap
-
-        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
+        l = self._ldap_conn
+        result = l.search_s(self.server.suffix, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         result.sort()
         self.assertEqual(result,
-            [('cn=Foo1,'+base,
+            [('cn=Foo1,'+self.server.suffix,
                {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo2,'+base,
+             ('cn=Foo2,'+self.server.suffix,
                {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo3,'+base,
+             ('cn=Foo3,'+self.server.suffix,
                {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo4,ou=Container,'+base,
+             ('cn=Foo4,ou=Container,'+self.server.suffix,
                {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}),
             ]
         )
 
     def test_search_onelevel(self):
-        base = self.server.get_dn_suffix()
-        l = self.ldap
-
-        result = l.search_s(base, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
+        l = self._ldap_conn
+        result = l.search_s(self.server.suffix, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
         result.sort()
         self.assertEqual(result,
-            [('cn=Foo1,'+base,
+            [('cn=Foo1,'+self.server.suffix,
                {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo2,'+base,
+             ('cn=Foo2,'+self.server.suffix,
                {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo3,'+base,
+             ('cn=Foo3,'+self.server.suffix,
                {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
             ]
         )
 
     def test_search_oneattr(self):
-        base = self.server.get_dn_suffix()
-        l = self.ldap
-
-        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
+        l = self._ldap_conn
+        result = l.search_s(self.server.suffix, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
         result.sort()
         self.assertEqual(result,
-            [('cn=Foo4,ou=Container,'+base, {'cn': [b'Foo4']})]
+            [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': [b'Foo4']})]
         )
 
     def test_search_subschema(self):
-        dn = self.ldap.search_subschemasubentry_s()
+        l = self._ldap_conn
+        dn = l.search_subschemasubentry_s()
         self.assertIsInstance(dn, text_type)
         self.assertEqual(dn, "cn=Subschema")
 

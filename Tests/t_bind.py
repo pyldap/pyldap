@@ -10,8 +10,7 @@ else:
     text_type = str
 
 import ldap, unittest
-from . import slapd
-
+from slapdtest import SlapdObject
 from ldap.ldapobject import LDAPObject
 
 server = None
@@ -22,7 +21,7 @@ class TestBinds(unittest.TestCase):
     def setUp(self):
         global server
         if server is None:
-            server = slapd.Slapd()
+            server = SlapdObject()
             server.start()
 
         self.server = server
@@ -33,7 +32,7 @@ class TestBinds(unittest.TestCase):
         self.dn_bytes = self.dn_unicode.encode('utf-8')
 
     def _get_ldapobject(self, bytes_mode=None):
-        l = LDAPObject(self.server.get_url(), bytes_mode=bytes_mode)
+        l = LDAPObject(self.server.ldap_uri, bytes_mode=bytes_mode)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
         return l

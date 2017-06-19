@@ -1,4 +1,26 @@
 ----------------------------------------------------------------
+Released 2.4.36 2017-04-26 (upstream)
+
+Changes since 2.4.35:
+
+Lib/
+* gracefully handle KeyError in LDAPObject._ldap_call() when
+  using errno
+* added new stand-alone module slapdtest (formerly Tests/slapd.py)
+  for general use (still experimental)
+
+Tests/
+* re-factored t_cext.py and t_search.py
+* set env var LDAPNOINIT=1 in t_cext.py and t_search.py to avoid
+  interference with locally installed .ldaprc or ldap.conf
+* by default back-mdb is now used for slapd-based tests
+  which requires fairly recent OpenLDAP builds but implements
+  full feature set
+* env vars can be set for slapd.py to tweak path names
+  of executables, temporary and schema data to be used
+* new class SlapdTestCase
+
+----------------------------------------------------------------
 Released 2.4.35.1 2017-05-29 (pyldap)
 
 Changes since 2.4.36:
@@ -25,6 +47,8 @@ Lib/
 ----------------------------------------------------------------
 Released 2.4.33 2017-04-25 (upstream)
 
+Changes since 2.4.32:
+
 Lib/
 * faster implementation of ldap.schema.tokenizer.split_tokens()
   (thanks to Christian Heimes)
@@ -43,6 +67,8 @@ Tests/
 
 ----------------------------------------------------------------
 Released 2.4.32 2017-02-14 (upstream)
+
+Changes since 2.4.31:
 
 Running tests made easier:
 - python setup.py test
@@ -1386,4 +1412,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.422 2017/04/25 13:52:48 stroeder Exp $
+$Id: CHANGES,v 1.430 2017/04/26 16:52:50 stroeder Exp $
