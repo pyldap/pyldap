@@ -182,16 +182,14 @@ class SimpleLDAPObject:
         for attr, val in modlist
       )
 
-  def _unbytesify_encoded_text(self, value):
+  def _unbytesify_text_value(self, value):
     """Adapt a 'known text, UTF-8 encoded' returned value following bytes_mode.
 
     With bytes_mode ON, takes bytes or None and returns bytes or None.
     With bytes_mode OFF, takes bytes or None and returns unicode or None.
 
-    This function should be applied on all result fields known to be text
-    per the RFCs (mostly distinguished names and attribute names in results).
-    It will convert them from the UTF-8 encoded bytes used in the C code to
-    the proper format depending on bytes_mode.
+    This function should only be applied on field *values*; distinguished names
+    or field *names* are already natively handled in result4.
     """
     if value is None:
       return value
@@ -204,6 +202,25 @@ class SimpleLDAPObject:
       return value
     else:
       return value.decode('utf-8')
+
+  def _maybe_rebytesify_text(self, value):
+    """Re-encodes text to bytes if needed by bytes_mode.
+
+    Takes unicode (and checks for it), and returns:
+    - bytes under bytes_mode
+    - unicode otherwise.
+    """
+    if not PY2:
+      return value
+
+    if value is None:
+      return value
+
+    assert isinstance(value, text_type), "Should return text, got bytes instead (%r)" % (value,)
+    if not self.bytes_mode:
+      return value
+    else:
+      return value.encode('utf-8')
 
   def _bytesify_result_value(self, result_value):
     """Applies bytes_mode to a result value.
@@ -218,14 +235,14 @@ class SimpleLDAPObject:
     if hasattr(result_value, 'items'):
       # It's a attribute_name: [values] dict
       return dict(
-        (self._unbytesify_encoded_text(key), value)
+        (self._maybe_rebytesify_text(key), value)
         for (key, value) in result_value.items()
       )
     else:
       # It's a list of referals
       # Example value:
       # [u'ldap://DomainDnsZones.xxxx.root.local/DC=DomainDnsZones,DC=xxxx,DC=root,DC=local']
-      return [self._unbytesify_encoded_text(referal) for referal in result_value]
+      return [self._maybe_rebytesify_text(referal) for referal in result_value]
 
   def _bytesify_results(self, results, with_ctrls=False):
     """Converts a "results" object according to bytes_mode.
@@ -240,12 +257,12 @@ class SimpleLDAPObject:
       return results
     if with_ctrls:
       return [
-        (self._unbytesify_encoded_text(dn), self._bytesify_result_value(fields), ctrls)
+        (self._maybe_rebytesify_text(dn), self._bytesify_result_value(fields), ctrls)
         for (dn, fields, ctrls) in results
       ]
     else:
       return [
-        (self._unbytesify_encoded_text(dn), self._bytesify_result_value(fields))
+        (self._maybe_rebytesify_text(dn), self._bytesify_result_value(fields))
         for (dn, fields) in results
       ]
 
@@ -883,7 +900,7 @@ class SimpleLDAPObject:
         else:
           # With legacy bytes mode, return bytes; otherwise, since this is a DN,
           # RFCs impose that the field value *can* be decoded to UTF-8.
-          return self._unbytesify_encoded_text(search_subschemasubentry_dn)
+          return self._unbytesify_text_value(search_subschemasubentry_dn)
     except IndexError:
       return None
 
