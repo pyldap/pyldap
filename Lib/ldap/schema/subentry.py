@@ -427,7 +427,7 @@ class SubSchema:
     # Apply attr_type_filter to results
     if attr_type_filter:
       for l in [r_must,r_may]:
-        for a in l.keys():
+        for a in list(l.keys()):
           for afk,afv in attr_type_filter:
             try:
               schema_attr_type = self.sed[AttributeType][a]
