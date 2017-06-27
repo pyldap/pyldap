@@ -162,13 +162,26 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(pmsg, [])
         self.assertEqual(ctrls, [])
 
-        # see if we can get the rootdse while we're here
-        m = l.search_ext("", _ldap.SCOPE_BASE, '(objectClass=*)')
+    def test_anon_rootdse_search(self):
+        l = self._open_conn(bind=False)
+        # see if we can get the rootdse with anon search (without prior bind)
+        m = l.search_ext(
+            "",
+            _ldap.SCOPE_BASE,
+            '(objectClass=*)',
+            [str('objectClass'), str('namingContexts')],
+        )
+        self.assertEqual(type(m), type(0))
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
         self.assertEqual(pmsg[0][0], "") # rootDSE has no dn
         self.assertEqual(msgid, m)
-        self.assertIn('objectClass', pmsg[0][1])
+        self.assertEqual(ctrls, [])
+        root_dse = pmsg[0][1]
+        self.assertTrue('objectClass' in root_dse)
+        self.assertTrue(b'OpenLDAProotDSE' in root_dse['objectClass'])
+        self.assertTrue('namingContexts' in root_dse)
+        self.assertEquals(root_dse['namingContexts'], [self.server.suffix.encode('ascii')])
 
     def test_unbind(self):
         l = self._open_conn()
@@ -659,6 +672,45 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn()
         if not self._require_attr(l, 'cancel'):         # FEATURE_CANCEL
             return
+
+    def test_errno107(self):
+        l = _ldap.initialize('ldap://127.0.0.1:42')
+        try:
+            m = l.simple_bind("", "")
+            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        except _ldap.SERVER_DOWN as ldap_err:
+            errno = ldap_err.args[0]['errno']
+            if errno != 107:
+                self.fail("expected errno=107, got %d" % errno)
+        else:
+            self.fail("expected SERVER_DOWN, got %r" % r)
+
+    def test_invalid_filter(self):
+        l = self._open_conn(bind=False)
+        # search with invalid filter
+        try:
+            m = l.search_ext(
+                "",
+                _ldap.SCOPE_BASE,
+                '(|(objectClass=*)',
+            )
+            self.assertEqual(type(m), type(0))
+            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        except _ldap.FILTER_ERROR:
+            pass
+        else:
+            self.fail("expected FILTER_ERROR, got %r" % r)
+
+    def test_invalid_credentials(self):
+        l = self._open_conn(bind=False)
+        # search with invalid filter
+        try:
+            m = l.simple_bind(self.server.root_dn, self.server.root_pw+'wrong')
+            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        except _ldap.INVALID_CREDENTIALS:
+            pass
+        else:
+            self.fail("expected INVALID_CREDENTIALS, got %r" % r)
 
 
 if __name__ == '__main__':

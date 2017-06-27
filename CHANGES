@@ -1,4 +1,18 @@
 ----------------------------------------------------------------
+Released 2.4.37 2017-04-27 (upstream)
+
+Changes since 2.4.36:
+
+Lib/
+* fixed errno-related regression introduced in 2.4.35
+  (in pyldap, this was included in 2.4.35.1)
+
+Tests/
+* added more checks to t_cext.py
+* renamed t_search.py to t_ldapobject.py and code-cleaning
+* added test for errno-related regression to t_ldapobject.py
+
+----------------------------------------------------------------
 Released 2.4.36 2017-04-26 (upstream), 2017-06-20 (pyldap)
 
 Changes since 2.4.35:
@@ -6,6 +20,7 @@ Changes since 2.4.35:
 Lib/
 * gracefully handle KeyError in LDAPObject._ldap_call() when
   using errno
+  (in pyldap, this was included in 2.4.35.1)
 * added new stand-alone module slapdtest (formerly Tests/slapd.py)
   for general use (still experimental)
 
@@ -1412,4 +1427,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.430 2017/04/26 16:52:50 stroeder Exp $
+$Id: CHANGES,v 1.435 2017/04/27 08:43:14 stroeder Exp $

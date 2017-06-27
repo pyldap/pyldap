@@ -1,3 +1,7 @@
+"""
+test LDAP operations with ldap.ldapobject
+"""
+
 from __future__ import unicode_literals
 
 import sys
@@ -42,7 +46,10 @@ cn: Foo4
 """
 
 
-class TestSearch(SlapdTestCase):
+class TestLDAPObject(SlapdTestCase):
+    """
+    test LDAP search operations
+    """
 
     ldap_object_class = LDAPObject
 
@@ -154,40 +161,71 @@ class TestSearch(SlapdTestCase):
             self.assertEqual(attrs, {})
 
     def test_search_subtree(self):
-        l = self._ldap_conn
-        result = l.search_s(self.server.suffix, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
+        result = self._ldap_conn.search_s(
+            self.server.suffix,
+            ldap.SCOPE_SUBTREE,
+            '(cn=Foo*)',
+            attrlist=['*'],
+        )
         result.sort()
-        self.assertEqual(result,
-            [('cn=Foo1,'+self.server.suffix,
-               {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo2,'+self.server.suffix,
-               {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo3,'+self.server.suffix,
-               {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo4,ou=Container,'+self.server.suffix,
-               {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}),
+        self.assertEqual(
+            result,
+            [
+                (
+                    'cn=Foo1,'+self.server.suffix,
+                    {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo2,'+self.server.suffix,
+                    {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo3,'+self.server.suffix,
+                    {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo4,ou=Container,'+self.server.suffix,
+                    {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}
+                ),
             ]
         )
 
     def test_search_onelevel(self):
-        l = self._ldap_conn
-        result = l.search_s(self.server.suffix, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
+        result = self._ldap_conn.search_s(
+            self.server.suffix,
+            ldap.SCOPE_ONELEVEL,
+            '(cn=Foo*)',
+            ['*'],
+        )
         result.sort()
-        self.assertEqual(result,
-            [('cn=Foo1,'+self.server.suffix,
-               {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo2,'+self.server.suffix,
-               {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
-             ('cn=Foo3,'+self.server.suffix,
-               {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
+        self.assertEqual(
+            result,
+            [
+                (
+                    'cn=Foo1,'+self.server.suffix,
+                    {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo2,'+self.server.suffix,
+                    {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}
+                ),
+                (
+                    'cn=Foo3,'+self.server.suffix,
+                    {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}
+                ),
             ]
         )
 
     def test_search_oneattr(self):
-        l = self._ldap_conn
-        result = l.search_s(self.server.suffix, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
+        result = self._ldap_conn.search_s(
+            self.server.suffix,
+            ldap.SCOPE_SUBTREE,
+            '(cn=Foo4)',
+            ['cn'],
+        )
         result.sort()
-        self.assertEqual(result,
+        self.assertEqual(
+            result,
             [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': [b'Foo4']})]
         )
 
@@ -203,6 +241,33 @@ class TestSearch(SlapdTestCase):
         dn = l.search_subschemasubentry_s()
         self.assertIsInstance(dn, bytes)
         self.assertEqual(dn, b"cn=Subschema")
+
+    def test_errno107(self):
+        l = self.ldap_object_class('ldap://127.0.0.1:42')
+        try:
+            m = l.simple_bind_s("", "")
+            r = l.result4(m, ldap.MSG_ALL, self.timeout)
+        except ldap.SERVER_DOWN as ldap_err:
+            errno = ldap_err.args[0]['errno']
+            if errno != 107:
+                self.fail("expected errno=107, got %d" % errno)
+            info = ldap_err.args[0]['info']
+            if info != os.strerror(107):
+                self.fail("expected info=%r, got %d" % (os.strerror(107), info))
+        else:
+            self.fail("expected SERVER_DOWN, got %r" % r)
+
+    def test_invalid_credentials(self):
+        l = self.ldap_object_class(self.server.ldap_uri)
+        # search with invalid filter
+        try:
+            m = l.simple_bind(self.server.root_dn, self.server.root_pw+'wrong')
+            r = l.result4(m, ldap.MSG_ALL)
+        except ldap.INVALID_CREDENTIALS:
+            pass
+        else:
+            self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+
 
 if __name__ == '__main__':
     unittest.main()
