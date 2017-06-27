@@ -420,7 +420,7 @@ class SubSchema:
 
     # Remove all mandantory attribute types from
     # optional attribute type list
-    for a in r_may.keys():
+    for a in list(r_may.keys()):
       if a in r_must:
         del r_may[a]
 
