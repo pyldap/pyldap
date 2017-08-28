@@ -15,6 +15,11 @@ try:
 except ImportError:
   from distutils.core import setup, Extension
 
+if sys.version_info[0] == 2 and sys.version_info[1] < 7:
+    raise Warning('This software is not tested on your version of Python.  Be careful!')
+if sys.version_info[0] >= 3 and sys.version_info < (3, 3):
+    raise RuntimeError('The C API from Python 3.3+ is required.')
+
 if sys.version_info[0] >= 3:
     from configparser import ConfigParser
     from functools import reduce as reduce_fun
@@ -88,7 +93,8 @@ if has_setuptools:
   kwargs = dict(
     include_package_data = True,
     install_requires = ['setuptools'],
-    zip_safe = False
+    zip_safe = False,
+    python_requires = '>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
   )
 
 setup(
