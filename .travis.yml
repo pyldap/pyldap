@@ -1,10 +1,13 @@
 language: python
+
 python:
 - '2.7'
 - '3.3'
 - '3.4'
 - '3.5'
 - '3.6'
+# Note: when updating Python versions, also change setup.py and tox.ini
+
 sudo: false
 
 cache:
