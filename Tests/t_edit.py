@@ -25,9 +25,20 @@ class EditionTests(unittest.TestCase):
             server = SlapdObject()
             server.start()
             base = server.suffix
+            suffix_dc = base.split(',')[0][3:]
 
             # insert some Foo* objects via ldapadd
             server.ldapadd("\n".join([
+                'dn: '+server.suffix,
+                'objectClass: dcObject',
+                'objectClass: organization',
+                'dc: '+suffix_dc,
+                'o: '+suffix_dc,
+                '',
+                'dn: '+server.root_dn,
+                'objectClass: applicationProcess',
+                'cn: '+server.root_cn,
+                '',
                 "dn: cn=Foo1,"+base,
                 "objectClass: organizationalRole",
                 "cn: Foo1",

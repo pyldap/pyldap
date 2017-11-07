@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-Tests the LDAP C Extension module called _ldap
+Automatic tests for python-ldap's C wrapper module _ldap
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_cext.py,v 1.22 2017/04/28 07:30:59 stroeder Exp $
 """
 
 from __future__ import unicode_literals
@@ -22,6 +27,31 @@ class TestLdapCExtension(SlapdTestCase):
     """
 
     timeout = 5
+
+    @classmethod
+    def setUpClass(cls):
+        SlapdTestCase.setUpClass()
+        # add two initial objects after server was started and is still empty
+        suffix_dc = cls.server.suffix.split(',')[0][3:]
+        cls.server._log.debug(
+            "adding %s and %s",
+            cls.server.suffix,
+            cls.server.root_dn,
+        )
+        cls.server.ldapadd(
+            "\n".join([
+                'dn: '+cls.server.suffix,
+                'objectClass: dcObject',
+                'objectClass: organization',
+                'dc: '+suffix_dc,
+                'o: '+suffix_dc,
+                '',
+                'dn: '+cls.server.root_dn,
+                'objectClass: applicationProcess',
+                'cn: '+cls.server.root_cn,
+                ''
+            ])
+        )
 
     def _open_conn(self, bind=True):
         """
