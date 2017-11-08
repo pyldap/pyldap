@@ -23,10 +23,7 @@ import atexit
 from logging.handlers import SysLogHandler
 import unittest
 
-try:
-    from urllib import quote_plus
-except ImportError:
-    from urllib.parse import quote_plus
+from ldap.compat import quote_plus
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""

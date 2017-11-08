@@ -5,6 +5,7 @@ import sys
 if sys.version_info[0] < 3:
     from UserDict import UserDict
     from urllib import quote
+    from urllib import quote_plus
     from urllib import unquote as urllib_unquote
     from urllib import urlopen
     from urlparse import urlparse
@@ -16,5 +17,5 @@ if sys.version_info[0] < 3:
         return unquoted.decode('utf-8')
 else:
     from collections import UserDict
-    from urllib.parse import quote, unquote, urlparse
+    from urllib.parse import quote, quote_plus, unquote, urlparse
     from urllib.request import urlopen
