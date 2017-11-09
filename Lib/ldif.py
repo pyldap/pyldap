@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.111 2017/04/27 11:11:01 stroeder Exp $
+$Id: ldif.py,v 1.114 2017/07/12 17:30:12 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -11,7 +11,7 @@ Tested with Python 2.0+, but should work with Python 1.5.2+.
 
 from __future__ import unicode_literals
 
-__version__ = '2.4.38'
+__version__ = '2.4.41'
 
 __all__ = [
   # constants
@@ -51,13 +51,14 @@ dn_regex   = re.compile('^%s$' % dn_pattern)
 ldif_pattern = '^((dn(:|::) %(dn_pattern)s)|(%(attrtype_pattern)s(:|::) .*)$)+' % vars()
 
 MOD_OP_INTEGER = {
-  'add'    :0, # ldap.MOD_REPLACE
-  'delete' :1, # ldap.MOD_DELETE
+  'add':0, # ldap.MOD_ADD
+  'delete':1, # ldap.MOD_DELETE
   'replace':2, # ldap.MOD_REPLACE
+  'increment':3, # ldap.MOD_INCREMENT
 }
 
 MOD_OP_STR = {
-  0:'add',1:'delete',2:'replace'
+  0:'add',1:'delete',2:'replace',3:'increment'
 }
 
 CHANGE_TYPES = ['add','delete','modify','modrdn']

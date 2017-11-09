@@ -1,4 +1,33 @@
 ----------------------------------------------------------------
+Released 2.4.41 2017-07-12 (upstream)
+
+Changes since 2.4.40:
+
+Lib/
+* Added support for increment: lines in LDIF changes records
+
+----------------------------------------------------------------
+Released 2.4.40 2017-06-27 (upstream)
+
+Changes since 2.4.39:
+
+Modules/
+* fixed memory leaks when using extended controls
+  (thanks to Erik Cumps)
+
+----------------------------------------------------------------
+Released 2.4.39 2017-05-31 (upstream)
+
+Changes since 2.4.38:
+
+Lib/
+* fixed errno-related ldap.TIMEOUT regression
+  (in pyldap, this was included in 2.4.35.1)
+
+Lib/slapdtest.py
+* Removed obsolete assert statements
+
+----------------------------------------------------------------
 Released 2.4.38 2017-04-28 (upstream)
 
 Changes since 2.4.37:
@@ -1450,4 +1479,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.443 2017/04/28 09:03:22 stroeder Exp $
+$Id: CHANGES,v 1.452 2017/07/12 18:04:30 stroeder Exp $
