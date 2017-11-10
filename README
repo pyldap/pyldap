@@ -172,7 +172,5 @@ These very kind people have supplied patches or suggested changes:
 Thanks to all the guys on the python-ldap mailing list for
 their contributions and input into this package.
 
-Thanks! We may have missed someone: please mail us if we have omitted
-your name.
-
-$Id: README,v 1.26 2017/08/15 16:21:58 stroeder Exp $
+   Thanks! We may have missed someone: please mail us if we have omitted
+   your name.
