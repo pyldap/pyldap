@@ -4,7 +4,11 @@ Released 2.4.45 2017-09-xx
 Changes since 2.4.44:
 
 Lib/
-* 
+* Fixed reraising of wrong exception in SimpleLDAPObject._ldap_call()
+  (thanks to Aigars Grins)
+
+Tests/
+* removed work-around in t_cext.py
 
 ----------------------------------------------------------------
 Released 2.4.44 2017-09-08 (upstream)
@@ -1528,4 +1532,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.467 2017/09/26 09:40:26 stroeder Exp $
+$Id: CHANGES,v 1.469 2017/10/09 14:54:10 stroeder Exp $
