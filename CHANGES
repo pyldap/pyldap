@@ -1,4 +1,20 @@
 ----------------------------------------------------------------
+Released 2.4.42 2017-09-04 (upstream)
+
+Changes since 2.4.41:
+
+Lib/
+* added new SlapdObject methods _ln_schema_files() and
+  _create_sub_dirs()
+* SlapdObject methods setup_rundir() and gen_config()
+  are now "public" methods
+* removed pseudo test script from module ldap.cidict
+
+Tests/
+* added sub-module for testing class ldap.cidict.cidict
+* avoid deprecated method alias unittest.TestCase.assertEquals
+
+----------------------------------------------------------------
 Released 2.4.41 2017-07-12 (upstream)
 
 Changes since 2.4.40:
@@ -1479,4 +1495,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.452 2017/07/12 18:04:30 stroeder Exp $
+$Id: CHANGES,v 1.458 2017/09/04 08:54:36 stroeder Exp $

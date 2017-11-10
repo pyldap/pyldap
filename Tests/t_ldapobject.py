@@ -2,9 +2,9 @@
 """
 Automatic tests for python-ldap's module ldap.ldapobject
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: t_ldapobject.py,v 1.7 2017/04/28 07:30:59 stroeder Exp $
+$Id: t_ldapobject.py,v 1.9 2017/09/04 07:47:29 stroeder Exp $
 """
 
 from __future__ import unicode_literals

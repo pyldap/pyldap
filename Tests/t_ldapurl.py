@@ -2,9 +2,9 @@
 """
 Automatic tests for python-ldap's module ldapurl
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: t_ldapurl.py,v 1.12 2017/04/28 07:30:59 stroeder Exp $
+$Id: t_ldapurl.py,v 1.14 2017/09/04 07:47:29 stroeder Exp $
 """
 
 from __future__ import unicode_literals

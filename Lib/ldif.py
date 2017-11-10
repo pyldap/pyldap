@@ -1,9 +1,9 @@
 """
 ldif - generate and parse LDIF data (see RFC 2849)
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.114 2017/07/12 17:30:12 stroeder Exp $
+$Id: ldif.py,v 1.116 2017/08/15 16:21:58 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -11,7 +11,7 @@ Tested with Python 2.0+, but should work with Python 1.5.2+.
 
 from __future__ import unicode_literals
 
-__version__ = '2.4.41'
+__version__ = '2.4.42'
 
 __all__ = [
   # constants

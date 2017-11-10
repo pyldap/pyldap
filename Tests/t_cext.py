@@ -2,9 +2,9 @@
 """
 Automatic tests for python-ldap's C wrapper module _ldap
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: t_cext.py,v 1.22 2017/04/28 07:30:59 stroeder Exp $
+$Id: t_cext.py,v 1.24 2017/09/04 07:47:29 stroeder Exp $
 """
 
 from __future__ import unicode_literals

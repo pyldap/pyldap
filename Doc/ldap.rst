@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.34 2016/07/24 16:12:55 stroeder Exp $
+.. % $Id: ldap.rst,v 1.39 2017/08/16 12:17:18 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -21,8 +21,8 @@ and errors appear as exceptions.
       `draft-ietf-ldapext-ldap-c-api <https://tools.ietf.org/html/draft-ietf-ldapext-ldap-c-api>`_
 
 
-This documentation is current for the Python LDAP module, version  
-|release|.  Source and binaries are available from 
+This documentation is current for the Python LDAP module, version
+|release|.  Source and binaries are available from
 https://www.python-ldap.org/.
 
 
@@ -35,13 +35,20 @@ This module defines the following functions:
 
    Initializes a new connection object for accessing the given LDAP server,
    and return an LDAP object (see :ref:`ldap-objects`) used to perform operations
-   on that server.  Parameter *uri* has to be a valid LDAP URL.
+   on that server.
 
-   Note that the C wrapper function :py:func:_ldap.initialize() is called which calls
-   the OpenLDAP funtion ldap_initialize(). Calling this function just initializes
-   the LDAP connection struct in the C API - nothing else. The first call to
-   an operation method (bind, search etc.) then really opens the connection.
-   Before that nothing is sent on the wire.
+   The *uri* parameter may be a comma- or whitespace-separated list of URIs
+   containing only the schema, the host, and the port fields. Note that
+   when using multiple URIs you cannot determine to which URI your client
+   gets connected.
+
+   Note that internally the OpenLDAP funtion
+   `ldap_initialize(3) <https://www.openldap.org/software/man.cgi?query=ldap_init&sektion=3>`_
+   is called which just initializes the LDAP connection struct in the C API
+   - nothing else. Therefore the first call to an operation method (bind,
+   search etc.) then really opens the connection (lazy connect). Before
+   that nothing is sent on the wire. The error handling in the calling
+   application has to correctly handle this behaviour.
 
    The optional arguments are for generating debug log information:
    *trace_level* specifies the amount of information being logged,
@@ -254,9 +261,7 @@ This constants are used for DN-parsing functions found in
 sub-module :py:mod:`ldap.dn`.
 
 .. seealso::
-
-   :manpage:`ldap_str2dn{3}`
-
+   `ldap_str2dn(3) <https://www.openldap.org/software/man.cgi?query=ldap_str2dn&sektion=3>`_
 
 .. py:data:: DN_FORMAT_LDAP
 
@@ -561,22 +566,24 @@ LDAPObject classes
 
    Instances of :py:class:`LDAPObject` are returned by :py:func:`initialize()`
    and :py:func:`open()` (deprecated). The connection is automatically unbound
-   and closed when the LDAP object is deleted. Internally :py:class:`LDAPObject`
-   is set to :py:class:`SimpleLDAPObject` by default.
+   and closed when the LDAP object is deleted.
 
+   Internally :py:class:`LDAPObject` is set to :py:class:`SimpleLDAPObject`
+   by default.
 
 .. py:class:: SimpleLDAPObject(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=5]]])
 
-   Instances of :py:class:`LDAPObject` are returned by :py:func:`initialize()`
-   and :py:func:`open()` (deprecated). The connection is automatically unbound
-   and closed  when the LDAP object is deleted.
+   This basic class wraps all methods of the underlying C API object.
 
+   The arguments are same like for function :py:func:`initialize()`.
 
 .. py:class:: ReconnectLDAPObject(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=5] [, retry_max=1 [, retry_delay=60.0]]]])
 
    This class is derived from :py:class:`SimpleLDAPObject` and used for automatic
    reconnects when using the synchronous request methods (see below). This class
    also implements the pickle protocol.
+
+   The first arguments are same like for function :py:func:`initialize()`.
 
    For automatic reconnects it has additional arguments:
 
@@ -733,9 +740,9 @@ and wait for and return with the server's result, or with
    *serverctrls* and *clientctrls* like described above.
 
 
-.. py:method:: extop(extreq[,serverctrls=None[,clientctrls=None]]]) -> int
+.. py:method:: LDAPObject.extop(extreq[,serverctrls=None[,clientctrls=None]]]) -> int
 
-.. py:method:: extop_s(extreq[,serverctrls=None[,clientctrls=None[,extop_resp_class=None]]]]) -> (respoid,respvalue)
+.. py:method:: LDAPObject.extop_s(extreq[,serverctrls=None[,clientctrls=None[,extop_resp_class=None]]]]) -> (respoid,respvalue)
 
    Performs an LDAP extended operation. The asynchronous
    form returns the message id of the initiated request, and the
@@ -743,12 +750,12 @@ and wait for and return with the server's result, or with
 
    The *extreq* is an instance of class :py:class:`ldap.extop.ExtendedRequest`
    containing the parameters for the extended operation request.
-   
+
    If argument *extop_resp_class* is set to a sub-class of
    :py:class:`ldap.extop.ExtendedResponse` this class is used to return an
    object of this class instead of a raw BER value in respvalue.
 
-.. py:method:: extop_result(self,msgid=ldap.RES_ANY,all=1,timeout=None) -> (respoid,respvalue)
+.. py:method:: LDAPObject.extop_result(self,msgid=ldap.RES_ANY,all=1,timeout=None) -> (respoid,respvalue)
 
    Wrapper method around :py:meth:`result4()` just for retrieving
    the result of an extended operation sent before.
@@ -923,7 +930,7 @@ and wait for and return with the server's result, or with
    The additional arguments are:
 
    *add_ctrls* (integer flag) specifies whether response controls are returned.
-   
+
    add_intermediates (integer flag) specifies whether response controls of
    intermediate search results are returned.
 
@@ -1001,7 +1008,6 @@ and wait for and return with the server's result, or with
   .. seealso::
 
     :rfc:`2830` - Lightweight Directory Access Protocol (v3): Extension for Transport Layer Security
-
 
 
 .. py:method:: LDAPObject.unbind() -> int

@@ -89,7 +89,7 @@ See TODO for planned features. Contributors welcome.
 
 For module documentation, see:
 
-	http://www.python-ldap.org/
+	https://www.python-ldap.org/
 
 Quick usage example:
 ====================
@@ -107,7 +107,7 @@ example code.
 Author(s) contact and documentation:
 ====================================
 
-   http://www.python-ldap.org/
+   https://www.python-ldap.org/
 
 If you are looking for help, please try the mailing list archives
 first, then send a question to the mailing list.
@@ -175,4 +175,4 @@ their contributions and input into this package.
 Thanks! We may have missed someone: please mail us if we have omitted
 your name.
 
-.. $Id: README,v 1.25 2011/10/26 18:43:21 stroeder Exp $
+$Id: README,v 1.26 2017/08/15 16:21:58 stroeder Exp $

@@ -2,9 +2,9 @@
 """
 slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.14 2017/07/12 17:30:12 stroeder Exp $
+$Id: slapdtest.py,v 1.19 2017/08/16 13:29:06 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -12,7 +12,7 @@ This module only works with Python 2.7.x since
 
 from __future__ import unicode_literals
 
-__version__ = '2.4.41'
+__version__ = '2.4.42'
 
 import os
 import socket
@@ -29,7 +29,7 @@ from ldap.compat import quote_plus
 SLAPD_CONF_TEMPLATE = r"""
 serverID %(serverid)s
 moduleload back_%(database)s
-include "%(schema_include)s"
+include "%(schema_prefix)s/core.schema"
 loglevel %(loglevel)s
 allow bind_v2
 
@@ -87,7 +87,7 @@ class SlapdObject(object):
     Controller class for a slapd instance, OpenLDAP's server.
 
     This class creates a temporary data store for slapd, runs it
-    on a private port, and initialises it with a top-level dc and
+    listening on a private Unix domain socket and TCP port, and initialises it with a top-level entry and
     the root user.
 
     When a reference to an instance of this class is lost, the slapd
@@ -103,6 +103,12 @@ class SlapdObject(object):
     # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
     cli_sasl_external = True
     local_host = '127.0.0.1'
+    testrunsubdirs = (
+        'schema',
+    )
+    openldap_schema_files = (
+        'core.schema',
+    )
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
     SBINDIR = os.environ.get('SBIN', '/usr/sbin')
@@ -115,8 +121,6 @@ class SlapdObject(object):
         SCHEMADIR = "/etc/ldap/schema"
     else:
         PATH_SCHEMA_CORE = None
-    INIT_SCHEMA_FILE = os.environ.get('SCHEMA_FILE', 'core.schema')
-    INIT_SCHEMA_PATH = os.environ.get('SCHEMA_PATH', os.path.join(SCHEMADIR, INIT_SCHEMA_FILE))
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
     PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
@@ -132,18 +136,24 @@ class SlapdObject(object):
         self._port = self._avail_tcp_port()
         self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
+        self._schema_prefix = os.path.join(self.testrundir, 'schema')
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
 
-    def _setup_rundir(self):
+    def setup_rundir(self):
         """
         creates rundir structure
+
+        for setting up a custom directory structure you have to override
+        this method
         """
         os.mkdir(self.testrundir)
         os.mkdir(self._db_directory)
+        self._create_sub_dirs(self.testrunsubdirs)
+        self._ln_schema_files(self.openldap_schema_files, self.SCHEMADIR)
 
     def _cleanup_rundir(self):
         """
@@ -176,13 +186,16 @@ class SlapdObject(object):
         self._log.info('Found available port %d', port)
         return port
 
-    def _gen_config(self):
+    def gen_config(self):
         """
         generates a slapd.conf and returns it as one string
+
+        for generating specific static configuration files you have to
+        override this method
         """
         config_dict = {
             'serverid': hex(self.server_id),
-            'schema_include': self.INIT_SCHEMA_PATH,
+            'schema_prefix':self._schema_prefix,
             'loglevel': self.slapd_loglevel,
             'database': self.database,
             'directory': self._db_directory,
@@ -194,11 +207,30 @@ class SlapdObject(object):
         }
         return self.slapd_conf_template % config_dict
 
+    def _create_sub_dirs(self, dir_names):
+        """
+        create sub-directories beneath self.testrundir
+        """
+        for dname in dir_names:
+            dir_name = os.path.join(self.testrundir, dname)
+            self._log.debug('Create directory %s', dir_name)
+            os.mkdir(dir_name)
+
+    def _ln_schema_files(self, file_names, source_dir):
+        """
+        write symbolic links to original schema files
+        """
+        for fname in file_names:
+            ln_source = os.path.join(source_dir, fname)
+            ln_target = os.path.join(self._schema_prefix, fname)
+            self._log.debug('Create symlink %s -> %s', ln_source, ln_target)
+            os.symlink(ln_source, ln_target)
+
     def _write_config(self):
         """Writes the slapd.conf file out, and returns the path to it."""
         self._log.debug("Writing config to %s", self._slapd_conf)
         with open(self._slapd_conf, 'w') as config_file:
-            config_file.write(self._gen_config())
+            config_file.write(self.gen_config())
 
     def _test_config(self):
         self._log.debug('testing config %s', self._slapd_conf)
@@ -255,7 +287,7 @@ class SlapdObject(object):
             # prepare directory structure
             atexit.register(self.stop)
             self._cleanup_rundir()
-            self._setup_rundir()
+            self.setup_rundir()
             self._write_config()
             self._test_config()
             self._start_slapd()
