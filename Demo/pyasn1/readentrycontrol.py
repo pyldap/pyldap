@@ -3,8 +3,6 @@
 This sample script demonstrates the use of the pre-read control (see RFC 4527).
 
 Originally contributed by Andreas Hasenack <ahasenack@terra.com.br>
-
-Requires module pyasn1 (see http://pyasn1.sourceforge.net/)
 """
 from __future__ import print_function
 
