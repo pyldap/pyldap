@@ -9,6 +9,8 @@ Lib/
 
 Tests/
 * removed work-around in t_cext.py
+* scripts do not directly call SlapdTestCase.setUpClass() anymore
+  (in pyldap, cherry-picked from python-ldap 2.5.2)
 
 ----------------------------------------------------------------
 Released 2.4.44 2017-09-08 (upstream)
