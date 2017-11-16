@@ -9,7 +9,7 @@ Tested with Python 2.0+, but should work with Python 1.5.2+.
 
 from __future__ import unicode_literals
 
-__version__ = '2.4.45'
+__version__ = '2.5.1'
 
 __all__ = [
   # constants
