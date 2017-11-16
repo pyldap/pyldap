@@ -1,9 +1,7 @@
 """
 ldap.schema -  LDAPv3 schema handling
 
-See http://www.python-ldap.org/ for details.
-
-\$Id: __init__.py,v 1.7 2009/07/26 11:09:58 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 """
 
 from ldap import __version__

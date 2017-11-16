@@ -2,9 +2,7 @@
 """
 ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 
-See http://www.python-ldap.org/ for project details.
-
-$Id: syncrepl.py,v 1.7 2015/06/06 09:21:38 stroeder Exp $
+See https://www.python-ldap.org/ for project details.
 """
 
 #__all__ = [

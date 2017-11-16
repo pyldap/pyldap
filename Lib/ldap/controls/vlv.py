@@ -3,9 +3,7 @@
 ldap.controls.vlv - classes for Virtual List View
 (see draft-ietf-ldapext-ldapv3-vlv)
 
-See http://www.python-ldap.org/ for project details.
-
-$Id: vlv.py,v 1.3 2015/07/07 12:46:31 stroeder Exp $
+See https://www.python-ldap.org/ for project details.
 """
 
 __all__ = [

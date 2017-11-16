@@ -2,9 +2,7 @@
 """
 Automatic tests for python-ldap's module ldif
 
-See http://www.python-ldap.org/ for details.
-
-$Id: t_ldif.py,v 1.22 2016/07/30 17:15:22 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import unicode_literals
@@ -479,7 +477,7 @@ class TestEntryRecords(TestLDIFParser):
 
     def test_multiple_empty_lines(self):
         """
-        see http://sourceforge.net/p/python-ldap/feature-requests/18/
+        test malformed LDIF with multiple empty lines
         """
         self.check_records(
             """
@@ -666,6 +664,29 @@ class TestChangeRecords(TestLDIFParser):
                 pass
             else:
                 self.fail("should have raised ValueError: %r" % ldif_str)
+
+    def test_mod_increment(self):
+        self.check_records(
+            """
+            version: 1
+
+            dn: cn=x,cn=y,cn=z
+            changetype: modify
+            increment: gidNumber
+            gidNumber: 1
+            -
+
+            """,
+            [
+                (
+                    'cn=x,cn=y,cn=z',
+                    [
+                        (ldif.MOD_OP_INTEGER['increment'], 'gidNumber', [b'1']),
+                    ],
+                    None,
+                ),
+            ],
+        )
 
 
 if __name__ == '__main__':

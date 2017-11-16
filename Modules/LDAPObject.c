@@ -1,5 +1,4 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.95 2017/01/25 19:41:31 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -546,27 +545,6 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
      defresult) has to return a string (or maybe None). The id
      argument specifies, which information should be passed back to
      the SASL lib (see SASL_CB_xxx in sasl.h)
-
-
-   A nice "Howto get LDAPv3 up and running with Kerberos and SSL" can
-   be found at http://www.bayour.com/LDAPv3-HOWTO.html.  Instead of
-   MIT Kerberos, I used Heimdal for my tests (since it is included
-   with SuSE Linux).
-
-   Todo:
-   
-   * Find a better interface than the python callback. This is 
-     really ugly. Perhaps one could make use of a sasl class, like
-     in the perl ldap module.
-
-   * Thread safety?
-
-   * Memory Management?
-   
-   * Write more docs
-
-   * ...
-
 */
 static int interaction ( unsigned flags, 
                          sasl_interact_t *interact,
@@ -1041,7 +1019,6 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
     int result = LDAP_SUCCESS;
     char **refs = NULL;
     LDAPControl **serverctrls = 0;
-    LDAP_BEGIN_ALLOW_THREADS( self );
     if (res_type == LDAP_RES_SEARCH_ENTRY) {
         /* LDAPmessage_to_python will parse entries and read the controls for each entry */
     } else if (res_type == LDAP_RES_SEARCH_REFERENCE) {
@@ -1052,7 +1029,9 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
         int rc;
         if (res_type == LDAP_RES_EXTENDED) {
             struct berval *retdata = 0;
+            LDAP_BEGIN_ALLOW_THREADS( self );
             rc = ldap_parse_extended_result( self->ldap, msg, &retoid, &retdata, 0 );
+            LDAP_END_ALLOW_THREADS( self );
             /* handle error rc!=0 here? */
             if (rc == LDAP_SUCCESS) {
                 valuestr = LDAPberval_to_object(retdata);
@@ -1060,10 +1039,11 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
             ber_bvfree( retdata );
         }
             
+        LDAP_BEGIN_ALLOW_THREADS( self );
         rc = ldap_parse_result( self->ldap, msg, &result, NULL, NULL, &refs,
                                 &serverctrls, 0 );
+        LDAP_END_ALLOW_THREADS( self );
     }
-    LDAP_END_ALLOW_THREADS( self );
 
     if (result != LDAP_SUCCESS) {               /* result error */
         char *e, err[1024];
@@ -1078,7 +1058,9 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
 
     if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
         int err = LDAP_NO_MEMORY;
+        LDAP_BEGIN_ALLOW_THREADS( self );
         ldap_set_option(self->ldap, LDAP_OPT_ERROR_NUMBER, &err);
+        LDAP_END_ALLOW_THREADS( self );
         ldap_msgfree(msg);
         return LDAPerror(self->ldap, "LDAPControls_to_List");
     }

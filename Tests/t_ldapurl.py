@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+Automatic tests for python-ldap's module ldapurl
+
+See https://www.python-ldap.org/ for details.
+"""
 
 from __future__ import unicode_literals
 

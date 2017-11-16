@@ -1,5 +1,4 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: functions.c,v 1.27 2009/08/17 05:00:57 leonard Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "functions.h"

@@ -1,9 +1,6 @@
-.. % $Id: ldap-sasl.rst,v 1.3 2015/10/24 13:41:02 stroeder Exp $
-
-
-********************************************
-:py:mod:`ldap.sasl` Handling LDAPv3 schema
-********************************************
+***********************************************
+:py:mod:`ldap.sasl` SASL Authentication Methods
+***********************************************
 
 .. py:module:: ldap.sasl
 
@@ -38,18 +35,28 @@ Classes
 
 .. autoclass:: ldap.sasl.sasl
    :members:
+   
+   This class is used with :py:meth:`ldap.LDAPObject.sasl_interactive_bind_s()`.
+
 
 .. autoclass:: ldap.sasl.cram_md5
    :members:
 
+
 .. autoclass:: ldap.sasl.digest_md5
    :members:
+
 
 .. autoclass:: ldap.sasl.gssapi
    :members:
 
+   You might consider using convenience method :py:meth:`ldap.LDAPObject.sasl_gssapi_bind_s()`.
+
+
 .. autoclass:: ldap.sasl.external
    :members:
+
+   You might consider using convenience method :py:meth:`ldap.LDAPObject.sasl_external_bind_s()`.
 
 
 .. _ldap.sasl-example:

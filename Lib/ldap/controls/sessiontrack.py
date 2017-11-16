@@ -3,9 +3,7 @@
 ldap.controls.sessiontrack - class for session tracking control
 (see draft-wahl-ldap-session)
 
-See http://www.python-ldap.org/ for project details.
-
-$Id: sessiontrack.py,v 1.5 2015/09/18 17:25:07 stroeder Exp $
+See https://www.python-ldap.org/ for project details.
 """
 
 from ldap.controls import RequestControl

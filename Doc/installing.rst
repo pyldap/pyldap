@@ -1,5 +1,3 @@
-.. % $Id: installing.rst,v 1.16 2015/12/09 17:56:38 stroeder Exp $
-
 ***********************
 Building and installing
 ***********************
@@ -15,7 +13,7 @@ along with your Python installation:
 If you have more than one Python interpreter installed locally you should
 use the same one you plan to use python-ldap with.
 
-See further instructions for using DistUtils here: http://docs.python.org/install/index.html
+See further instructions for using DistUtils here: https://docs.python.org/2.7/install/index.html
 
 Prerequisites
 =============
@@ -23,17 +21,17 @@ Prerequisites
 The following software packages are required to be installed
 on the local system when building python-ldap:
 
-- Python version 2.3 or later including its development files: http://www.python.org/
-- OpenLDAP client libs version 2.4.11 or later: http://www.openldap.org/
+- Python version 2.3 or later including its development files: https://www.python.org/
+- OpenLDAP client libs version 2.4.11 or later: https://www.openldap.org/
   It is not possible and not supported to build with prior versions.
-- OpenSSL (optional): http://www.openssl.org/
-- cyrus-sasl (optional): http://www.cyrussasl.org
+- OpenSSL (optional): https://www.openssl.org/
+- cyrus-sasl (optional): https://www.cyrusimap.org/sasl/
 - Kerberos libs, MIT or heimdal (optional)
 
 Furthermore some sub-modules of :py:mod:`ldap.controls` and :py:mod:`ldap.extop`
 require :py:mod:`pyasn1` and :py:mod:`pyasn1_modules` to be installed.
 
-  http://pyasn1.sf.net
+  https://github.com/etingof/pyasn1
 
 
 setup.cfg

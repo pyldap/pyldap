@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-test module ldap.schema.tokenizer
+Automatic tests for python-ldap's module ldap.schema.tokenizer
+
+See https://www.python-ldap.org/ for details.
 """
 
 import unittest

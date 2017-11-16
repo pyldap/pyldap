@@ -1,9 +1,7 @@
 """
 setup.py - Setup package with the help Python's DistUtils
 
-See http://www.python-ldap.org/ for details.
-
-$Id: setup.py,v 1.79 2017/04/26 16:52:50 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 """
 
 import sys,os,string,time

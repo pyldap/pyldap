@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-Tests for module ldap.modlist
+Automatic tests for python-ldap's module ldap.modlist
+
+See https://www.python-ldap.org/ for details.
 """
+
 import unittest
 
 import ldap

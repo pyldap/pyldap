@@ -1,5 +1,4 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: schema.c,v 1.8 2009/04/17 12:19:09 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 

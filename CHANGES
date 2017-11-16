@@ -1,4 +1,109 @@
 ----------------------------------------------------------------
+Released 2.4.45 2017-10-09 (upstream)
+
+Changes since 2.4.44:
+
+Lib/
+* Fixed reraising of wrong exception in SimpleLDAPObject._ldap_call()
+  (thanks to Aigars Grins)
+
+Tests/
+* removed work-around in t_cext.py
+
+----------------------------------------------------------------
+Released 2.4.44 2017-09-08 (upstream)
+
+Changes since 2.4.43:
+
+Modules/
+* more fine-grained GIL releasing in function l_ldap_result4()
+
+----------------------------------------------------------------
+Released 2.4.43 2017-09-06 (upstream)
+
+Changes since 2.4.42:
+
+Lib/
+* fixed passing all arguments from LDAPObject.sasl_non_interactive_bind_s()
+  to LDAPObject.sasl_interactive_bind_s()
+
+Tests/
+* added test for LDAPObject.sasl_external_bind_s()
+
+Doc/
+* added docs for SASL bind methods
+* more references
+* better sorting of LDAPObject methods
+
+----------------------------------------------------------------
+Released 2.4.42 2017-09-04 (upstream)
+
+Changes since 2.4.41:
+
+Lib/
+* added new SlapdObject methods _ln_schema_files() and
+  _create_sub_dirs()
+* SlapdObject methods setup_rundir() and gen_config()
+  are now "public" methods
+* removed pseudo test script from module ldap.cidict
+
+Tests/
+* added sub-module for testing class ldap.cidict.cidict
+* avoid deprecated method alias unittest.TestCase.assertEquals
+
+----------------------------------------------------------------
+Released 2.4.41 2017-07-12 (upstream)
+
+Changes since 2.4.40:
+
+Lib/
+* Added support for increment: lines in LDIF changes records
+
+----------------------------------------------------------------
+Released 2.4.40 2017-06-27 (upstream)
+
+Changes since 2.4.39:
+
+Modules/
+* fixed memory leaks when using extended controls
+  (thanks to Erik Cumps)
+
+----------------------------------------------------------------
+Released 2.4.39 2017-05-31 (upstream)
+
+Changes since 2.4.38:
+
+Lib/
+* fixed errno-related ldap.TIMEOUT regression
+  (in pyldap, this was included in 2.4.35.1)
+
+Lib/slapdtest.py
+* Removed obsolete assert statements
+
+----------------------------------------------------------------
+Released 2.4.38 2017-04-28 (upstream)
+
+Changes since 2.4.37:
+
+Lib/slapdtest.py
+* SlapdObject now evaluates env var SLAPD for optionally pointing
+  to OpenLDAP's slapd executable (e.g. with OpenLDAP LTB builds)
+* added LDAPI support in slaptest.SlapdObject which is internally used
+  in methods ldapadd() and ldapwhoami()
+* added method slaptest.SlapdObject.ldapmodify()
+* fixed enabling logger in slaptest
+* directory name now contains port to be able to run several SlapdObject
+  instances side-by-side (e.g. with replication)
+* added authz-regexp mapping to rootdn for user running the test
+* internally use SASL/EXTERNAL via LDAPI to bind
+* SlapdObject.server_id used as serverID in slapd.conf for MMR
+* Removed method SlapdObject.started() because SlapdTestCase.setUpClass()
+  will be used to add initial entries
+
+Tests/
+* ReconnectLDAPObject is also tested by sub-classing test class
+
+----------------------------------------------------------------
 Released 2.4.37 2017-04-27 (upstream), 2017-06-28 (pyldap)
 
 Changes since 2.4.36:
@@ -1426,5 +1531,3 @@ Released 2.0.0pre02 2002-02-01
 
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
-
-$Id: CHANGES,v 1.435 2017/04/27 08:43:14 stroeder Exp $

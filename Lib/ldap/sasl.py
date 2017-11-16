@@ -1,9 +1,7 @@
 """
 sasl.py - support for SASL mechanism
 
-See http://www.python-ldap.org/ for details.
-
-\$Id: sasl.py,v 1.17 2015/06/06 09:21:38 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 
 Description:
 The ldap.sasl module provides SASL authentication classes.

@@ -1,9 +1,7 @@
 """
 schema.py - support for subSchemaSubEntry information
 
-See http://www.python-ldap.org/ for details.
-
-\$Id: models.py,v 1.49 2017/02/18 15:32:01 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 """
 
 import sys

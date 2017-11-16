@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
 """
-python-ldap tests module package
+Automatic tests for python-ldap
+
+See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import absolute_import
 
 from . import t_cext
+from . import t_cidict
 from . import t_ldap_dn
 from . import t_ldap_filter
 from . import t_ldap_functions

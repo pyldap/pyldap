@@ -2,15 +2,13 @@
 dsml - generate and parse DSMLv1 data
 (see http://www.oasis-open.org/committees/dsml/)
 
-See http://www.python-ldap.org/ for details.
-
-$Id: dsml.py,v 1.54 2017/04/26 20:48:43 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 
 Python compability note:
 Tested with Python 2.0+.
 """
 
-__version__ = '2.4.37'
+__version__ = '2.4.45'
 
 import string,base64
 

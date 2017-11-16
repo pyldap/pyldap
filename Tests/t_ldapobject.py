@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-test LDAP operations with ldap.ldapobject
+Automatic tests for python-ldap's module ldap.ldapobject
+
+See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import unicode_literals
@@ -21,9 +24,21 @@ from slapdtest import SlapdTestCase
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.ldapobject import LDAPObject
+from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
 
-LDIF_TEMPLATE = """dn: cn=Foo1,%(suffix)s
+LDIF_TEMPLATE = """dn: %(suffix)s
+objectClass: dcObject
+objectClass: organization
+dc: %(dc)s
+o: %(dc)s
+
+dn: %(rootdn)s
+objectClass: applicationProcess
+objectClass: simpleSecurityObject
+cn: %(rootcn)s
+userPassword: %(rootpw)s
+
+dn: cn=Foo1,%(suffix)s
 objectClass: organizationalRole
 cn: Foo1
 
@@ -46,18 +61,26 @@ cn: Foo4
 """
 
 
-class TestLDAPObject(SlapdTestCase):
+class Test01_SimpleLDAPObject(SlapdTestCase):
     """
     test LDAP search operations
     """
 
-    ldap_object_class = LDAPObject
+    ldap_object_class = SimpleLDAPObject
 
     @classmethod
     def setUpClass(cls):
         SlapdTestCase.setUpClass()
         # insert some Foo* objects via ldapadd
-        cls.server.ldapadd(LDIF_TEMPLATE % {'suffix':cls.server.suffix})
+        cls.server.ldapadd(
+            LDIF_TEMPLATE % {
+                'suffix':cls.server.suffix,
+                'rootdn':cls.server.root_dn,
+                'rootcn':cls.server.root_cn,
+                'rootpw':cls.server.root_pw,
+                'dc': cls.server.suffix.split(',')[0][3:],
+            }
+        )
 
     def setUp(self):
         try:
@@ -267,6 +290,23 @@ class TestLDAPObject(SlapdTestCase):
             pass
         else:
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+
+    def test_sasl_extenal_bind_s(self):
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        l.sasl_external_bind_s()
+        self.assertEqual(l.whoami_s(), 'dn:'+self.server.root_dn.lower())
+        authz_id = 'dn:cn=Foo2,%s' % (self.server.suffix)
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        l.sasl_external_bind_s(authz_id=authz_id)
+        self.assertEqual(l.whoami_s(), authz_id.lower())
+        
+
+class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
+    """
+    test LDAP search operations
+    """
+
+    ldap_object_class = ReconnectLDAPObject
 
 
 if __name__ == '__main__':

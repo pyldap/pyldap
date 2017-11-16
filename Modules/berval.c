@@ -1,5 +1,4 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: berval.c,v 1.1 2009/08/17 01:49:47 leonard Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "berval.h"

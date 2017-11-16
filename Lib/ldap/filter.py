@@ -1,9 +1,7 @@
 """
 filters.py - misc stuff for handling LDAP filter strings (see RFC2254)
 
-See http://www.python-ldap.org/ for details.
-
-\$Id: filter.py,v 1.11 2016/07/24 15:14:56 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 
 Compability:
 - Tested with Python 2.0+

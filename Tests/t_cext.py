@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-Tests the LDAP C Extension module called _ldap
+Automatic tests for python-ldap's C wrapper module _ldap
+
+See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import unicode_literals
@@ -22,6 +25,31 @@ class TestLdapCExtension(SlapdTestCase):
     """
 
     timeout = 5
+
+    @classmethod
+    def setUpClass(cls):
+        SlapdTestCase.setUpClass()
+        # add two initial objects after server was started and is still empty
+        suffix_dc = cls.server.suffix.split(',')[0][3:]
+        cls.server._log.debug(
+            "adding %s and %s",
+            cls.server.suffix,
+            cls.server.root_dn,
+        )
+        cls.server.ldapadd(
+            "\n".join([
+                'dn: '+cls.server.suffix,
+                'objectClass: dcObject',
+                'objectClass: organization',
+                'dc: '+suffix_dc,
+                'o: '+suffix_dc,
+                '',
+                'dn: '+cls.server.root_dn,
+                'objectClass: applicationProcess',
+                'cn: '+cls.server.root_cn,
+                ''
+            ])
+        )
 
     def _open_conn(self, bind=True):
         """
@@ -490,20 +518,6 @@ class TestLdapCExtension(SlapdTestCase):
             [
                 ('objectClass', b'organizationalUnit'),
                 ('ou', b'RenameContainer'),
-            ]
-        )
-        result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        self.assertEqual(result, _ldap.RES_ADD)
-
-        # WORKAROUND bug in slapd. (Without an existing child,
-        # renames into a container object do not work for the ldif backend,
-        # the renamed object appears to be deleted, not moved.)
-        # see http://www.openldap.org/its/index.cgi/Software%20Bugs?id=5408
-        m = l.add_ext(
-            "cn=Bogus," + containerDn,
-            [
-                ('objectClass', b'organizationalRole'),
-                ('cn', b'Bogus'),
             ]
         )
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)

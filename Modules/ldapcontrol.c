@@ -1,5 +1,4 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: ldapcontrol.c,v 1.20 2011/10/26 18:38:06 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "LDAPObject.h"
@@ -231,6 +230,7 @@ encode_rfc3876(PyObject *self, PyObject *args)
 	}
 
 	res = LDAPberval_to_object(ctrl_val);
+	ber_bvfree(ctrl_val);
 
 endlbl:
 	if (vrber)
@@ -287,6 +287,7 @@ encode_rfc2696(PyObject *self, PyObject *args)
     }
 
     res = LDAPberval_to_object(ctrl_val);
+    ber_bvfree(ctrl_val);
 
  endlbl:
     if (ber)
@@ -324,6 +325,7 @@ decode_rfc2696(PyObject *self, PyObject *args)
     }
 
     res = Py_BuildValue("(lO&)", count, LDAPberval_to_object, cookiep);
+    ber_bvfree(cookiep);
 
  endlbl:
     if (ber)

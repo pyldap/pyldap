@@ -1,9 +1,7 @@
 """
 ldapobject.py - wraps class _ldap.LDAPObject
 
-See http://www.python-ldap.org/ for details.
-
-\$Id: ldapobject.py,v 1.162 2017/04/27 08:40:10 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -42,6 +40,7 @@ import warnings
 from ldap.schema import SCHEMA_ATTRS
 from ldap.controls import LDAPControl,DecodeControlTuples,RequestControlTuples
 from ldap.extop import ExtendedRequest,ExtendedResponse
+from ldap.compat import reraise
 
 from ldap import LDAPError
 
@@ -298,6 +297,7 @@ class SimpleLDAPObject:
       finally:
         self._ldap_object_lock.release()
     except LDAPError as e:
+      exc_type,exc_value,exc_traceback = sys.exc_info()
       try:
         if 'info' not in e.args[0] and 'errno' in e.args[0]:
           e.args[0]['info'] = strerror(e.args[0]['errno'])
@@ -305,7 +305,7 @@ class SimpleLDAPObject:
         pass
       if __debug__ and self._trace_level>=2:
         self._trace_file.write('=> LDAPError - %s: %s\n' % (e.__class__.__name__,str(e)))
-      raise
+      reraise(exc_type, exc_value, exc_traceback)
     else:
       if __debug__ and self._trace_level>=2:
         if not diagnostic_message_success is None:
@@ -442,13 +442,11 @@ class SimpleLDAPObject:
     """
     Send a SASL bind request using a non-interactive SASL method (e.g. GSSAPI, EXTERNAL)
     """
-    self.sasl_interactive_bind_s(
-      '',
-      ldap.sasl.sasl(
-        {ldap.sasl.CB_USER:authz_id},
-        sasl_mech
-      )
+    auth = ldap.sasl.sasl(
+      {ldap.sasl.CB_USER:authz_id},
+      sasl_mech
     )
+    self.sasl_interactive_bind_s('',auth,serverctrls,clientctrls,sasl_flags)
 
   def sasl_external_bind_s(self,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET,authz_id=''):
     """

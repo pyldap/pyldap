@@ -2,8 +2,6 @@
 python-ldap Documentation
 ##########################
 
-.. % $Id: index.rst,v 1.9 2015/10/24 12:49:41 stroeder Exp $
-
 .. topic:: Abstract
 
    This document describes the package python-ldap with its various modules.
@@ -34,6 +32,7 @@ Contents
    ldif.rst
    ldapurl.rst
    dsml.rst
+   slapdtest.rst
 
 
 ******************

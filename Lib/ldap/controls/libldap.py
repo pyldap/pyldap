@@ -3,9 +3,7 @@
 controls.libldap - LDAP controls wrapper classes with en-/decoding done
 by OpenLDAP functions
 
-See http://www.python-ldap.org/ for details.
-
-$Id: libldap.py,v 1.3 2015/06/06 09:21:38 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 """
 
 import _ldap,ldap

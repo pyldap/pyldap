@@ -2,9 +2,7 @@
 """
 ldap.controls.simple - classes for some very simple LDAP controls
 
-See http://www.python-ldap.org/ for details.
-
-$Id: simple.py,v 1.10 2015/06/06 09:21:38 stroeder Exp $
+See https://www.python-ldap.org/ for details.
 """
 
 import struct,ldap

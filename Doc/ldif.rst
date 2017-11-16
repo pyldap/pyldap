@@ -1,5 +1,3 @@
-.. % $Id: ldif.rst,v 1.9 2016/07/24 15:47:46 stroeder Exp $
-
 #####################################
 :mod:`ldif` LDIF parser and generator
 #####################################
@@ -31,12 +29,16 @@ Classes
 ^^^^^^^
 
 .. autoclass:: ldif.LDIFWriter
+   :members:
 
 .. autoclass:: ldif.LDIFParser
+   :members:
 
 .. autoclass:: LDIFRecordList
+   :members:
 
 .. autoclass:: LDIFCopy
+   :members:
 
 
 .. _ldif-example:
@@ -65,7 +67,7 @@ with :mod:`ldif` module, skip some entries and write the result to stdout. ::
    import sys
    from ldif import LDIFParser,LDIFWriter
 
-   SKIP_DN = ["uid=foo,ou=People,dc=example,dc=com", 
+   SKIP_DN = ["uid=foo,ou=People,dc=example,dc=com",
       "uid=bar,ou=People,dc=example,dc=com"]
 
    class MyLDIF(LDIFParser):
