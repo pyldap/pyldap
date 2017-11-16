@@ -157,6 +157,9 @@ class SlapdObject(object):
         """
         Recursively delete whole directory specified by `path'
         """
+        # cleanup_rundir() is called in atexit handler. Until Python 3.4,
+        # the rest of the world is already destroyed.
+        import os, os.path
         if not os.path.exists(self.testrundir):
             return
         self._log.debug('clean-up %s', self.testrundir)
