@@ -297,7 +297,6 @@ class SimpleLDAPObject:
       finally:
         self._ldap_object_lock.release()
     except LDAPError as e:
-      exc_type,exc_value,exc_traceback = sys.exc_info()
       try:
         if 'info' not in e.args[0] and 'errno' in e.args[0]:
           e.args[0]['info'] = strerror(e.args[0]['errno'])
@@ -305,7 +304,7 @@ class SimpleLDAPObject:
         pass
       if __debug__ and self._trace_level>=2:
         self._trace_file.write('=> LDAPError - %s: %s\n' % (e.__class__.__name__,str(e)))
-      reraise(exc_type, exc_value, exc_traceback)
+      reraise(*sys.exc_info())
     else:
       if __debug__ and self._trace_level>=2:
         if not diagnostic_message_success is None:
