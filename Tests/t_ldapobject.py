@@ -299,7 +299,16 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s(authz_id=authz_id)
         self.assertEqual(l.whoami_s(), authz_id.lower())
-        
+
+    def test_timeout(self):
+        l = self.ldap_object_class(self.server.ldap_uri)
+
+        m = l.search_ext(self.server.suffix, ldap.SCOPE_SUBTREE, '(objectClass=*)')
+        l.abandon(m)
+
+        with self.assertRaises(ldap.TIMEOUT):
+            result = l.result(m, timeout=0.1)
+
 
 class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
     """
