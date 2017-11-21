@@ -5,7 +5,6 @@
 #include "constants.h"
 #include "errors.h"
 #include "functions.h"
-#include "schema.h"
 #include "ldapcontrol.h"
 
 #include "LDAPObject.h"
@@ -57,7 +56,6 @@ PyObject* init_ldap_module()
 	LDAPinit_constants(d);
 	LDAPinit_errors(d);
 	LDAPinit_functions(d);
-	LDAPinit_schema(d);
 	LDAPinit_control(d);
 
 	/* Check for errors */

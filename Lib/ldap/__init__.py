@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 # This is also the overall release version number
 
-__version__ = '2.4.45'
+from pkginfo import __version__, __author__, __license__
 
 import sys
 
@@ -17,7 +17,11 @@ if __debug__:
   _trace_file = sys.stderr
   _trace_stack_limit = None
 
+from ldap.pkginfo import __version__
+
 import _ldap
+assert _ldap.__version__==__version__, \
+       ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
 from _ldap import *
 
 PYLDAP_VERSION = __version__
