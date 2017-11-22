@@ -18,6 +18,7 @@ else:
 
 import os
 import unittest
+import pickle
 from slapdtest import SlapdTestCase
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -67,7 +68,7 @@ cn: Foo4
 """
 
 
-class Test01_SimpleLDAPObject(SlapdTestCase):
+class Test00_SimpleLDAPObject(SlapdTestCase):
     """
     test LDAP search operations
     """
@@ -76,7 +77,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(Test01_SimpleLDAPObject, cls).setUpClass()
+        super(Test00_SimpleLDAPObject, cls).setUpClass()
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
             LDIF_TEMPLATE % {
@@ -189,7 +190,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
             self.assertIsInstance(dn, text_type)
             self.assertEqual(attrs, {})
 
-    def test_search_subtree(self):
+    def test001_search_subtree(self):
         result = self._ldap_conn.search_s(
             self.server.suffix,
             ldap.SCOPE_SUBTREE,
@@ -219,7 +220,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
             ]
         )
 
-    def test_search_onelevel(self):
+    def test002_search_onelevel(self):
         result = self._ldap_conn.search_s(
             self.server.suffix,
             ldap.SCOPE_ONELEVEL,
@@ -245,7 +246,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
             ]
         )
 
-    def test_search_oneattr(self):
+    def test003_search_oneattr(self):
         result = self._ldap_conn.search_s(
             self.server.suffix,
             ldap.SCOPE_SUBTREE,
@@ -271,7 +272,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
         self.assertIsInstance(dn, bytes)
         self.assertEqual(dn, b"cn=Subschema")
 
-    def test_errno107(self):
+    def test004_errno107(self):
         l = self.ldap_object_class('ldap://127.0.0.1:42')
         try:
             m = l.simple_bind_s("", "")
@@ -286,7 +287,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 
-    def test_invalid_credentials(self):
+    def test005_invalid_credentials(self):
         l = self.ldap_object_class(self.server.ldap_uri)
         # search with invalid filter
         try:
@@ -297,7 +298,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
         else:
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
 
-    def test_sasl_extenal_bind_s(self):
+    def test006_sasl_extenal_bind_s(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
         self.assertEqual(l.whoami_s(), 'dn:'+self.server.root_dn.lower())
@@ -313,17 +314,17 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
         l.abandon(m)
 
         with self.assertRaises(ldap.TIMEOUT):
-            result = l.result(m, timeout=0.1)
+            result = l.result(m, timeout=0.001)
 
 
-class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
+class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
     test ReconnectLDAPObject by restarting slapd
     """
 
     ldap_object_class = ReconnectLDAPObject
 
-    def test_reconnect_sasl_external(self):
+    def test101_reconnect_sasl_external(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
         authz_id = l.whoami_s()
@@ -331,13 +332,50 @@ class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
         self.server.restart()
         self.assertEqual(l.whoami_s(), authz_id)
 
-    def test_reconnect_simple_bind(self):
+    def test102_reconnect_simple_bind(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         bind_dn = 'cn=user1,'+self.server.suffix
         l.simple_bind_s(bind_dn, 'user1_pw')
         self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
         self.server.restart()
         self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
+
+    def test103_reconnect_get_state(self):
+        l1 = self.ldap_object_class(self.server.ldapi_uri)
+        bind_dn = 'cn=user1,'+self.server.suffix
+        l1.simple_bind_s(bind_dn, 'user1_pw')
+        self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+        self.assertEqual(
+            l1.__getstate__(),
+            {
+                str('_last_bind'): (
+                    'simple_bind_s',
+                    (bind_dn, 'user1_pw'),
+                    {}
+                ),
+                str('_options'): [(17, 3)],
+                str('_reconnects_done'): 0,
+                str('_retry_delay'): 60.0,
+                str('_retry_max'): 1,
+                str('_start_tls'): 0,
+                str('_trace_level'): 0,
+                str('_trace_stack_limit'): 5,
+                str('_uri'): self.server.ldapi_uri,
+                str('bytes_mode'): l1.bytes_mode,
+                str('bytes_mode_hardfail'): l1.bytes_mode_hardfail,
+                str('timeout'): -1,
+            },
+        )
+
+    def test104_reconnect_restore(self):
+        l1 = self.ldap_object_class(self.server.ldapi_uri)
+        bind_dn = 'cn=user1,'+self.server.suffix
+        l1.simple_bind_s(bind_dn, 'user1_pw')
+        self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+        l1_state = pickle.dumps(l1)
+        del l1
+        l2 = pickle.loads(l1_state)
+        self.assertEqual(l2.whoami_s(), 'dn:'+bind_dn)
 
 
 if __name__ == '__main__':

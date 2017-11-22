@@ -3,7 +3,7 @@
 import sys
 
 if sys.version_info[0] < 3:
-    from UserDict import UserDict
+    from UserDict import UserDict, IterableUserDict
     from urllib import quote
     from urllib import quote_plus
     from urllib import unquote as urllib_unquote
@@ -29,6 +29,7 @@ if sys.version_info[0] < 3:
 
 else:
     from collections import UserDict
+    IterableUserDict = UserDict
     from urllib.parse import quote, quote_plus, unquote, urlparse
     from urllib.request import urlopen
 

@@ -2,14 +2,11 @@
 ldif - generate and parse LDIF data (see RFC 2849)
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-Tested with Python 2.0+, but should work with Python 1.5.2+.
 """
 
 from __future__ import unicode_literals
 
-__version__ = '2.5.1'
+__version__ = '2.5.2'
 
 __all__ = [
   # constants
@@ -23,11 +20,8 @@ __all__ = [
   'LDIFCopy',
 ]
 
-import urllib
-import base64
 import re
-import types
-import sys
+from base64 import b64encode, b64decode
 
 try:
   from cStringIO import StringIO
@@ -37,7 +31,7 @@ except ImportError:
   except ImportError:
     from io import StringIO
 
-from ldap.compat import urlparse
+from ldap.compat import urlparse, urlopen
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
@@ -150,7 +144,7 @@ class LDIFWriter:
     """
     if self._needs_base64_encoding(attr_type,attr_value):
       # Encode with base64
-      encoded = base64.encodestring(attr_value).decode('ascii')
+      encoded = b64encode(attr_value).decode('ascii')
       encoded = encoded.replace('\n','')
       self._unfold_lines(':: '.join([attr_type, encoded]))
     else:
@@ -162,9 +156,7 @@ class LDIFWriter:
     entry
         dictionary holding an entry
     """
-    attr_types = list(entry.keys())
-    attr_types.sort()
-    for attr_type in attr_types:
+    for attr_type in sorted(entry.keys()):
       for attr_value in entry[attr_type]:
         self._unparseAttrTypeandValue(attr_type,attr_value)
 
@@ -294,7 +286,7 @@ class LDIFParser:
     self.records_read = 0
     self.changetype_counter = {}.fromkeys(CHANGE_TYPES,0)
     # Store some symbols for better performance
-    self._base64_decodestring = base64.decodestring
+    self._b64decode = b64decode
     # Read very first line
     try:
       self._last_line = self._readline()
@@ -375,7 +367,7 @@ class LDIFParser:
       # base64 makes sens only for ascii
       attr_value = unfolded_line[colon_pos+2:]
       attr_value = attr_value.encode('ascii')
-      attr_value = self._base64_decodestring(attr_value)
+      attr_value = self._b64decode(attr_value)
     elif value_spec==':<':
       # fetch attribute value from URL
       url = unfolded_line[colon_pos+2:].strip()
@@ -383,7 +375,7 @@ class LDIFParser:
       if self._process_url_schemes:
         u = urlparse(url)
         if u[0] in self._process_url_schemes:
-          attr_value = urllib.urlopen(url).read()
+          attr_value = urlopen(url).read()
     else:
       # All values should be valid ascii; we support UTF-8 as a
       # non-official, backwards compatibility layer.

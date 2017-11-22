@@ -4,7 +4,7 @@ setup.py - Setup package with the help Python's DistUtils
 See https://www.python-ldap.org/ for details.
 """
 
-import sys,os,string,time
+import sys,os
 
 has_setuptools = False
 try:
@@ -14,24 +14,14 @@ except ImportError:
   from distutils.core import setup, Extension
 
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
-    raise Warning('This software is not tested on your version of Python.  Be careful!')
+    raise RuntimeError('This software requires Python 2.7 or 3.x.')
 if sys.version_info[0] >= 3 and sys.version_info < (3, 3):
     raise RuntimeError('The C API from Python 3.3+ is required.')
 
 if sys.version_info[0] >= 3:
     from configparser import ConfigParser
-    from functools import reduce as reduce_fun
-    def string_strip(s):
-        return s.strip()
-    def string_split(s, *args):
-        return s.split(*args)
 else:
     from ConfigParser import ConfigParser
-    reduce_fun = reduce
-    def string_strip(s):
-        return string.strip(s)
-    def string_split(s, *args):
-        return string.split(s, *args)
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
@@ -55,15 +45,14 @@ cfg.read('setup.cfg')
 if cfg.has_section('_ldap'):
   for name in dir(LDAP_CLASS):
     if cfg.has_option('_ldap', name):
-      print(name + ': ' + cfg.get('_ldap', name))
-      setattr(LDAP_CLASS, name, string_split(cfg.get('_ldap', name)))
+      setattr(LDAP_CLASS, name, cfg.get('_ldap', name).split())
 
 for i in range(len(LDAP_CLASS.defines)):
   LDAP_CLASS.defines[i]=((LDAP_CLASS.defines[i],None))
 
 for i in range(len(LDAP_CLASS.extra_files)):
-  destdir, origfiles = string_split(LDAP_CLASS.extra_files[i], ':')
-  origfileslist = string_split(origfiles, ',')
+  destdir, origfiles = LDAP_CLASS.extra_files[i].split(':')
+  origfileslist = origfiles.split(',')
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 #-- Let distutils/setuptools do the rest
@@ -138,7 +127,6 @@ setup(
         'Modules/functions.c',
         'Modules/ldapmodule.c',
         'Modules/message.c',
-        'Modules/version.c',
         'Modules/options.c',
         'Modules/berval.c',
       ],
@@ -153,7 +141,11 @@ setup(
         ('ldap_r' in LDAP_CLASS.libs or 'oldap_r' in LDAP_CLASS.libs)*[('HAVE_LIBLDAP_R',None)] + \
         ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)*[('HAVE_SASL',None)] + \
         ('ssl' in LDAP_CLASS.libs and 'crypto' in LDAP_CLASS.libs)*[('HAVE_TLS',None)] + \
-        [('LDAPMODULE_VERSION', pkginfo.__version__)]
+        [
+          ('LDAPMODULE_VERSION', pkginfo.__version__),
+          ('LDAPMODULE_AUTHOR', pkginfo.__author__),
+          ('LDAPMODULE_LICENSE', pkginfo.__license__),
+        ]
     ),
   ],
   #-- Python "stand alone" modules
@@ -175,6 +167,7 @@ setup(
     'ldap.controls.sessiontrack',
     'ldap.controls.simple',
     'ldap.controls.sss',
+    'ldap.controls.vlv',
     'ldap.cidict',
     'ldap.dn',
     'ldap.extop',

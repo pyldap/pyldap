@@ -1,7 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
-#include "version.h"
 #include "constants.h"
 #include "errors.h"
 #include "functions.h"
@@ -15,8 +14,22 @@ PyMODINIT_FUNC PyInit__ldap(void);
 PyMODINIT_FUNC init_ldap(void);
 #endif
 
-/* dummy module methods */
+#define _STR(x)        #x
+#define STR(x) _STR(x)
 
+static char version_str[] = STR(LDAPMODULE_VERSION);
+static char author_str[] = STR(LDAPMODULE_AUTHOR);
+static char license_str[] = STR(LDAPMODULE_LICENSE);
+
+static void
+init_pkginfo( PyObject* m )
+{
+	PyModule_AddStringConstant(m, "__version__", version_str);
+	PyModule_AddStringConstant(m, "__author__", author_str);
+	PyModule_AddStringConstant(m, "__license__", license_str);
+}
+
+/* dummy module methods */
 static PyMethodDef methods[]  = {
 	{ NULL, NULL }
 };
@@ -52,7 +65,8 @@ PyObject* init_ldap_module()
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);
 
-	LDAPinit_version(d);
+	init_pkginfo(m);
+
 	LDAPinit_constants(d);
 	LDAPinit_errors(d);
 	LDAPinit_functions(d);

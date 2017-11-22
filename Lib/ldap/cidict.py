@@ -6,18 +6,19 @@ names of variable case.
 See https://www.python-ldap.org/ for details.
 """
 
-__version__ = """$Revision: 1.15 $"""
+from ldap import __version__
 
-from ldap.compat import UserDict
+from ldap.compat import IterableUserDict
 
-class cidict(UserDict):
+
+class cidict(IterableUserDict):
   """
   Case-insensitive but case-respecting dictionary.
   """
 
   def __init__(self,default=None):
     self._keys = {}
-    UserDict.__init__(self,{})
+    IterableUserDict.__init__(self,{})
     self.update(default or {})
 
   def __getitem__(self,key):
@@ -41,7 +42,7 @@ class cidict(UserDict):
     return key in self
 
   def __contains__(self,key):
-    return UserDict.__contains__(self,key.lower())
+    return IterableUserDict.__contains__(self, key.lower())
 
   def get(self,key,failobj=None):
     try:

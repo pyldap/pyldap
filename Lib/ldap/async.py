@@ -2,26 +2,22 @@
 ldap.async - handle async LDAP operations
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-Tested on Python 2.0+ but should run on Python 1.5.x.
 """
 
 import ldap
 
 from ldap import __version__
 
+SEARCH_RESULT_TYPES = set([
+  ldap.RES_SEARCH_ENTRY,
+  ldap.RES_SEARCH_RESULT,
+  ldap.RES_SEARCH_REFERENCE,
+])
 
-_searchResultTypes={
-  ldap.RES_SEARCH_ENTRY:None,
-  ldap.RES_SEARCH_RESULT:None,
-  ldap.RES_SEARCH_REFERENCE:None,
-}
-
-_entryResultTypes={
-  ldap.RES_SEARCH_ENTRY:None,
-  ldap.RES_SEARCH_RESULT:None,
-}
+ENTRY_RESULT_TYPES = set([
+  ldap.RES_SEARCH_ENTRY,
+  ldap.RES_SEARCH_RESULT,
+])
 
 
 class WrongResultType(Exception):
@@ -137,8 +133,8 @@ class AsyncSearchHandler:
             self._afterFirstResult = 0
         if not result_list:
           break
-        if result_type not in _searchResultTypes:
-          raise WrongResultType(result_type,_searchResultTypes.keys())
+        if result_type not in SEARCH_RESULT_TYPES:
+          raise WrongResultType(result_type,SEARCH_RESULT_TYPES)
         # Loop over list of search results
         for result_item in result_list:
           if result_counter<ignoreResultsNumber:
@@ -197,7 +193,7 @@ class Dict(AsyncSearchHandler):
     self.allEntries = {}
 
   def _processSingleResult(self,resultType,resultItem):
-    if resultType in _entryResultTypes:
+    if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
       dn,entry = resultItem
       self.allEntries[dn] = entry
@@ -215,7 +211,7 @@ class IndexedDict(Dict):
     self.index = {}.fromkeys(self.indexed_attrs,{})
 
   def _processSingleResult(self,resultType,resultItem):
-    if resultType in _entryResultTypes:
+    if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
       dn,entry = resultItem
       self.allEntries[dn] = entry
@@ -281,7 +277,7 @@ class LDIFWriter(FileWriter):
     FileWriter.__init__(self,l,self._ldif_writer._output_file,headerStr,footerStr)
 
   def _processSingleResult(self,resultType,resultItem):
-    if resultType in _entryResultTypes:
+    if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
       dn,entry = resultItem
       self._ldif_writer.unparse(dn,entry)

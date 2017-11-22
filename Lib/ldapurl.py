@@ -2,14 +2,9 @@
 ldapurl - handling of LDAP URLs as described in RFC 4516
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-This module only works with Python 2.0+ since
-1. string methods are used instead of module string and
-2. list comprehensions are used.
 """
 
-__version__ = '2.5.1'
+__version__ = '2.5.2'
 
 __all__ = [
   # constants
@@ -66,8 +61,7 @@ def ldapUrlEscape(s):
   """Returns URL encoding of string s"""
   return quote(s).replace(',','%2C').replace('/','%2F')
 
-
-class LDAPUrlExtension:
+class LDAPUrlExtension(object):
   """
   Class for parsing and unparsing LDAP URL extensions
   as described in RFC 4516.
@@ -190,7 +184,7 @@ class LDAPUrlExtensions(UserDict):
     return ','.join([ v.unparse() for v in self.values() ])
 
 
-class LDAPUrl:
+class LDAPUrl(object):
   """
   Class for parsing and unparsing LDAP URLs
   as described in RFC 4516.
