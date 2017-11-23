@@ -5,7 +5,7 @@
 __pycache__/
 .tox
 
-# shared libs installed 'setup.py test'
+# shared libs installed by 'setup.py test'
 /Lib/*.so*
 /Lib/*.dylib
 /Lib/*.pyd
