@@ -150,8 +150,6 @@ class SyncStateControl(ResponseControl):
     def decodeControlValue(self, encodedControlValue):
         d = decoder.decode(encodedControlValue, asn1Spec=SyncStateValue())
         state = d[0].getComponentByName('state')
-        # In Python 3, pyasn1.char overrides bytes() to do encoding for us.
-        # See also http://pyasn1.sourceforge.net/docs/type/univ/octetstring.html
         uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         cookie = d[0].getComponentByName('cookie')
         if cookie is not None and cookie.hasValue():
@@ -337,9 +335,6 @@ class SyncInfoMessage:
                     uuids = []
                     ids = comp.getComponentByName('syncUUIDs')
                     for i in range(len(ids)):
-                        # In Python 3, pyasn1.char overrides bytes() to do
-                        # encoding for us.  See also:
-                        # http://pyasn1.sourceforge.net/docs/type/univ/octetstring.html
                         uuid = UUID(bytes=bytes(ids.getComponentByPosition(i)))
                         uuids.append(str(uuid))
                     val['syncUUIDs'] = uuids
