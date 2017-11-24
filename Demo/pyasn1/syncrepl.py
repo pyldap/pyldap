@@ -143,8 +143,6 @@ signal.signal(signal.SIGINT, commenceShutdown)
 
 
 try:
-  ldap_url = ldapurl.LDAPUrl(sys.argv[1])
-  database_path = sys.argv[2]
     ldap_url = ldapurl.LDAPUrl(sys.argv[1])
     database_path = sys.argv[2]
 except IndexError,e:
@@ -160,8 +158,8 @@ except IndexError,e:
     ).format(script_name=sys.argv[0])
     sys.exit(1)
 except ValueError as e:
-  print('Error parsing command-line arguments:',str(e))
-  sys.exit(1)
+    print('Error parsing command-line arguments:',str(e))
+    sys.exit(1)
 
 while watcher_running:
     logger.info('Connecting to %s now...', ldap_url.initializeUrl())

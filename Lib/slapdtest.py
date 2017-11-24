@@ -226,9 +226,10 @@ class SlapdObject(object):
 
     def _write_config(self):
         """Writes the slapd.conf file out, and returns the path to it."""
-        self._log.debug("Writing config to %s", self._slapd_conf)
+        self._log.debug('Writing config to %s', self._slapd_conf)
         with open(self._slapd_conf, 'w') as config_file:
             config_file.write(self.gen_config())
+        self._log.info('Wrote config to %s', self._slapd_conf)
 
     def _test_config(self):
         self._log.debug('testing config %s', self._slapd_conf)

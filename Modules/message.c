@@ -102,8 +102,8 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	      attr = ldap_next_attribute( ld, entry, ber )
 	 ) {
 	     PyObject* valuelist;
-             PyObject* pyattr;
-             pyattr = PyUnicode_FromString(attr);
+	     PyObject* pyattr;
+	     pyattr = PyUnicode_FromString(attr);
 
 	     struct berval ** bvals =
 	     	ldap_get_values_len( ld, entry, attr );
@@ -121,8 +121,8 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	     }
 
 	     if (valuelist == NULL) {
+		Py_DECREF(pyattr);
                 Py_DECREF(pydn);
-                Py_DECREF(pyattr);
 		Py_DECREF(attrdict);
 		Py_DECREF(result);
 		if (ber != NULL)
@@ -141,8 +141,8 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 
 		    valuestr = LDAPberval_to_object(bvals[i]);
 		    if (PyList_Append( valuelist, valuestr ) == -1) {
+		        Py_DECREF(pyattr);
                         Py_DECREF(pydn);
-                        Py_DECREF(pyattr);
 			Py_DECREF(attrdict);
 			Py_DECREF(result);
 			Py_DECREF(valuestr);
@@ -159,7 +159,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	    	}
 		ldap_value_free_len(bvals);
 	     }
-             Py_DECREF(pyattr);
+	     Py_DECREF(pyattr);
 	     Py_DECREF( valuelist );
 	     ldap_memfree(attr);
 	 }

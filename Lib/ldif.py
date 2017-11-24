@@ -200,9 +200,9 @@ class LDIFWriter:
     dn = dn.encode('utf-8')
     self._unparseAttrTypeandValue('dn', dn)
     # Dispatch to record type specific writers
-    if isinstance(record, dict):
+    if isinstance(record,dict):
       self._unparseEntryRecord(record)
-    elif isinstance(record, list):
+    elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
       raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
