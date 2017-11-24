@@ -56,7 +56,7 @@ for i in range(len(LDAP_CLASS.extra_files)):
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 #-- Let distutils/setuptools do the rest
-name = 'pyldap'
+name = 'python-ldap'
 
 # Python 2.3.6+ and setuptools are needed to build eggs, so
 # let's handle setuptools' additional  keyword arguments to
@@ -78,16 +78,17 @@ setup(
   license=pkginfo.__license__,
   version=pkginfo.__version__,
   description = 'Python modules for implementing LDAP clients',
-  long_description = """pyldap:
-  pyldap is a fork of python-ldap, and provides an object-oriented API to access LDAP
-  directory servers from Python programs. Mainly it wraps the OpenLDAP 2.x libs for that purpose.
+  long_description = """python-ldap:
+  python-ldap provides an object-oriented API to access LDAP directory servers
+  from Python programs. Mainly it wraps the OpenLDAP 2.x libs for that purpose.
   Additionally the package contains modules for other LDAP-related stuff
   (e.g. processing LDIF, LDAPURLs, LDAPv3 schema, LDAPv3 extended operations
   and controls, etc.). 
   """,
-  author = 'pyldap project',
-  url = 'https://github.com/pyldap/pyldap/',
-  download_url = 'https://pypi.python.org/pypi/pyldap/',
+  author = 'python-ldap project',
+  author_email = 'python-ldap@python.org',
+  url = 'https://www.python-ldap.org/',
+  download_url = 'https://pypi.python.org/pypi/python-ldap/',
   classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
