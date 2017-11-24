@@ -49,7 +49,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 BerElement *ber = NULL;
 	 PyObject* entrytuple; 
 	 PyObject* attrdict; 
-         PyObject* pydn;
+	 PyObject* pydn;
 
 	 dn = ldap_get_dn( ld, entry );
 	 if (dn == NULL)  {
@@ -57,17 +57,9 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
              ldap_msgfree( m );
 	     return LDAPerror( ld, "ldap_get_dn" );
 	 }
-         pydn = PyUnicode_FromString(dn);
-         if (pydn == NULL) {
-             Py_DECREF(result);
-             ldap_msgfree( m );
-             ldap_memfree(dn);
-             return NULL;
-         }
 
 	 attrdict = PyDict_New();
 	 if (attrdict == NULL) {
-                Py_DECREF(pydn);
 		Py_DECREF(result);
 		ldap_msgfree( m );
 		ldap_memfree(dn);
@@ -76,7 +68,6 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 
 	 rc = ldap_get_entry_controls( ld, entry, &serverctrls );
 	 if (rc) {
-            Py_DECREF(pydn);
 	    Py_DECREF(result);
 	    ldap_msgfree( m );
 	    ldap_memfree(dn);
@@ -87,7 +78,6 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 if ( ! ( pyctrls = LDAPControls_to_List( serverctrls ) ) ) {
 	    int err = LDAP_NO_MEMORY;
 	    ldap_set_option( ld, LDAP_OPT_ERROR_NUMBER, &err );
-            Py_DECREF(pydn);
 	    Py_DECREF(result);
 	    ldap_msgfree( m );
 	    ldap_memfree(dn);
@@ -122,7 +112,6 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 
 	     if (valuelist == NULL) {
 		Py_DECREF(pyattr);
-                Py_DECREF(pydn);
 		Py_DECREF(attrdict);
 		Py_DECREF(result);
 		if (ber != NULL)
@@ -142,7 +131,6 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 		    valuestr = LDAPberval_to_object(bvals[i]);
 		    if (PyList_Append( valuelist, valuestr ) == -1) {
 		        Py_DECREF(pyattr);
-                        Py_DECREF(pydn);
 			Py_DECREF(attrdict);
 			Py_DECREF(result);
 			Py_DECREF(valuestr);
@@ -164,12 +152,20 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	     ldap_memfree(attr);
 	 }
 
+	 pydn = PyUnicode_FromString(dn);
+	 if (pydn == NULL) {
+	     Py_DECREF(result);
+	     ldap_msgfree( m );
+	     ldap_memfree(dn);
+	     return NULL;
+	 }
+
 	 if (add_ctrls) {
 	    entrytuple = Py_BuildValue("(OOO)", pydn, attrdict, pyctrls);
 	 } else {
 	    entrytuple = Py_BuildValue("(OO)", pydn, attrdict);
 	 }
-         Py_DECREF(pydn);
+	 Py_DECREF(pydn);
 	 ldap_memfree(dn);
 	 Py_DECREF(attrdict);
 	 Py_XDECREF(pyctrls);
