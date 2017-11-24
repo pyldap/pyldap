@@ -209,7 +209,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertTrue('objectClass' in root_dse)
         self.assertTrue(b'OpenLDAProotDSE' in root_dse['objectClass'])
         self.assertTrue('namingContexts' in root_dse)
-        self.assertEquals(root_dse['namingContexts'], [self.server.suffix.encode('ascii')])
+        self.assertEqual(root_dse['namingContexts'], [self.server.suffix.encode('ascii')])
 
     def test_unbind(self):
         l = self._open_conn()

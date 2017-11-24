@@ -22,14 +22,7 @@ __all__ = [
 
 import re
 from base64 import b64encode, b64decode
-
-try:
-  from cStringIO import StringIO
-except ImportError:
-  try:
-    from StringIO import StringIO
-  except ImportError:
-    from io import StringIO
+from io import StringIO
 
 from ldap.compat import urlparse, urlopen
 
@@ -200,9 +193,9 @@ class LDIFWriter:
     dn = dn.encode('utf-8')
     self._unparseAttrTypeandValue('dn', dn)
     # Dispatch to record type specific writers
-    if isinstance(record, dict):
+    if isinstance(record,dict):
       self._unparseEntryRecord(record)
-    elif isinstance(record, list):
+    elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
       raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
@@ -303,8 +296,8 @@ class LDIFParser:
   def _readline(self):
     s = self._input_file.readline()
     if self._file_sends_bytes:
-      # The RFC does not allow UTF-8 values, but some implementations do,
-      # including upstream.
+      # The RFC does not allow UTF-8 values; we support it as a
+      # non-official, backwards compatibility layer
       s = s.decode('utf-8')
     self.line_counter = self.line_counter + 1
     self.byte_counter = self.byte_counter + len(s)

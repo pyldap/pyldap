@@ -1,71 +1,14 @@
-======
-pyldap
-======
+-----------------------
+THIS FORK IS DEPRECATED
+-----------------------
+
+The pyldap fork will be merged back into python-ldap soon.
+This repository is now used for staging preparations.
+
 
 .. image:: https://travis-ci.org/pyldap/pyldap.svg?branch=master
     :target: https://travis-ci.org/pyldap/pyldap
     :alt: Continuous integration status
-
-pyldap is a fork of the excellent ``python-ldap`` Python project.
-
-The goals of this fork are the following:
-
-* Bring Python 3 support to ``python-ldap`` while keeping a PY2-compatible codebase
-* Improve tooling and code quality
-* Keep backwards compatibility whenever possible
-
------------------------
-Backwards compatibility
------------------------
-
-Users should be able to replace ``python-ldap`` with ``pyldap`` with minimal impact on their code.
-According to this, releases of ``pyldap`` will stick to the numbering of the upstream ``python-ldap`` releases they are based on.
-
-However, some compatibility toggles will be added to bring cleaner APIs for PY3 code.
-
-Please note the ``pyldap`` installs under the same ``ldap`` module as ``python-ldap``; it **CANNOT** be installed alongside.
-
-
---------------------------
-Upgrading from python-ldap
---------------------------
-
-``pyldap`` brings some improvements on top of ``python-ldap``.
-
-
-Bytes/text management
-=====================
-
-The LDAP protocol states that some fields (distinguised names, relative distinguished names,
-attribute names, queries) be encoded in UTF-8; some other (mostly attribute *values*) **MAY**
-contain any type of data, and thus be treated as bytes.
-
-However, ``python-ldap`` used bytes for all fields, including those guaranteed to be text.
-In order to support Python 3, ``pyldap`` needs to make this distinction explicit; this is done
-through the ``bytes_mode`` flag to ``ldap.initialize()``.
-
-When porting from ``python-ldap``, users are advised to update their code to set ``bytes_mode=False``
-on calls to these methods.
-Under Python 2, ``pyldap`` checks aggressively the type of provided arguments, and will raise a ``TypeError``
-for any invalid parameter; however, if the ``bytes_mode`` kwarg isn't provided, ``pyldap`` will only
-raise warnings.
-
-The typical usage is as follow; note that only the result's *values* are of the bytes type:
-
-.. code-block:: pycon
-
-    >>> import ldap
-    >>> con = ldap.initialize('ldap://localhost:389', bytes_mode=False)
-    >>> con.simple_bind_s('login', 'secret_password')
-    >>> results = con.search_s('ou=people,dc=example,dc=org', ldap.SCOPE_SUBTREE, "(cn=Raphaël)")
-    >>> results
-    [
-        ("cn=Raphaël,ou=people,dc=example,dc=org", {
-            'cn': [b'Rapha\xc3\xabl'],
-            'sn': [b'Barrois'],
-        }),
-    ]
-
 
 ---------------------------------------
 python-ldap: LDAP client API for Python
@@ -168,6 +111,27 @@ These very kind people have supplied patches or suggested changes:
 * Ingo Steuwer <steuwer at univention.de>
 * Andreas Hasenack <ahasenack at terra.com.br>
 * Matej Vela <vela at debian.org>
+
+These people contributed to Python 3 porting (at https://github.com/pyldap/):
+* A. Karl Kornel <akkornel at stanford.edu>
+* Alex Willmer <alex at moreati.org.uk>
+* Aymeric Augustin <aymeric.augustin at oscaro.com>
+* Bradley Baetz <bbaetz at google.com>
+* Christian Heimes <cheimes at redhat.com>
+* Dirk Mueller <dirk at dmllr.de>
+* Jon Dufresne <jon.dufresne at gmail.com>
+* Martin Basti <mbasti at redhat.com>
+* Miro Hroncok <miro at hroncok.cz>
+* Paul Aurich <paul at darkrain42.org>
+* Petr Viktorin <pviktori at redhat.com>
+* Pieterjan De Potter <pieterjan.depotter at ugent.be>
+* Raphaël Barrois <raphael.barrois at polyconseil.fr>
+* Robert Kuska <rkuska at redhat.com>
+* Stanislav Láznička <stlaz at users.noreply.github.com>
+* Tobias Bräutigam <tobias.braeutigam at gonicus.de>
+* Tom van Dijk <t.vandijk at utwente.nl>
+* Wentao Han <wentao.han at gmail.com>
+* William Brown <firstyear at redhat.com>
 
 Thanks to all the guys on the python-ldap mailing list for
 their contributions and input into this package.

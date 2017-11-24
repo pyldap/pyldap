@@ -26,8 +26,6 @@ from _ldap import *
 # call into libldap to initialize it right now
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
-PYLDAP_VERSION = __version__
-
 OPT_NAMES_DICT = {}
 for k,v in vars(_ldap).items():
   if k.startswith('OPT_'):
