@@ -303,8 +303,8 @@ class LDIFParser:
   def _readline(self):
     s = self._input_file.readline()
     if self._file_sends_bytes:
-      # The RFC does not allow UTF-8 values, but some implementations do,
-      # including upstream.
+      # The RFC does not allow UTF-8 values; we support it as a
+      # non-official, backwards compatibility layer
       s = s.decode('utf-8')
     self.line_counter = self.line_counter + 1
     self.byte_counter = self.byte_counter + len(s)
