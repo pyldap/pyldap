@@ -15,7 +15,6 @@ Documentation is available at:
 
 To install the new code, use::
 
-    pip install --pre python-ldap
+    pip install python-ldap
 
-After python-ldap 3.0.0 comes out of beta, we'll release pyldap 3.0 as an
-empty package requiring python-ldap.
+Package pyldap 3.0 now exists only to require python-ldap.
