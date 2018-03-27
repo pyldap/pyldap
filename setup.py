@@ -6,7 +6,7 @@ with open('README.rst') as f:
 setup(
     name = 'pyldap',
     license = 'Python style',
-    version = '3.0.0',
+    version = '3.0.0.post1',
     description = 'DEPRECATED; use python-ldap instead',
     long_description = long_description,
     author = 'pyldap project',
