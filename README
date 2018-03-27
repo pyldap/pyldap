@@ -3,7 +3,7 @@ THIS FORK IS DEPRECATED
 -----------------------
 
 The pyldap fork was merged back into python-ldap,
-and released as python-ldap 3.0.0b1.
+and released as python-ldap 3.0.0.
 
 Development continues at:
 
@@ -11,7 +11,7 @@ Development continues at:
 
 Documentation is available at:
 
-    https://python-ldap.readthedocs.io/en/latest/
+    https://python-ldap.org/
 
 To install the new code, use::
 
