@@ -1,14 +1,14 @@
 from setuptools import setup
 
+with open('README.rst') as f:
+    long_description = f.read()
+
 setup(
     name = 'pyldap',
     license = 'Python style',
     version = '3.0.0',
     description = 'DEPRECATED; use python-ldap instead',
-    long_description = """
-        The pyldap fork was merged back into python-ldap,
-        and will be released as python-ldap 3.0.0.
-    """,
+    long_description = long_description,
     author = 'pyldap project',
     author_email = 'python-ldap@python.org',
     url = 'https://github.com/pyldap/pyldap/',
